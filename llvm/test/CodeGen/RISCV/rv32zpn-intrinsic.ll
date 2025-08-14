@@ -1336,6 +1336,16 @@ entry:
   ret i32 %0
 }
 
+define i32 @slli8(i32 %a, i32 %b) {
+; CHECK-LABEL: slli8:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    slli8 a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i32 @llvm.riscv.sll8.i32.i32(i32 %a, i32 1)
+  ret i32 %0
+}
+
 declare i32 @llvm.riscv.sll8.i32.i32(i32, i32)
 
 define i32 @sll16(i32 %a, i32 %b) {
@@ -1598,6 +1608,16 @@ entry:
   ret i32 %0
 }
 
+define i32 @srai8(i32 %a, i32 %b) {
+; CHECK-LABEL: srai8:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    srai8 a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i32 @llvm.riscv.sra8.i32.i32(i32 %a, i32 1)
+  ret i32 %0
+}
+
 declare i32 @llvm.riscv.sra8.i32.i32(i32, i32)
 
 define i32 @sra8_u(i32 %a, i32 %b) {
@@ -1607,6 +1627,16 @@ define i32 @sra8_u(i32 %a, i32 %b) {
 ; CHECK-NEXT:    ret
 entry:
   %0 = tail call i32 @llvm.riscv.sra8.u.i32.i32(i32 %a, i32 %b)
+  ret i32 %0
+}
+
+define i32 @srai8_u(i32 %a, i32 %b) {
+; CHECK-LABEL: srai8_u:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    srai8.u a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i32 @llvm.riscv.sra8.u.i32.i32(i32 %a, i32 1)
   ret i32 %0
 }
 
@@ -1666,6 +1696,16 @@ entry:
   ret i32 %0
 }
 
+define i32 @srli8(i32 %a, i32 %b) {
+; CHECK-LABEL: srli8:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    srli8 a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i32 @llvm.riscv.srl8.i32.i32(i32 %a, i32 1)
+  ret i32 %0
+}
+
 declare i32 @llvm.riscv.srl8.i32.i32(i32, i32)
 
 define i32 @srl8_u(i32 %a, i32 %b) {
@@ -1675,6 +1715,16 @@ define i32 @srl8_u(i32 %a, i32 %b) {
 ; CHECK-NEXT:    ret
 entry:
   %0 = tail call i32 @llvm.riscv.srl8.u.i32.i32(i32 %a, i32 %b)
+  ret i32 %0
+}
+
+define i32 @srli8_u(i32 %a, i32 %b) {
+; CHECK-LABEL: srli8_u:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    srli8.u a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i32 @llvm.riscv.srl8.u.i32.i32(i32 %a, i32 1)
   ret i32 %0
 }
 

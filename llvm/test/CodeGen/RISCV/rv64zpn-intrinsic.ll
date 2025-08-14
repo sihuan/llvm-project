@@ -880,6 +880,16 @@ entry:
   ret i64 %0
 }
 
+define i64 @kslli8(i64 %a, i32 signext %b) {
+; CHECK-LABEL: kslli8:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kslli8 a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.ksll8.i64.i64(i64 %a, i64 1)
+  ret i64 %0
+}
+
 declare i64 @llvm.riscv.ksll8.i64.i64(i64, i64)
 
 define i64 @ksll16(i64 %a, i32 signext %b) {
@@ -1406,6 +1416,16 @@ entry:
   ret i64 %0
 }
 
+define i64 @slli8(i64 %a, i32 signext %b) {
+; CHECK-LABEL: slli8:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    slli8 a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.sll8.i64.i64(i64 %a, i64 1)
+  ret i64 %0
+}
+
 declare i64 @llvm.riscv.sll8.i64.i64(i64, i64)
 
 define i64 @sll16(i64 %a, i32 signext %b) {
@@ -1714,6 +1734,16 @@ entry:
   ret i64 %0
 }
 
+define i64 @srai8(i64 %a, i32 signext %b) {
+; CHECK-LABEL: srai8:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    srai8 a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.sra8.i64.i64(i64 %a, i64 1)
+  ret i64 %0
+}
+
 declare i64 @llvm.riscv.sra8.i64.i64(i64, i64)
 
 define i64 @sra8_u(i64 %a, i32 signext %b) {
@@ -1726,6 +1756,16 @@ define i64 @sra8_u(i64 %a, i32 signext %b) {
 entry:
   %conv = zext i32 %b to i64
   %0 = tail call i64 @llvm.riscv.sra8.u.i64.i64(i64 %a, i64 %conv)
+  ret i64 %0
+}
+
+define i64 @srai8_u(i64 %a, i32 signext %b) {
+; CHECK-LABEL: srai8_u:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    srai8.u a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.sra8.u.i64.i64(i64 %a, i64 1)
   ret i64 %0
 }
 
@@ -1794,6 +1834,16 @@ entry:
   ret i64 %0
 }
 
+define i64 @srli8(i64 %a, i32 signext %b) {
+; CHECK-LABEL: srli8:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    srli8 a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.srl8.i64.i64(i64 %a, i64 1)
+  ret i64 %0
+}
+
 declare i64 @llvm.riscv.srl8.i64.i64(i64, i64)
 
 define i64 @srl8_u(i64 %a, i32 signext %b) {
@@ -1806,6 +1856,16 @@ define i64 @srl8_u(i64 %a, i32 signext %b) {
 entry:
   %conv = zext i32 %b to i64
   %0 = tail call i64 @llvm.riscv.srl8.u.i64.i64(i64 %a, i64 %conv)
+  ret i64 %0
+}
+
+define i64 @srli8_u(i64 %a, i32 signext %b) {
+; CHECK-LABEL: srli8_u:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    srli8.u a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.srl8.u.i64.i64(i64 %a, i64 1)
   ret i64 %0
 }
 

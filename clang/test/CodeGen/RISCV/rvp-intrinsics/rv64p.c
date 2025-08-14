@@ -654,6 +654,15 @@ unsigned long ksll8(unsigned long a, unsigned int b) {
   return __rv_ksll8(a, b);
 }
 
+// CHECK-RV64-LABEL: @kslli8(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.ksll8.i64.i64(i64 [[A:%.*]], i64 1)
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long kslli8(unsigned long a, unsigned int b) {
+  return __rv_ksll8(a, 1);
+}
+
 // CHECK-RV64-LABEL: @ksll16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[CONV:%.*]] = zext i32 [[B:%.*]] to i64
@@ -1054,6 +1063,15 @@ unsigned long sll8(unsigned long a, unsigned int b) {
   return __rv_sll8(a, b);
 }
 
+// CHECK-RV64-LABEL: @slli8(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.sll8.i64.i64(i64 [[A:%.*]], i64 1)
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long slli8(unsigned long a, unsigned int b) {
+  return __rv_sll8(a, 1);
+}
+
 // CHECK-RV64-LABEL: @sll16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[CONV:%.*]] = zext i32 [[B:%.*]] to i64
@@ -1282,6 +1300,15 @@ unsigned long sra8(unsigned long a, unsigned int b) {
   return __rv_sra8(a, b);
 }
 
+// CHECK-RV64-LABEL: @srai8(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.sra8.i64.i64(i64 [[A:%.*]], i64 1)
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long srai8(unsigned long a, unsigned int b) {
+  return __rv_sra8(a, 1);
+}
+
 // CHECK-RV64-LABEL: @sra8_u(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[CONV:%.*]] = zext i32 [[B:%.*]] to i64
@@ -1290,6 +1317,15 @@ unsigned long sra8(unsigned long a, unsigned int b) {
 //
 unsigned long sra8_u(unsigned long a, unsigned int b) {
   return __rv_sra8_u(a, b);
+}
+
+// CHECK-RV64-LABEL: @srai8_u(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.sra8.u.i64.i64(i64 [[A:%.*]], i64 1)
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long srai8_u(unsigned long a, unsigned int b) {
+  return __rv_sra8_u(a, 1);
 }
 
 // CHECK-RV64-LABEL: @sra16(
@@ -1340,6 +1376,15 @@ unsigned long srl8(unsigned long a, unsigned int b) {
   return __rv_srl8(a, b);
 }
 
+// CHECK-RV64-LABEL: @srli8(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.srl8.i64.i64(i64 [[A:%.*]], i64 1)
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long srli8(unsigned long a, unsigned int b) {
+  return __rv_srl8(a, 1);
+}
+
 // CHECK-RV64-LABEL: @srl8_u(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[CONV:%.*]] = zext i32 [[B:%.*]] to i64
@@ -1348,6 +1393,15 @@ unsigned long srl8(unsigned long a, unsigned int b) {
 //
 unsigned long srl8_u(unsigned long a, unsigned int b) {
   return __rv_srl8_u(a, b);
+}
+
+// CHECK-RV64-LABEL: @srli8_u(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.srl8.u.i64.i64(i64 [[A:%.*]], i64 1)
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long srli8_u(unsigned long a, unsigned int b) {
+  return __rv_srl8_u(a, 1);
 }
 
 // CHECK-RV64-LABEL: @srl16(
