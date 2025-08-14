@@ -1134,6 +1134,11 @@ let Predicates = [HasStdExtZpn] in {
 def : RVPBinaryI4IntPat<SCLIP16, "sclip16">;
 def : RVPBinaryI4IntPat<UCLIP16, "uclip16">;
 def : RVPBinaryI4IntPat<KSLLI16, "ksll16">;
+def : RVPBinaryI4IntPat<SRAI16,  "sra16">;
+def : RVPBinaryI4IntPat<SRAI16U, "sra16_u">;
+def : RVPBinaryI4IntPat<SRLI16,  "srl16">;
+def : RVPBinaryI4IntPat<SRLI16U, "srl16_u">;
+def : RVPBinaryI4IntPat<SLLI16,  "sll16">;
 } // Predicates = [HasStdExtZpn]
 
 class RVPBinaryI5IntPat<RVInst Inst, string IntID>

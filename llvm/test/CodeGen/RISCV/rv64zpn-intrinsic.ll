@@ -895,6 +895,16 @@ entry:
   ret i64 %0
 }
 
+define i64 @kslli16(i64 %a, i32 signext %b) {
+; CHECK-LABEL: kslli16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kslli16 a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.ksll16.i64.i64(i64 %a, i64 1)
+  ret i64 %0
+}
+
 declare i64 @llvm.riscv.ksll16.i64.i64(i64, i64)
 
 define i64 @kslra8(i64 %a, i32 signext %b) {
@@ -1411,6 +1421,17 @@ entry:
   ret i64 %0
 }
 
+define i64 @slli16(i64 %a, i32 signext %b) {
+; CHECK-LABEL: slli16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    slli16 a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.sll16.i64.i64(i64 %a, i64 1)
+  ret i64 %0
+}
+
+
 declare i64 @llvm.riscv.sll16.i64.i64(i64, i64)
 
 define i64 @smaqa(i64 %t, i64 %a, i64 %b) {
@@ -1723,6 +1744,16 @@ entry:
   ret i64 %0
 }
 
+define i64 @srai16(i64 %a, i32 signext %b) {
+; CHECK-LABEL: srai16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    srai16 a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.sra16.i64.i64(i64 %a, i64 1)
+  ret i64 %0
+}
+
 declare i64 @llvm.riscv.sra16.i64.i64(i64, i64)
 
 define i64 @sra16_u(i64 %a, i32 signext %b) {
@@ -1735,6 +1766,16 @@ define i64 @sra16_u(i64 %a, i32 signext %b) {
 entry:
   %conv = zext i32 %b to i64
   %0 = tail call i64 @llvm.riscv.sra16.u.i64.i64(i64 %a, i64 %conv)
+  ret i64 %0
+}
+
+define i64 @srai16_u(i64 %a, i32 signext %b) {
+; CHECK-LABEL: srai16_u:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    srai16.u a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.sra16.u.i64.i64(i64 %a, i64 1)
   ret i64 %0
 }
 
@@ -1783,6 +1824,16 @@ entry:
   ret i64 %0
 }
 
+define i64 @srli16(i64 %a, i32 signext %b) {
+; CHECK-LABEL: srli16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    srli16 a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.srl16.i64.i64(i64 %a, i64 1)
+  ret i64 %0
+}
+
 declare i64 @llvm.riscv.srl16.i64.i64(i64, i64)
 
 define i64 @srl16_u(i64 %a, i32 signext %b) {
@@ -1795,6 +1846,16 @@ define i64 @srl16_u(i64 %a, i32 signext %b) {
 entry:
   %conv = zext i32 %b to i64
   %0 = tail call i64 @llvm.riscv.srl16.u.i64.i64(i64 %a, i64 %conv)
+  ret i64 %0
+}
+
+define i64 @srli16_u(i64 %a, i32 signext %b) {
+; CHECK-LABEL: srli16_u:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    srli16.u a0, a0, 1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.srl16.u.i64.i64(i64 %a, i64 1)
   ret i64 %0
 }
 

@@ -629,6 +629,15 @@ unsigned long ksll16(unsigned long a, unsigned int b) {
   return __rv_ksll16(a, b);
 }
 
+// CHECK-RV32-LABEL: @kslli16(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = tail call i32 @llvm.riscv.ksll16.i32.i32(i32 [[A:%.*]], i32 1)
+// CHECK-RV32-NEXT:    ret i32 [[TMP0]]
+//
+unsigned long kslli16(unsigned long a, unsigned int b) {
+  return __rv_ksll16(a, 1);
+}
+
 // CHECK-RV32-LABEL: @kslra8(
 // CHECK-RV32-NEXT:  entry:
 // CHECK-RV32-NEXT:    [[TMP0:%.*]] = tail call i32 @llvm.riscv.kslra8.i32.i32(i32 [[A:%.*]], i32 [[B:%.*]])
@@ -998,6 +1007,15 @@ unsigned long sll16(unsigned long a, unsigned int b) {
   return __rv_sll16(a, b);
 }
 
+// CHECK-RV32-LABEL: @slli16(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = tail call i32 @llvm.riscv.sll16.i32.i32(i32 [[A:%.*]], i32 1)
+// CHECK-RV32-NEXT:    ret i32 [[TMP0]]
+//
+unsigned long slli16(unsigned long a, unsigned int b) {
+  return __rv_sll16(a, 1);
+}
+
 // CHECK-RV32-LABEL: @smaqa(
 // CHECK-RV32-NEXT:  entry:
 // CHECK-RV32-NEXT:    [[TMP0:%.*]] = tail call i32 @llvm.riscv.smaqa.i32.i32(i32 [[T:%.*]], i32 [[A:%.*]], i32 [[B:%.*]])
@@ -1196,6 +1214,16 @@ unsigned long sra16(unsigned long a, unsigned int b) {
   return __rv_sra16(a, b);
 }
 
+// CHECK-RV32-LABEL: @srai16(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = tail call i32 @llvm.riscv.sra16.i32.i32(i32 [[A:%.*]], i32 1)
+// CHECK-RV32-NEXT:    ret i32 [[TMP0]]
+//
+unsigned long srai16(unsigned long a, unsigned int b) {
+  return __rv_sra16(a, 1);
+}
+
+
 // CHECK-RV32-LABEL: @sra16_u(
 // CHECK-RV32-NEXT:  entry:
 // CHECK-RV32-NEXT:    [[TMP0:%.*]] = tail call i32 @llvm.riscv.sra16.u.i32.i32(i32 [[A:%.*]], i32 [[B:%.*]])
@@ -1203,6 +1231,15 @@ unsigned long sra16(unsigned long a, unsigned int b) {
 //
 unsigned long sra16_u(unsigned long a, unsigned int b) {
   return __rv_sra16_u(a, b);
+}
+
+// CHECK-RV32-LABEL: @srai16_u(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = tail call i32 @llvm.riscv.sra16.u.i32.i32(i32 [[A:%.*]], i32 1)
+// CHECK-RV32-NEXT:    ret i32 [[TMP0]]
+//
+unsigned long srai16_u(unsigned long a, unsigned int b) {
+  return __rv_sra16_u(a, 1);
 }
 
 // CHECK-RV32-LABEL: @srl8(
@@ -1232,6 +1269,15 @@ unsigned long srl16(unsigned long a, unsigned int b) {
   return __rv_srl16(a, b);
 }
 
+// CHECK-RV32-LABEL: @srli16(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = tail call i32 @llvm.riscv.srl16.i32.i32(i32 [[A:%.*]], i32 1)
+// CHECK-RV32-NEXT:    ret i32 [[TMP0]]
+//
+unsigned long srli16(unsigned long a, unsigned int b) {
+  return __rv_srl16(a, 1);
+}
+
 // CHECK-RV32-LABEL: @srl16_u(
 // CHECK-RV32-NEXT:  entry:
 // CHECK-RV32-NEXT:    [[TMP0:%.*]] = tail call i32 @llvm.riscv.srl16.u.i32.i32(i32 [[A:%.*]], i32 [[B:%.*]])
@@ -1239,6 +1285,15 @@ unsigned long srl16(unsigned long a, unsigned int b) {
 //
 unsigned long srl16_u(unsigned long a, unsigned int b) {
   return __rv_srl16_u(a, b);
+}
+
+// CHECK-RV32-LABEL: @srli16_u(
+// CHECK-RV32-NEXT:  entry:
+// CHECK-RV32-NEXT:    [[TMP0:%.*]] = tail call i32 @llvm.riscv.srl16.u.i32.i32(i32 [[A:%.*]], i32 1)
+// CHECK-RV32-NEXT:    ret i32 [[TMP0]]
+//
+unsigned long srli16_u(unsigned long a, unsigned int b) {
+  return __rv_srl16_u(a, 1);
 }
 
 // CHECK-RV32-LABEL: @stas16(
