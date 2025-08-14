@@ -1100,6 +1100,15 @@ long smbb16(unsigned long a, unsigned long b) {
   return __rv_smbb16(a, b);
 }
 
+// CHECK-RV64-LABEL: @smbb32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.smbb32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+long smbb32(long a, long b) {
+  return __rv_smbb32(a, b);
+}
+
 // CHECK-RV64-LABEL: @smbt16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.smbt16.i64.i64(i64 [[A:%.*]], i64 [[B:%.*]])

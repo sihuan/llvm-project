@@ -19294,6 +19294,7 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   case RISCV::BI__rv_scmplt16:
   case RISCV::BI__rv_smax8:
   case RISCV::BI__rv_smax16:
+  case RISCV::BI__rv_smbb32:
   case RISCV::BI__rv_smin8:
   case RISCV::BI__rv_smin16:
   case RISCV::BI__rv_smmul:
@@ -19403,6 +19404,7 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
       BUILTIN_ID(scmplt16)
       BUILTIN_ID(smax8)
       BUILTIN_ID(smax16)
+      BUILTIN_ID(smbb32)
       BUILTIN_ID(smin8)
       BUILTIN_ID(smin16)
       BUILTIN_ID(smmul)

@@ -911,6 +911,10 @@ def : InstAlias<"clrov",    (CSRRCI      X0, SysRegVXSAT.Encoding,  1)>;
 def : InstAlias<"swap16 $rd, $rs1", (PKBT16 GPR:$rd, GPR:$rs1, GPR:$rs1)>;
 }
 
+let Predicates = [HasStdExtZpn, IsRV64] in {
+def : InstAlias<"smbb32 $rd, $rs1, $rs2", (MULSR64_64 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+}
+
 //===----------------------------------------------------------------------===//
 // Intrinsics codegen patterns
 //===----------------------------------------------------------------------===//
@@ -1103,6 +1107,10 @@ def : RVPBinaryIntPat<URSUB8,   "ursub8">;
 def : RVPBinaryIntPat<URSUB16,  "ursub16">;
 def : RVPBinaryIntPat<URSUBW,   "ursubw">;
 } // Predicates = [HasStdExtZpn]
+
+let Predicates = [HasStdExtZpn, IsRV64] in {
+def : RVPBinaryIntPat<MULSR64_64,   "smbb32">;
+} // Predicates = [HasStdExtZpn, IsRV64]
 
 class RVPBinaryI3IntPat<RVInst Inst, string IntID>
     : Pat<(XLenVT (!cast<Intrinsic>("int_riscv_" # IntID)

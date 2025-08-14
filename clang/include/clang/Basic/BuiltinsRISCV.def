@@ -438,6 +438,10 @@ TARGET_BUILTIN(__rv_smax16, "ULiULiULi", "", "experimental-p")
 
 // smbb16
 TARGET_BUILTIN(__rv_smbb16, "LiULiULi", "", "experimental-p")
+
+//smbb32
+TARGET_BUILTIN(__rv_smbb32, "LiLiLi", "", "experimental-p")
+
 // smbt16
 TARGET_BUILTIN(__rv_smbt16, "LiULiULi", "", "experimental-p")
 // smtt16

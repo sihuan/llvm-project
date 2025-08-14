@@ -1473,6 +1473,18 @@ entry:
 
 declare i64 @llvm.riscv.smbb16.i64.i64(i64, i64)
 
+define i64 @smbb32(i64 %a, i64 %b) {
+; CHECK-LABEL: smbb32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    smbb32 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.smbb32.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.smbb32.i64(i64, i64)
+
 define i64 @smbt16(i64 %a, i64 %b) {
 ; CHECK-LABEL: smbt16:
 ; CHECK:       # %bb.0: # %entry

@@ -231,6 +231,7 @@ let TargetPrefix = "riscv" in {
   defm scmplt16 : RVPBinaryIntrinsics;
   defm smax8    : RVPBinaryIntrinsics;
   defm smax16   : RVPBinaryIntrinsics;
+  defm smbb32   : RVPBinaryIntrinsics;
   defm smin8    : RVPBinaryIntrinsics;
   defm smin16   : RVPBinaryIntrinsics;
   defm smmul    : RVPBinaryIntrinsics;
