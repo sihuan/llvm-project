@@ -1109,7 +1109,9 @@ def : RVPBinaryIntPat<URSUBW,   "ursubw">;
 } // Predicates = [HasStdExtZpn]
 
 let Predicates = [HasStdExtZpn, IsRV64] in {
-def : RVPBinaryIntPat<MULSR64_64,   "smbb32">;
+def : RVPBinaryIntPat<MULSR64_64, "smbb32">;
+def : RVPBinaryIntPat<SMBT32,     "smbt32">;
+def : RVPBinaryIntPat<SMTT32,     "smtt32">;
 } // Predicates = [HasStdExtZpn, IsRV64]
 
 class RVPBinaryI3IntPat<RVInst Inst, string IntID>

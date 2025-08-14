@@ -444,8 +444,15 @@ TARGET_BUILTIN(__rv_smbb32, "LiLiLi", "", "experimental-p")
 
 // smbt16
 TARGET_BUILTIN(__rv_smbt16, "LiULiULi", "", "experimental-p")
+
+// smbt32
+TARGET_BUILTIN(__rv_smbt32, "LiLiLi", "", "experimental-p")
+
 // smtt16
 TARGET_BUILTIN(__rv_smtt16, "LiULiULi", "", "experimental-p")
+
+// smtt32
+TARGET_BUILTIN(__rv_smtt32, "LiLiLi", "", "experimental-p")
 
 // smds
 TARGET_BUILTIN(__rv_smds, "LiULiULi", "", "experimental-p")

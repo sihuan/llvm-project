@@ -1497,6 +1497,18 @@ entry:
 
 declare i64 @llvm.riscv.smbt16.i64.i64(i64, i64)
 
+define i64 @smbt32(i64 %a, i64 %b) {
+; CHECK-LABEL: smbt32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    smbt32 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.smbt32.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.smbt32.i64(i64, i64)
+
 define i64 @smtt16(i64 %a, i64 %b) {
 ; CHECK-LABEL: smtt16:
 ; CHECK:       # %bb.0: # %entry
@@ -1508,6 +1520,18 @@ entry:
 }
 
 declare i64 @llvm.riscv.smtt16.i64.i64(i64, i64)
+
+define i64 @smtt32(i64 %a, i64 %b) {
+; CHECK-LABEL: smtt32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    smtt32 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.smtt32.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.smtt32.i64(i64, i64)
 
 define i64 @smds(i64 %a, i64 %b) {
 ; CHECK-LABEL: smds:

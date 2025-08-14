@@ -1118,6 +1118,15 @@ long smbt16(unsigned long a, unsigned long b) {
   return __rv_smbt16(a, b);
 }
 
+// CHECK-RV64-LABEL: @smbt32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.smbt32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+long smbt32(long a, long b) {
+  return __rv_smbt32(a, b);
+}
+
 // CHECK-RV64-LABEL: @smtt16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.smtt16.i64.i64(i64 [[A:%.*]], i64 [[B:%.*]])
@@ -1125,6 +1134,15 @@ long smbt16(unsigned long a, unsigned long b) {
 //
 long smtt16(unsigned long a, unsigned long b) {
   return __rv_smtt16(a, b);
+}
+
+// CHECK-RV64-LABEL: @smtt32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.smtt32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+long smtt32(long a, long b) {
+  return __rv_smtt32(a, b);
 }
 
 // CHECK-RV64-LABEL: @smds(
