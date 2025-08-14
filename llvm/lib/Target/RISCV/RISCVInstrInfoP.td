@@ -113,7 +113,7 @@ class RVPShiftI4<bits<7> funct7, bits<1> funct1,
 }
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
-class RVPShiftI5<bits<7> funct7, bits<3> funct3, string opcodestr, 
+class RVPShiftI5<bits<7> funct7, bits<3> funct3, string opcodestr,
                  DAGOperand rs1_kind = GPR>
     : RVInstI<funct3, OPC_OP_P, (outs GPR:$rd), (ins rs1_kind:$rs1, uimm5:$shamt),
               opcodestr, "$rd, $rs1, $shamt"> {
