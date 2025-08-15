@@ -430,6 +430,12 @@ kmda32 a0, a1, a2
 # CHECK-UNKNOWN: 77 a5 c5 3a <unknown>
 kmxda32 a0, a1, a2
 
+# CHECK-INST: kmada32 a0, a1, a2
+# CHECK-ENCODING: [0x77,0x95,0xc5,0x94]
+# CHECK-ERROR: instruction requires the following: 'Zpn' (Normal 'P' Instructions)
+# CHECK-UNKNOWN: 77 95 c5 94 <unknown>
+kmada32 a0, a1, a2
+
 # CHECK-INST: kmaxda32 a0, a1, a2
 # CHECK-ENCODING: [0x77,0xa5,0xc5,0x4a]
 # CHECK-ERROR: instruction requires the following: 'Zpn' (Normal 'P' Instructions)

@@ -744,6 +744,18 @@ entry:
 
 declare i64 @llvm.riscv.kmada.i64.i64(i64, i64, i64)
 
+define i64 @kmada32(i64 %t, i64 %a, i64 %b) {
+; CHECK-LABEL: kmada32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kmada32 a0, a1, a2
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kmada32.i64.i64(i64 %t, i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kmada32.i64.i64(i64, i64, i64)
+
 define i64 @kmaxda(i64 %t, i64 %a, i64 %b) {
 ; CHECK-LABEL: kmaxda:
 ; CHECK:       # %bb.0: # %entry
@@ -755,6 +767,18 @@ entry:
 }
 
 declare i64 @llvm.riscv.kmaxda.i64.i64(i64, i64, i64)
+
+define i64 @kmaxda32(i64 %t, i64 %a, i64 %b) {
+; CHECK-LABEL: kmaxda32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kmaxda32 a0, a1, a2
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kmaxda32.i64.i64(i64 %t, i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kmaxda32.i64.i64(i64, i64, i64)
 
 define i64 @kmads(i64 %t, i64 %a, i64 %b) {
 ; CHECK-LABEL: kmads:
@@ -768,6 +792,18 @@ entry:
 
 declare i64 @llvm.riscv.kmads.i64.i64(i64, i64, i64)
 
+define i64 @kmads32(i64 %t, i64 %a, i64 %b) {
+; CHECK-LABEL: kmads32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kmads32 a0, a1, a2
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kmads32.i64.i64(i64 %t, i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kmads32.i64.i64(i64, i64, i64)
+
 define i64 @kmadrs(i64 %t, i64 %a, i64 %b) {
 ; CHECK-LABEL: kmadrs:
 ; CHECK:       # %bb.0: # %entry
@@ -779,6 +815,17 @@ entry:
 }
 
 declare i64 @llvm.riscv.kmadrs.i64.i64(i64, i64, i64)
+
+define i64 @mkadrs32(i64 %t, i64 %a, i64 %b) {
+; CHECK-LABEL: mkadrs32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    tail llvm.riscv.mkadrs32.i64.i64@plt
+entry:
+  %0 = tail call i64 @llvm.riscv.mkadrs32.i64.i64(i64 %t, i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.mkadrs32.i64.i64(i64, i64, i64)
 
 define i64 @kmaxds(i64 %t, i64 %a, i64 %b) {
 ; CHECK-LABEL: kmaxds:
@@ -792,6 +839,18 @@ entry:
 
 declare i64 @llvm.riscv.kmaxds.i64.i64(i64, i64, i64)
 
+define i64 @kmaxds32(i64 %t, i64 %a, i64 %b) {
+; CHECK-LABEL: kmaxds32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kmaxds a0, a1, a2
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kmaxds32.i64.i64(i64 %t, i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kmaxds32.i64.i64(i64, i64, i64)
+
 define i64 @kmda(i64 %a, i64 %b) {
 ; CHECK-LABEL: kmda:
 ; CHECK:       # %bb.0: # %entry
@@ -804,6 +863,18 @@ entry:
 
 declare i64 @llvm.riscv.kmda.i64.i64(i64, i64)
 
+define i64 @kmda32(i64 %a, i64 %b) {
+; CHECK-LABEL: kmda32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kmda32 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kmda32.i64.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kmda32.i64.i64(i64, i64)
+
 define i64 @kmxda(i64 %a, i64 %b) {
 ; CHECK-LABEL: kmxda:
 ; CHECK:       # %bb.0: # %entry
@@ -815,6 +886,18 @@ entry:
 }
 
 declare i64 @llvm.riscv.kmxda.i64.i64(i64, i64)
+
+define i64 @kmxda32(i64 %a, i64 %b) {
+; CHECK-LABEL: kmxda32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kmxda32 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kmxda32.i64.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kmxda32.i64.i64(i64, i64)
 
 define i64 @kmmac(i64 %t, i64 %a, i64 %b) {
 ; CHECK-LABEL: kmmac:
@@ -1020,6 +1103,18 @@ entry:
 
 declare i64 @llvm.riscv.kmsda.i64.i64(i64, i64, i64)
 
+define i64 @kmsda32(i64 %t, i64 %a, i64 %b) {
+; CHECK-LABEL: kmsda32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kmsda a0, a1, a2
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kmsda32.i64.i64(i64 %t, i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kmsda32.i64.i64(i64, i64, i64)
+
 define i64 @kmsxda(i64 %t, i64 %a, i64 %b) {
 ; CHECK-LABEL: kmsxda:
 ; CHECK:       # %bb.0: # %entry
@@ -1031,6 +1126,17 @@ entry:
 }
 
 declare i64 @llvm.riscv.kmsxda.i64.i64(i64, i64, i64)
+
+define i64 @mksxda32(i64 %t, i64 %a, i64 %b) {
+; CHECK-LABEL: mksxda32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    tail llvm.riscv.mksxda32.i64.i64@plt
+entry:
+  %0 = tail call i64 @llvm.riscv.mksxda32.i64.i64(i64 %t, i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.mksxda32.i64.i64(i64, i64, i64)
 
 define i64 @ksllw(i64 %a, i32 signext %b) {
 ; CHECK-LABEL: ksllw:
@@ -1876,6 +1982,18 @@ entry:
 
 declare i64 @llvm.riscv.smds.i64.i64(i64, i64)
 
+define i64 @smds32(i64 %a, i64 %b) {
+; CHECK-LABEL: smds32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    smds32 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.smds32.i64.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.smds32.i64.i64(i64, i64)
+
 define i64 @smdrs(i64 %a, i64 %b) {
 ; CHECK-LABEL: smdrs:
 ; CHECK:       # %bb.0: # %entry
@@ -1888,6 +2006,18 @@ entry:
 
 declare i64 @llvm.riscv.smdrs.i64.i64(i64, i64)
 
+define i64 @smdrs32(i64 %a, i64 %b) {
+; CHECK-LABEL: smdrs32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    smdrs32 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.smdrs32.i64.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.smdrs32.i64.i64(i64, i64)
+
 define i64 @smxds(i64 %a, i64 %b) {
 ; CHECK-LABEL: smxds:
 ; CHECK:       # %bb.0: # %entry
@@ -1899,6 +2029,18 @@ entry:
 }
 
 declare i64 @llvm.riscv.smxds.i64.i64(i64, i64)
+
+define i64 @smxds32(i64 %a, i64 %b) {
+; CHECK-LABEL: smxds32:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    smxds32 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.smxds32.i64.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.smxds32.i64.i64(i64, i64)
 
 define i64 @smin8(i64 %a, i64 %b) {
 ; CHECK-LABEL: smin8:

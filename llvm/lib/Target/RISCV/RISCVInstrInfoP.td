@@ -912,7 +912,8 @@ def : InstAlias<"swap16 $rd, $rs1", (PKBT16 GPR:$rd, GPR:$rs1, GPR:$rs1)>;
 }
 
 let Predicates = [HasStdExtZpn, IsRV64] in {
-def : InstAlias<"smbb32 $rd, $rs1, $rs2", (MULSR64_64 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+def : InstAlias<"smbb32 $rd, $rs1, $rs2",  (MULSR64_64 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+def : InstAlias<"kmada32 $rd, $rs1, $rs2", (KMAR64_64 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
 }
 
 //===----------------------------------------------------------------------===//
@@ -1145,9 +1146,14 @@ def : RVPBinaryIntPat<KHMTT16,    "khmtt16">;
 def : RVPBinaryIntPat<KDMBB16,    "kdmbb16">;
 def : RVPBinaryIntPat<KDMBT16,    "kdmbt16">;
 def : RVPBinaryIntPat<KDMTT16,    "kdmtt16">;
+def : RVPBinaryIntPat<KMDA32,     "kmda32">;
+def : RVPBinaryIntPat<KMXDA32,    "kmxda32">;
 def : RVPBinaryIntPat<MULSR64_64, "smbb32">;
 def : RVPBinaryIntPat<SMBT32,     "smbt32">;
 def : RVPBinaryIntPat<SMTT32,     "smtt32">;
+def : RVPBinaryIntPat<SMDS32,     "smds32">;
+def : RVPBinaryIntPat<SMDRS32,    "smdrs32">;
+def : RVPBinaryIntPat<SMXDS32,    "smxds32">;
 } // Predicates = [HasStdExtZpn, IsRV64]
 
 class RVPBinaryI3IntPat<RVInst Inst, string IntID>
@@ -1200,36 +1206,43 @@ class RVPTernaryIntPat<RVInst Inst, string IntID>
           (Inst GPR:$rs1, GPR:$rs2, GPR:$rs3)>;
 
 let Predicates = [HasStdExtZpn] in {
-def : RVPTernaryIntPat<BPICK,    "bpick">;
-def : RVPTernaryIntPat<KDMABB,   "kdmabb">;
-def : RVPTernaryIntPat<KDMABT,   "kdmabt">;
-def : RVPTernaryIntPat<KDMATT,   "kdmatt">;
-def : RVPTernaryIntPat<KMABB,    "kmabb">;
-def : RVPTernaryIntPat<KMABT,    "kmabt">;
-def : RVPTernaryIntPat<KMATT,    "kmatt">;
-def : RVPTernaryIntPat<KMADA,    "kmada">;
-def : RVPTernaryIntPat<KMAXDA,   "kmaxda">;
-def : RVPTernaryIntPat<KMADS,    "kmads">;
-def : RVPTernaryIntPat<KMADRS,   "kmadrs">;
-def : RVPTernaryIntPat<KMAXDS,   "kmaxds">;
-def : RVPTernaryIntPat<KMMAC,    "kmmac">;
-def : RVPTernaryIntPat<KMMACU,   "kmmac_u">;
-def : RVPTernaryIntPat<KMMAWB,   "kmmawb">;
-def : RVPTernaryIntPat<KMMAWBU,  "kmmawb_u">;
-def : RVPTernaryIntPat<KMMAWB2,  "kmmawb2">;
-def : RVPTernaryIntPat<KMMAWB2U, "kmmawb2_u">;
-def : RVPTernaryIntPat<KMMAWT,   "kmmawt">;
-def : RVPTernaryIntPat<KMMAWTU,  "kmmawt_u">;
-def : RVPTernaryIntPat<KMMAWT2,  "kmmawt2">;
-def : RVPTernaryIntPat<KMMAWT2U, "kmmawt2_u">;
-def : RVPTernaryIntPat<KMMSB,    "kmmsb">;
-def : RVPTernaryIntPat<KMMSBU,   "kmmsb_u">;
-def : RVPTernaryIntPat<KMSDA,    "kmsda">;
-def : RVPTernaryIntPat<KMSXDA,   "kmsxda">;
-def : RVPTernaryIntPat<PBSADA,   "pbsada">;
-def : RVPTernaryIntPat<SMAQA,    "smaqa">;
-def : RVPTernaryIntPat<SMAQASU,  "smaqa_su">;
-def : RVPTernaryIntPat<UMAQA,    "umaqa">;
+def : RVPTernaryIntPat<BPICK,     "bpick">;
+def : RVPTernaryIntPat<KDMABB,    "kdmabb">;
+def : RVPTernaryIntPat<KDMABT,    "kdmabt">;
+def : RVPTernaryIntPat<KDMATT,    "kdmatt">;
+def : RVPTernaryIntPat<KMABB,     "kmabb">;
+def : RVPTernaryIntPat<KMABT,     "kmabt">;
+def : RVPTernaryIntPat<KMATT,     "kmatt">;
+def : RVPTernaryIntPat<KMADA,     "kmada">;
+def : RVPTernaryIntPat<KMAXDA,    "kmaxda">;
+def : RVPTernaryIntPat<KMADS,     "kmads">;
+def : RVPTernaryIntPat<KMADRS,    "kmadrs">;
+def : RVPTernaryIntPat<KMAXDS,    "kmaxds">;
+def : RVPTernaryIntPat<KMAR64_64, "kmada32">;
+def : RVPTernaryIntPat<KMAXDA32,  "kmaxda32">;
+def : RVPTernaryIntPat<KMADS32,   "kmads32">;
+def : RVPTernaryIntPat<KMADRS32,  "kmadrs32">;
+def : RVPTernaryIntPat<KMAXDS,    "kmaxds32">;
+def : RVPTernaryIntPat<KMSDA,     "kmsda32">;
+def : RVPTernaryIntPat<KMSXDA,    "kmsxda32">;
+def : RVPTernaryIntPat<KMMAC,     "kmmac">;
+def : RVPTernaryIntPat<KMMACU,    "kmmac_u">;
+def : RVPTernaryIntPat<KMMAWB,    "kmmawb">;
+def : RVPTernaryIntPat<KMMAWBU,   "kmmawb_u">;
+def : RVPTernaryIntPat<KMMAWB2,   "kmmawb2">;
+def : RVPTernaryIntPat<KMMAWB2U,  "kmmawb2_u">;
+def : RVPTernaryIntPat<KMMAWT,    "kmmawt">;
+def : RVPTernaryIntPat<KMMAWTU,   "kmmawt_u">;
+def : RVPTernaryIntPat<KMMAWT2,   "kmmawt2">;
+def : RVPTernaryIntPat<KMMAWT2U,  "kmmawt2_u">;
+def : RVPTernaryIntPat<KMMSB,     "kmmsb">;
+def : RVPTernaryIntPat<KMMSBU,    "kmmsb_u">;
+def : RVPTernaryIntPat<KMSDA,     "kmsda">;
+def : RVPTernaryIntPat<KMSXDA,    "kmsxda">;
+def : RVPTernaryIntPat<PBSADA,    "pbsada">;
+def : RVPTernaryIntPat<SMAQA,     "smaqa">;
+def : RVPTernaryIntPat<SMAQASU,   "smaqa_su">;
+def : RVPTernaryIntPat<UMAQA,     "umaqa">;
 } // Predicates = [HasStdExtZpn]
 
 let Predicates = [HasStdExtZpn, IsRV64] in {
