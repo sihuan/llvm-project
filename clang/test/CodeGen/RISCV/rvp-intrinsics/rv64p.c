@@ -36,6 +36,15 @@ unsigned long add16(unsigned long a, unsigned long b) {
   return __rv_add16(a, b);
 }
 
+// CHECK-RV64-LABEL: @add32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.add32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long add32(unsigned long a, unsigned long b) {
+  return __rv_add32(a, b);
+}
+
 // CHECK-RV64-LABEL: @ave(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.ave.i64(i64 [[A:%.*]], i64 [[B:%.*]])
@@ -144,6 +153,15 @@ unsigned long cras16(unsigned long a, unsigned long b) {
   return __rv_cras16(a, b);
 }
 
+// CHECK-RV64-LABEL: @cras32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.cras32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long cras32(unsigned long a, unsigned long b) {
+  return __rv_cras32(a, b);
+}
+
 // CHECK-RV64-LABEL: @crsa16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.crsa16.i64(i64 [[A:%.*]], i64 [[B:%.*]])
@@ -151,6 +169,15 @@ unsigned long cras16(unsigned long a, unsigned long b) {
 //
 unsigned long crsa16(unsigned long a, unsigned long b) {
   return __rv_crsa16(a, b);
+}
+
+// CHECK-RV64-LABEL: @crsa32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.crsa32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long crsa32(unsigned long a, unsigned long b) {
+  return __rv_crsa32(a, b);
 }
 
 // CHECK-RV64-LABEL: @insb(
@@ -207,6 +234,15 @@ unsigned long kadd16(unsigned long a, unsigned long b) {
   return __rv_kadd16(a, b);
 }
 
+// CHECK-RV64-LABEL: @kadd32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.kadd32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long kadd32(unsigned long a, unsigned long b) {
+  return __rv_kadd32(a, b);
+}
+
 // CHECK-RV64-LABEL: @kaddh(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[CONV:%.*]] = sext i32 [[A:%.*]] to i64
@@ -238,6 +274,15 @@ unsigned long kcras16(unsigned long a, unsigned long b) {
   return __rv_kcras16(a, b);
 }
 
+// CHECK-RV64-LABEL: @kcras32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.kcras32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long kcras32(unsigned long a, unsigned long b) {
+  return __rv_kcras32(a, b);
+}
+
 // CHECK-RV64-LABEL: @kcrsa16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.kcrsa16.i64(i64 [[A:%.*]], i64 [[B:%.*]])
@@ -245,6 +290,15 @@ unsigned long kcras16(unsigned long a, unsigned long b) {
 //
 unsigned long kcrsa16(unsigned long a, unsigned long b) {
   return __rv_kcrsa16(a, b);
+}
+
+// CHECK-RV64-LABEL: @kcrsa32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.kcrsa32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long kcrsa32(unsigned long a, unsigned long b) {
+  return __rv_kcrsa32(a, b);
 }
 
 // CHECK-RV64-LABEL: @kdmbb(
@@ -753,6 +807,15 @@ unsigned long kstas16(unsigned long a, unsigned long b) {
   return __rv_kstas16(a, b);
 }
 
+// CHECK-RV64-LABEL: @kstas32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.kstas32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long kstas32(unsigned long a, unsigned long b) {
+  return __rv_kstas32(a, b);
+}
+
 // CHECK-RV64-LABEL: @kstsa16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.kstsa16.i64(i64 [[A:%.*]], i64 [[B:%.*]])
@@ -760,6 +823,15 @@ unsigned long kstas16(unsigned long a, unsigned long b) {
 //
 unsigned long kstsa16(unsigned long a, unsigned long b) {
   return __rv_kstsa16(a, b);
+}
+
+// CHECK-RV64-LABEL: @kstsa32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.kstsa32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long kstsa32(unsigned long a, unsigned long b) {
+  return __rv_kstsa32(a, b);
 }
 
 // CHECK-RV64-LABEL: @ksub8(
@@ -778,6 +850,15 @@ unsigned long ksub8(unsigned long a, unsigned long b) {
 //
 unsigned long ksub16(unsigned long a, unsigned long b) {
   return __rv_ksub16(a, b);
+}
+
+// CHECK-RV64-LABEL: @ksub32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.ksub32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long ksub32(unsigned long a, unsigned long b) {
+  return __rv_ksub32(a, b);
 }
 
 // CHECK-RV64-LABEL: @ksubh(
@@ -907,11 +988,20 @@ unsigned long radd8(unsigned long a, unsigned long b) {
 
 // CHECK-RV64-LABEL: @radd16(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.radd8.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.radd16.i64(i64 [[A:%.*]], i64 [[B:%.*]])
 // CHECK-RV64-NEXT:    ret i64 [[TMP0]]
 //
 unsigned long radd16(unsigned long a, unsigned long b) {
-  return __rv_radd8(a, b);
+  return __rv_radd16(a, b);
+}
+
+// CHECK-RV64-LABEL: @radd32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.radd32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long radd32(unsigned long a, unsigned long b) {
+  return __rv_radd32(a, b);
 }
 
 // CHECK-RV64-LABEL: @raddw(
@@ -934,6 +1024,15 @@ unsigned long rcras16(unsigned long a, unsigned long b) {
   return __rv_rcras16(a, b);
 }
 
+// CHECK-RV64-LABEL: @rcras32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.rcras32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long rcras32(unsigned long a, unsigned long b) {
+  return __rv_rcras32(a, b);
+}
+
 // CHECK-RV64-LABEL: @rcrsa16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.rcrsa16.i64(i64 [[A:%.*]], i64 [[B:%.*]])
@@ -941,6 +1040,15 @@ unsigned long rcras16(unsigned long a, unsigned long b) {
 //
 unsigned long rcrsa16(unsigned long a, unsigned long b) {
   return __rv_rcrsa16(a, b);
+}
+
+// CHECK-RV64-LABEL: @rcrsa32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.rcrsa32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long rcrsa32(unsigned long a, unsigned long b) {
+  return __rv_rcrsa32(a, b);
 }
 
 // CHECK-RV64-LABEL: @rstas16(
@@ -952,6 +1060,15 @@ unsigned long rstas16(unsigned long a, unsigned long b) {
   return __rv_rstas16(a, b);
 }
 
+// CHECK-RV64-LABEL: @rstas32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.rstas32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long rstas32(unsigned long a, unsigned long b) {
+  return __rv_rstas32(a, b);
+}
+
 // CHECK-RV64-LABEL: @rstsa16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.rstsa16.i64(i64 [[A:%.*]], i64 [[B:%.*]])
@@ -959,6 +1076,15 @@ unsigned long rstas16(unsigned long a, unsigned long b) {
 //
 unsigned long rstsa16(unsigned long a, unsigned long b) {
   return __rv_rstsa16(a, b);
+}
+
+// CHECK-RV64-LABEL: @rstsa32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.rstsa32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long rstsa32(unsigned long a, unsigned long b) {
+  return __rv_rstsa32(a, b);
 }
 
 // CHECK-RV64-LABEL: @rsub8(
@@ -977,6 +1103,15 @@ unsigned long rsub8(unsigned long a, unsigned long b) {
 //
 unsigned long rsub16(unsigned long a, unsigned long b) {
   return __rv_rsub16(a, b);
+}
+
+// CHECK-RV64-LABEL: @rsub32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.rsub32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long rsub32(unsigned long a, unsigned long b) {
+  return __rv_rsub32(a, b);
 }
 
 // CHECK-RV64-LABEL: @rsubw(
@@ -1451,6 +1586,15 @@ unsigned long stas16(unsigned long a, unsigned long b) {
   return __rv_stas16(a, b);
 }
 
+// CHECK-RV64-LABEL: @stas32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.stas32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long stas32(unsigned long a, unsigned long b) {
+  return __rv_stas32(a, b);
+}
+
 // CHECK-RV64-LABEL: @stsa16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.stsa16.i64(i64 [[A:%.*]], i64 [[B:%.*]])
@@ -1458,6 +1602,15 @@ unsigned long stas16(unsigned long a, unsigned long b) {
 //
 unsigned long stsa16(unsigned long a, unsigned long b) {
   return __rv_stsa16(a, b);
+}
+
+// CHECK-RV64-LABEL: @stsa32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.stsa32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long stsa32(unsigned long a, unsigned long b) {
+  return __rv_stsa32(a, b);
 }
 
 // CHECK-RV64-LABEL: @sub8(
@@ -1476,6 +1629,15 @@ unsigned long sub8(unsigned long a, unsigned long b) {
 //
 unsigned long sub16(unsigned long a, unsigned long b) {
   return __rv_sub16(a, b);
+}
+
+// CHECK-RV64-LABEL: @sub32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.sub32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long sub32(unsigned long a, unsigned long b) {
+  return __rv_sub32(a, b);
 }
 
 // CHECK-RV64-LABEL: @sunpkd810(
@@ -1622,6 +1784,15 @@ unsigned long ukadd16(unsigned long a, unsigned long b) {
   return __rv_ukadd16(a, b);
 }
 
+// CHECK-RV64-LABEL: @ukadd32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.ukadd32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long ukadd32(unsigned long a, unsigned long b) {
+  return __rv_ukadd32(a, b);
+}
+
 // CHECK-RV64-LABEL: @ukaddh(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[CONV:%.*]] = sext i32 [[A:%.*]] to i64
@@ -1653,6 +1824,15 @@ unsigned long ukcras16(unsigned long a, unsigned long b) {
   return __rv_ukcras16(a, b);
 }
 
+// CHECK-RV64-LABEL: @ukcras32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.ukcras32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long ukcras32(unsigned long a, unsigned long b) {
+  return __rv_ukcras32(a, b);
+}
+
 // CHECK-RV64-LABEL: @ukcrsa16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.ukcrsa16.i64(i64 [[A:%.*]], i64 [[B:%.*]])
@@ -1660,6 +1840,15 @@ unsigned long ukcras16(unsigned long a, unsigned long b) {
 //
 unsigned long ukcrsa16(unsigned long a, unsigned long b) {
   return __rv_ukcrsa16(a, b);
+}
+
+// CHECK-RV64-LABEL: @ukcrsa32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.ukcrsa32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long ukcrsa32(unsigned long a, unsigned long b) {
+  return __rv_ukcrsa32(a, b);
 }
 
 // CHECK-RV64-LABEL: @ukstas16(
@@ -1671,6 +1860,15 @@ unsigned long ukstas16(unsigned long a, unsigned long b) {
   return __rv_ukstas16(a, b);
 }
 
+// CHECK-RV64-LABEL: @ukstas32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.ukstas32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long ukstas32(unsigned long a, unsigned long b) {
+  return __rv_ukstas32(a, b);
+}
+
 // CHECK-RV64-LABEL: @ukstsa16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.ukstsa16.i64(i64 [[A:%.*]], i64 [[B:%.*]])
@@ -1678,6 +1876,15 @@ unsigned long ukstas16(unsigned long a, unsigned long b) {
 //
 unsigned long ukstsa16(unsigned long a, unsigned long b) {
   return __rv_ukstsa16(a, b);
+}
+
+// CHECK-RV64-LABEL: @ukstsa32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.ukstsa32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long ukstsa32(unsigned long a, unsigned long b) {
+  return __rv_ukstsa32(a, b);
 }
 
 // CHECK-RV64-LABEL: @uksub8(
@@ -1696,6 +1903,15 @@ unsigned long uksub8(unsigned long a, unsigned long b) {
 //
 unsigned long uksub16(unsigned long a, unsigned long b) {
   return __rv_uksub16(a, b);
+}
+
+// CHECK-RV64-LABEL: @uksub32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.uksub32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long uksub32(unsigned long a, unsigned long b) {
+  return __rv_uksub32(a, b);
 }
 
 // CHECK-RV64-LABEL: @uksubh(
@@ -1776,11 +1992,20 @@ unsigned long uradd8(unsigned long a, unsigned long b) {
 
 // CHECK-RV64-LABEL: @uradd16(
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.uradd8.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.uradd16.i64(i64 [[A:%.*]], i64 [[B:%.*]])
 // CHECK-RV64-NEXT:    ret i64 [[TMP0]]
 //
 unsigned long uradd16(unsigned long a, unsigned long b) {
-  return __rv_uradd8(a, b);
+  return __rv_uradd16(a, b);
+}
+
+// CHECK-RV64-LABEL: @uradd32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.uradd32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long uradd32(unsigned long a, unsigned long b) {
+  return __rv_uradd32(a, b);
 }
 
 // CHECK-RV64-LABEL: @uraddw(
@@ -1803,6 +2028,15 @@ unsigned long urcras16(unsigned long a, unsigned long b) {
   return __rv_urcras16(a, b);
 }
 
+// CHECK-RV64-LABEL: @urcras32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.urcras32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long urcras32(unsigned long a, unsigned long b) {
+  return __rv_urcras32(a, b);
+}
+
 // CHECK-RV64-LABEL: @urcrsa16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.urcrsa16.i64(i64 [[A:%.*]], i64 [[B:%.*]])
@@ -1810,6 +2044,15 @@ unsigned long urcras16(unsigned long a, unsigned long b) {
 //
 unsigned long urcrsa16(unsigned long a, unsigned long b) {
   return __rv_urcrsa16(a, b);
+}
+
+// CHECK-RV64-LABEL: @urcrsa32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.urcrsa32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long urcrsa32(unsigned long a, unsigned long b) {
+  return __rv_urcrsa32(a, b);
 }
 
 // CHECK-RV64-LABEL: @urstas16(
@@ -1821,6 +2064,15 @@ unsigned long urstas16(unsigned long a, unsigned long b) {
   return __rv_urstas16(a, b);
 }
 
+// CHECK-RV64-LABEL: @urstas32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.urstas32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long urstas32(unsigned long a, unsigned long b) {
+  return __rv_urstas32(a, b);
+}
+
 // CHECK-RV64-LABEL: @urstsa16(
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.urstsa16.i64(i64 [[A:%.*]], i64 [[B:%.*]])
@@ -1828,6 +2080,15 @@ unsigned long urstas16(unsigned long a, unsigned long b) {
 //
 unsigned long urstsa16(unsigned long a, unsigned long b) {
   return __rv_urstsa16(a, b);
+}
+
+// CHECK-RV64-LABEL: @urstsa32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.urstsa32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long urstsa32(unsigned long a, unsigned long b) {
+  return __rv_urstsa32(a, b);
 }
 
 // CHECK-RV64-LABEL: @ursub8(
@@ -1846,6 +2107,15 @@ unsigned long ursub8(unsigned long a, unsigned long b) {
 //
 unsigned long ursub16(unsigned long a, unsigned long b) {
   return __rv_ursub16(a, b);
+}
+
+// CHECK-RV64-LABEL: @ursub32(
+// CHECK-RV64-NEXT:  entry:
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = tail call i64 @llvm.riscv.ursub32.i64(i64 [[A:%.*]], i64 [[B:%.*]])
+// CHECK-RV64-NEXT:    ret i64 [[TMP0]]
+//
+unsigned long ursub32(unsigned long a, unsigned long b) {
+  return __rv_ursub32(a, b);
 }
 
 // CHECK-RV64-LABEL: @ursubw(

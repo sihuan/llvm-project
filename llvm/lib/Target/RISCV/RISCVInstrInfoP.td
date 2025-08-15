@@ -1109,6 +1109,36 @@ def : RVPBinaryIntPat<URSUBW,   "ursubw">;
 } // Predicates = [HasStdExtZpn]
 
 let Predicates = [HasStdExtZpn, IsRV64] in {
+def : RVPBinaryIntPat<ADD32,      "add32">;
+def : RVPBinaryIntPat<RADD32,     "radd32">;
+def : RVPBinaryIntPat<URADD32,    "uradd32">;
+def : RVPBinaryIntPat<KADD32,     "kadd32">;
+def : RVPBinaryIntPat<UKADD32,    "ukadd32">;
+def : RVPBinaryIntPat<SUB32,      "sub32">;
+def : RVPBinaryIntPat<RSUB32,     "rsub32">;
+def : RVPBinaryIntPat<URSUB32,    "ursub32">;
+def : RVPBinaryIntPat<KSUB32,     "ksub32">;
+def : RVPBinaryIntPat<UKSUB32,    "uksub32">;
+def : RVPBinaryIntPat<CRAS32,     "cras32">;
+def : RVPBinaryIntPat<RCRAS32,    "rcras32">;
+def : RVPBinaryIntPat<URCRAS32,   "urcras32">;
+def : RVPBinaryIntPat<KCRAS32,    "kcras32">;
+def : RVPBinaryIntPat<UKCRAS32,   "ukcras32">;
+def : RVPBinaryIntPat<CRSA32,     "crsa32">;
+def : RVPBinaryIntPat<RCRSA32,    "rcrsa32">;
+def : RVPBinaryIntPat<URCRSA32,   "urcrsa32">;
+def : RVPBinaryIntPat<KCRSA32,    "kcrsa32">;
+def : RVPBinaryIntPat<UKCRSA32,   "ukcrsa32">;
+def : RVPBinaryIntPat<STAS32,     "stas32">;
+def : RVPBinaryIntPat<RSTAS32,    "rstas32">;
+def : RVPBinaryIntPat<URSTAS32,   "urstas32">;
+def : RVPBinaryIntPat<KSTAS32,    "kstas32">;
+def : RVPBinaryIntPat<UKSTAS32,   "ukstas32">;
+def : RVPBinaryIntPat<STSA32,     "stsa32">;
+def : RVPBinaryIntPat<RSTSA32,    "rstsa32">;
+def : RVPBinaryIntPat<URSTSA32,   "urstsa32">;
+def : RVPBinaryIntPat<KSTSA32,    "kstsa32">;
+def : RVPBinaryIntPat<UKSTSA32,   "ukstsa32">;
 def : RVPBinaryIntPat<MULSR64_64, "smbb32">;
 def : RVPBinaryIntPat<SMBT32,     "smbt32">;
 def : RVPBinaryIntPat<SMTT32,     "smtt32">;
