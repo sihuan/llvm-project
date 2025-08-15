@@ -312,21 +312,27 @@ let TargetPrefix = "riscv" in {
     def "int_riscv_" # NAME : RVPBinaryABBIntrinsics;
   }
 
-  defm kdmbb  : RVPBinaryABBIntrinsics;
-  defm kdmbt  : RVPBinaryABBIntrinsics;
-  defm kdmtt  : RVPBinaryABBIntrinsics;
-  defm khmbb  : RVPBinaryABBIntrinsics;
-  defm khmbt  : RVPBinaryABBIntrinsics;
-  defm khmtt  : RVPBinaryABBIntrinsics;
-  defm kmda   : RVPBinaryABBIntrinsics;
-  defm kmxda  : RVPBinaryABBIntrinsics;
-  defm pbsad  : RVPBinaryABBIntrinsics;
-  defm smbb16 : RVPBinaryABBIntrinsics;
-  defm smbt16 : RVPBinaryABBIntrinsics;
-  defm smtt16 : RVPBinaryABBIntrinsics;
-  defm smds   : RVPBinaryABBIntrinsics;
-  defm smdrs  : RVPBinaryABBIntrinsics;
-  defm smxds  : RVPBinaryABBIntrinsics;
+  defm kdmbb   : RVPBinaryABBIntrinsics;
+  defm kdmbt   : RVPBinaryABBIntrinsics;
+  defm kdmtt   : RVPBinaryABBIntrinsics;
+  defm khmbb   : RVPBinaryABBIntrinsics;
+  defm khmbt   : RVPBinaryABBIntrinsics;
+  defm khmtt   : RVPBinaryABBIntrinsics;
+  defm kmda    : RVPBinaryABBIntrinsics;
+  defm kmxda   : RVPBinaryABBIntrinsics;
+  defm pbsad   : RVPBinaryABBIntrinsics;
+  defm smbb16  : RVPBinaryABBIntrinsics;
+  defm smbt16  : RVPBinaryABBIntrinsics;
+  defm smtt16  : RVPBinaryABBIntrinsics;
+  defm smds    : RVPBinaryABBIntrinsics;
+  defm smdrs   : RVPBinaryABBIntrinsics;
+  defm smxds   : RVPBinaryABBIntrinsics;
+  defm khmbb16 : RVPBinaryABBIntrinsics;
+  defm khmbt16 : RVPBinaryABBIntrinsics;
+  defm khmtt16 : RVPBinaryABBIntrinsics;
+  defm kdmbb16 : RVPBinaryABBIntrinsics;
+  defm kdmbt16 : RVPBinaryABBIntrinsics;
+  defm kdmtt16 : RVPBinaryABBIntrinsics;
 
   class RVPBinaryAABIntrinsics
       : Intrinsic<[llvm_any_ty],
@@ -411,6 +417,9 @@ let TargetPrefix = "riscv" in {
   defm smaqa    : RVPTernaryAABBIntrinsics;
   defm smaqa_su : RVPTernaryAABBIntrinsics;
   defm umaqa    : RVPTernaryAABBIntrinsics;
+  defm kdmabb16 : RVPTernaryAABBIntrinsics;
+  defm kdmabt16 : RVPTernaryAABBIntrinsics;
+  defm kdmatt16 : RVPTernaryAABBIntrinsics;
 
   class RVPTernaryAAABIntrinsics
       : Intrinsic<[llvm_any_ty],

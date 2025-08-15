@@ -396,6 +396,18 @@ entry:
 
 declare i64 @llvm.riscv.kdmbb.i64.i64(i64, i64)
 
+define i64 @kdmbb16(i64 %a, i64 %b) {
+; CHECK-LABEL: kdmbb16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kdmbb16 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kdmbb16.i64.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kdmbb16.i64.i64(i64, i64)
+
 define i64 @kdmbt(i32 signext %a, i32 signext %b) {
 ; CHECK-LABEL: kdmbt:
 ; CHECK:       # %bb.0: # %entry
@@ -413,6 +425,18 @@ entry:
 }
 
 declare i64 @llvm.riscv.kdmbt.i64.i64(i64, i64)
+
+define i64 @kdmbt16(i64 %a, i64 %b) {
+; CHECK-LABEL: kdmbt16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kdmbt16 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kdmbt16.i64.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kdmbt16.i64.i64(i64, i64)
 
 define i64 @kdmtt(i32 signext %a, i32 signext %b) {
 ; CHECK-LABEL: kdmtt:
@@ -432,6 +456,18 @@ entry:
 
 declare i64 @llvm.riscv.kdmtt.i64.i64(i64, i64)
 
+define i64 @kdmtt16(i64 %a, i64 %b) {
+; CHECK-LABEL: kdmtt16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kdmtt16 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kdmtt16.i64.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kdmtt16.i64.i64(i64, i64)
+
 define i64 @kdmabb(i64 %t, i32 signext %a, i32 signext %b) {
 ; CHECK-LABEL: kdmabb:
 ; CHECK:       # %bb.0: # %entry
@@ -449,6 +485,18 @@ entry:
 }
 
 declare i64 @llvm.riscv.kdmabb.i64.i64(i64, i64, i64)
+
+define i64 @kdmabb16(i64 %t, i64 %a, i64 %b) {
+; CHECK-LABEL: kdmabb16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kdmabb16 a0, a1, a2
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kdmabb16.i64.i64(i64 %t, i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kdmabb16.i64.i64(i64, i64, i64)
 
 define i64 @kdmabt(i64 %t, i32 signext %a, i32 signext %b) {
 ; CHECK-LABEL: kdmabt:
@@ -468,6 +516,18 @@ entry:
 
 declare i64 @llvm.riscv.kdmabt.i64.i64(i64, i64, i64)
 
+define i64 @kdmabt16(i64 %t, i64 %a, i64 %b) {
+; CHECK-LABEL: kdmabt16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kdmabt16 a0, a1, a2
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kdmabt16.i64.i64(i64 %t, i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kdmabt16.i64.i64(i64, i64, i64)
+
 define i64 @kdmatt(i64 %t, i32 signext %a, i32 signext %b) {
 ; CHECK-LABEL: kdmatt:
 ; CHECK:       # %bb.0: # %entry
@@ -485,6 +545,18 @@ entry:
 }
 
 declare i64 @llvm.riscv.kdmatt.i64.i64(i64, i64, i64)
+
+define i64 @kdmatt16(i64 %t, i64 %a, i64 %b) {
+; CHECK-LABEL: kdmatt16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    kdmatt16 a0, a1, a2
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.kdmatt16.i64.i64(i64 %t, i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.kdmatt16.i64.i64(i64, i64, i64)
 
 define i64 @khm8(i64 %a, i64 %b) {
 ; CHECK-LABEL: khm8:
@@ -552,6 +624,18 @@ entry:
 
 declare i64 @llvm.riscv.khmbb.i64.i64(i64, i64)
 
+define i64 @khmbb16(i64 %a, i64 %b) {
+; CHECK-LABEL: khmbb16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    khmbb16 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.khmbb16.i64.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.khmbb16.i64.i64(i64, i64)
+
 define i64 @khmbt(i32 signext %a, i32 signext %b) {
 ; CHECK-LABEL: khmbt:
 ; CHECK:       # %bb.0: # %entry
@@ -570,6 +654,18 @@ entry:
 
 declare i64 @llvm.riscv.khmbt.i64.i64(i64, i64)
 
+define i64 @khmbt16(i64 %a, i64 %b) {
+; CHECK-LABEL: khmbt16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    khmbt16 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.khmbt16.i64.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.khmbt16.i64.i64(i64, i64)
+
 define i64 @khmtt(i32 signext %a, i32 signext %b) {
 ; CHECK-LABEL: khmtt:
 ; CHECK:       # %bb.0: # %entry
@@ -587,6 +683,18 @@ entry:
 }
 
 declare i64 @llvm.riscv.khmtt.i64.i64(i64, i64)
+
+define i64 @khmtt16(i64 %a, i64 %b) {
+; CHECK-LABEL: khmtt16:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    khmtt16 a0, a0, a1
+; CHECK-NEXT:    ret
+entry:
+  %0 = tail call i64 @llvm.riscv.khmtt16.i64.i64(i64 %a, i64 %b)
+  ret i64 %0
+}
+
+declare i64 @llvm.riscv.khmtt16.i64.i64(i64, i64)
 
 define i64 @kmabb(i64 %t, i64 %a, i64 %b) {
 ; CHECK-LABEL: kmabb:

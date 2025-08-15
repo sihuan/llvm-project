@@ -1139,6 +1139,12 @@ def : RVPBinaryIntPat<RSTSA32,    "rstsa32">;
 def : RVPBinaryIntPat<URSTSA32,   "urstsa32">;
 def : RVPBinaryIntPat<KSTSA32,    "kstsa32">;
 def : RVPBinaryIntPat<UKSTSA32,   "ukstsa32">;
+def : RVPBinaryIntPat<KHMBB16,    "khmbb16">;
+def : RVPBinaryIntPat<KHMBT16,    "khmbt16">;
+def : RVPBinaryIntPat<KHMTT16,    "khmtt16">;
+def : RVPBinaryIntPat<KDMBB16,    "kdmbb16">;
+def : RVPBinaryIntPat<KDMBT16,    "kdmbt16">;
+def : RVPBinaryIntPat<KDMTT16,    "kdmtt16">;
 def : RVPBinaryIntPat<MULSR64_64, "smbb32">;
 def : RVPBinaryIntPat<SMBT32,     "smbt32">;
 def : RVPBinaryIntPat<SMTT32,     "smtt32">;
@@ -1225,6 +1231,12 @@ def : RVPTernaryIntPat<SMAQA,    "smaqa">;
 def : RVPTernaryIntPat<SMAQASU,  "smaqa_su">;
 def : RVPTernaryIntPat<UMAQA,    "umaqa">;
 } // Predicates = [HasStdExtZpn]
+
+let Predicates = [HasStdExtZpn, IsRV64] in {
+def : RVPTernaryIntPat<KDMABB16, "kdmabb16">;
+def : RVPTernaryIntPat<KDMABT16, "kdmabt16">;
+def : RVPTernaryIntPat<KDMATT16, "kdmatt16">;
+}
 
 class RVPTernaryINSBIntPat<RVInst Inst, string IntID>
     : Pat<(XLenVT (!cast<Intrinsic>("int_riscv_" # IntID)

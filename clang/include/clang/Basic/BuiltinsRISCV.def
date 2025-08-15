@@ -224,12 +224,26 @@ TARGET_BUILTIN(__rv_kdmbt, "LiULiULi", "", "experimental-p")
 // kdmtt
 TARGET_BUILTIN(__rv_kdmtt, "LiULiULi", "", "experimental-p")
 
+// kdmbb16
+TARGET_BUILTIN(__rv_kdmbb16, "LiULiULi", "", "experimental-p")
+// kdmbt16
+TARGET_BUILTIN(__rv_kdmbt16, "LiULiULi", "", "experimental-p")
+// kdmtt16
+TARGET_BUILTIN(__rv_kdmtt16, "LiULiULi", "", "experimental-p")
+
 // kdmabb
 TARGET_BUILTIN(__rv_kdmabb, "LiLiULiULi", "", "experimental-p")
 // kdmabt
 TARGET_BUILTIN(__rv_kdmabt, "LiLiULiULi", "", "experimental-p")
 // kdmatt
 TARGET_BUILTIN(__rv_kdmatt, "LiLiULiULi", "", "experimental-p")
+
+// kdmabb16
+TARGET_BUILTIN(__rv_kdmabb16, "LiLiULiULi", "", "experimental-p")
+// kdmabt16
+TARGET_BUILTIN(__rv_kdmabt16, "LiLiULiULi", "", "experimental-p")
+// kdmatt16
+TARGET_BUILTIN(__rv_kdmatt16, "LiLiULiULi", "", "experimental-p")
 
 // khm8
 TARGET_BUILTIN(__rv_khm8, "ULiULiULi", "", "experimental-p")
@@ -247,6 +261,13 @@ TARGET_BUILTIN(__rv_khmbb, "LiULiULi", "", "experimental-p")
 TARGET_BUILTIN(__rv_khmbt, "LiULiULi", "", "experimental-p")
 // khmtt
 TARGET_BUILTIN(__rv_khmtt, "LiULiULi", "", "experimental-p")
+
+// khmbb16
+TARGET_BUILTIN(__rv_khmbb16, "LiULiULi", "", "experimental-p")
+// khmbt16
+TARGET_BUILTIN(__rv_khmbt16, "LiULiULi", "", "experimental-p")
+// khmtt16
+TARGET_BUILTIN(__rv_khmtt16, "LiULiULi", "", "experimental-p")
 
 // kmabb
 TARGET_BUILTIN(__rv_kmabb, "LiLiULiULi", "", "experimental-p")
