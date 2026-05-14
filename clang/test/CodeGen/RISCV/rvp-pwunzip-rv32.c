@@ -8,7 +8,7 @@
 // RV32-LABEL: @test_pwunzipe_i16x2(
 // RV32-NEXT:  entry:
 // RV32-NEXT:    [[TMP0:%.*]] = bitcast i32 [[RS1_COERCE:%.*]] to <4 x i8>
-// RV32-NEXT:    [[TMP1:%.*]] = call <2 x i16> @llvm.riscv.psext.h.b(<4 x i8> [[TMP0]])
+// RV32-NEXT:    [[TMP1:%.*]] = call <2 x i16> @llvm.riscv.psext.h.b.v2i16.v4i8(<4 x i8> [[TMP0]])
 // RV32-NEXT:    [[TMP2:%.*]] = bitcast <2 x i16> [[TMP1]] to i32
 // RV32-NEXT:    ret i32 [[TMP2]]
 //
@@ -28,7 +28,7 @@ int16x2_t test_pwunzipo_i16x2(int8x4_t rs1) {
 // RV32-LABEL: @test_pwunzipue_u16x2(
 // RV32-NEXT:  entry:
 // RV32-NEXT:    [[TMP0:%.*]] = bitcast i32 [[RS1_COERCE:%.*]] to <4 x i8>
-// RV32-NEXT:    [[TMP1:%.*]] = call <4 x i8> @llvm.riscv.pnzip(<4 x i8> [[TMP0]], <4 x i8> zeroinitializer)
+// RV32-NEXT:    [[TMP1:%.*]] = call <4 x i8> @llvm.riscv.pnzip.v4i8.v4i8(<4 x i8> [[TMP0]], <4 x i8> zeroinitializer)
 // RV32-NEXT:    [[TMP2:%.*]] = bitcast <4 x i8> [[TMP1]] to i32
 // RV32-NEXT:    ret i32 [[TMP2]]
 //
@@ -38,7 +38,7 @@ uint16x2_t test_pwunzipue_u16x2(uint8x4_t rs1) {
 // RV32-LABEL: @test_pwunzipuo_u16x2(
 // RV32-NEXT:  entry:
 // RV32-NEXT:    [[TMP0:%.*]] = bitcast i32 [[RS1_COERCE:%.*]] to <4 x i8>
-// RV32-NEXT:    [[TMP1:%.*]] = call <4 x i8> @llvm.riscv.pnziph(<4 x i8> [[TMP0]], <4 x i8> zeroinitializer)
+// RV32-NEXT:    [[TMP1:%.*]] = call <4 x i8> @llvm.riscv.pnziph.v4i8.v4i8(<4 x i8> [[TMP0]], <4 x i8> zeroinitializer)
 // RV32-NEXT:    [[TMP2:%.*]] = bitcast <4 x i8> [[TMP1]] to i32
 // RV32-NEXT:    ret i32 [[TMP2]]
 //
@@ -58,7 +58,7 @@ int16x2_t test_pwunziphe_i16x2(int8x4_t rs1) {
 // RV32-LABEL: @test_pwunzipho_i16x2(
 // RV32-NEXT:  entry:
 // RV32-NEXT:    [[TMP0:%.*]] = bitcast i32 [[RS1_COERCE:%.*]] to <4 x i8>
-// RV32-NEXT:    [[TMP1:%.*]] = call <4 x i8> @llvm.riscv.pnziph(<4 x i8> zeroinitializer, <4 x i8> [[TMP0]])
+// RV32-NEXT:    [[TMP1:%.*]] = call <4 x i8> @llvm.riscv.pnziph.v4i8.v4i8(<4 x i8> zeroinitializer, <4 x i8> [[TMP0]])
 // RV32-NEXT:    [[TMP2:%.*]] = bitcast <4 x i8> [[TMP1]] to i32
 // RV32-NEXT:    ret i32 [[TMP2]]
 //
@@ -78,7 +78,7 @@ uint16x2_t test_pwunziphe_u16x2(uint8x4_t rs1) {
 // RV32-LABEL: @test_pwunzipho_u16x2(
 // RV32-NEXT:  entry:
 // RV32-NEXT:    [[TMP0:%.*]] = bitcast i32 [[RS1_COERCE:%.*]] to <4 x i8>
-// RV32-NEXT:    [[TMP1:%.*]] = call <4 x i8> @llvm.riscv.pnziph(<4 x i8> zeroinitializer, <4 x i8> [[TMP0]])
+// RV32-NEXT:    [[TMP1:%.*]] = call <4 x i8> @llvm.riscv.pnziph.v4i8.v4i8(<4 x i8> zeroinitializer, <4 x i8> [[TMP0]])
 // RV32-NEXT:    [[TMP2:%.*]] = bitcast <4 x i8> [[TMP1]] to i32
 // RV32-NEXT:    ret i32 [[TMP2]]
 //

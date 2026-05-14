@@ -9,7 +9,7 @@
 // RV32-NEXT:  entry:
 // RV32-NEXT:    [[TMP0:%.*]] = bitcast i32 [[RS1_COERCE:%.*]] to <4 x i8>
 // RV32-NEXT:    [[TMP1:%.*]] = bitcast i32 [[RS2_COERCE:%.*]] to <4 x i8>
-// RV32-NEXT:    [[TMP2:%.*]] = call <4 x i8> @llvm.riscv.pnzip(<4 x i8> [[TMP0]], <4 x i8> [[TMP1]])
+// RV32-NEXT:    [[TMP2:%.*]] = call <4 x i8> @llvm.riscv.pnzip.v4i8.v4i8(<4 x i8> [[TMP0]], <4 x i8> [[TMP1]])
 // RV32-NEXT:    [[TMP3:%.*]] = bitcast <4 x i8> [[TMP2]] to i32
 // RV32-NEXT:    ret i32 [[TMP3]]
 //
@@ -20,7 +20,7 @@ int8x4_t test_pnzip_i8x4(int16x2_t rs1, int16x2_t rs2) {
 // RV32-NEXT:  entry:
 // RV32-NEXT:    [[TMP0:%.*]] = bitcast i32 [[RS1_COERCE:%.*]] to <4 x i8>
 // RV32-NEXT:    [[TMP1:%.*]] = bitcast i32 [[RS2_COERCE:%.*]] to <4 x i8>
-// RV32-NEXT:    [[TMP2:%.*]] = call <4 x i8> @llvm.riscv.pnzip(<4 x i8> [[TMP0]], <4 x i8> [[TMP1]])
+// RV32-NEXT:    [[TMP2:%.*]] = call <4 x i8> @llvm.riscv.pnzip.v4i8.v4i8(<4 x i8> [[TMP0]], <4 x i8> [[TMP1]])
 // RV32-NEXT:    [[TMP3:%.*]] = bitcast <4 x i8> [[TMP2]] to i32
 // RV32-NEXT:    ret i32 [[TMP3]]
 //
@@ -31,7 +31,7 @@ uint8x4_t test_pnzip_u8x4(uint16x2_t rs1, uint16x2_t rs2) {
 // RV32-NEXT:  entry:
 // RV32-NEXT:    [[TMP0:%.*]] = bitcast i32 [[RS1_COERCE:%.*]] to <4 x i8>
 // RV32-NEXT:    [[TMP1:%.*]] = bitcast i32 [[RS2_COERCE:%.*]] to <4 x i8>
-// RV32-NEXT:    [[TMP2:%.*]] = call <4 x i8> @llvm.riscv.pnziph(<4 x i8> [[TMP0]], <4 x i8> [[TMP1]])
+// RV32-NEXT:    [[TMP2:%.*]] = call <4 x i8> @llvm.riscv.pnziph.v4i8.v4i8(<4 x i8> [[TMP0]], <4 x i8> [[TMP1]])
 // RV32-NEXT:    [[TMP3:%.*]] = bitcast <4 x i8> [[TMP2]] to i32
 // RV32-NEXT:    ret i32 [[TMP3]]
 //
@@ -42,7 +42,7 @@ int8x4_t test_pnziph_i8x4(int16x2_t rs1, int16x2_t rs2) {
 // RV32-NEXT:  entry:
 // RV32-NEXT:    [[TMP0:%.*]] = bitcast i32 [[RS1_COERCE:%.*]] to <4 x i8>
 // RV32-NEXT:    [[TMP1:%.*]] = bitcast i32 [[RS2_COERCE:%.*]] to <4 x i8>
-// RV32-NEXT:    [[TMP2:%.*]] = call <4 x i8> @llvm.riscv.pnziph(<4 x i8> [[TMP0]], <4 x i8> [[TMP1]])
+// RV32-NEXT:    [[TMP2:%.*]] = call <4 x i8> @llvm.riscv.pnziph.v4i8.v4i8(<4 x i8> [[TMP0]], <4 x i8> [[TMP1]])
 // RV32-NEXT:    [[TMP3:%.*]] = bitcast <4 x i8> [[TMP2]] to i32
 // RV32-NEXT:    ret i32 [[TMP3]]
 //

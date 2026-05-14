@@ -2457,6 +2457,25 @@ let Predicates = [HasStdExtP, IsRV64] in {
   def : Pat<(v2i32 (build_vector (XLenVT GPR:$a), (XLenVT GPR:$b))),
             (PACK GPR:$a, GPR:$b)>;
 
+  // Packed Narrowing Zip / psext (used by Packed Widening Unzip), 64-bit.
+  // pnzip / pnziph for byte-pair from v4i16 inputs and halfword-pair from
+  // v2i32 inputs.
+  def : Pat<(v8i8 (int_riscv_pnzip  (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PPAIRE_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v8i8 (int_riscv_pnziph (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PPAIRO_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pnzip  (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PPAIRE_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pnziph (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PPAIRO_H GPR:$rs1, GPR:$rs2)>;
+  // psext.h.b on RV64: sign-extend the even bytes of v8i8 into a v4i16
+  // halfword vector. psext.w.h: sign-extend the even halfwords of v4i16
+  // into a v2i32 word vector.
+  def : Pat<(v4i16 (int_riscv_psext_h_b (v8i8 GPR:$rs1))),
+            (PSEXT_H_B GPR:$rs1)>;
+  def : Pat<(v2i32 (int_riscv_psext_w_h (v4i16 GPR:$rs1))),
+            (PSEXT_W_H GPR:$rs1)>;
+
   // Packed Multiplication with Horizontal Addition (64-bit, RV64 only)
   // 4-way byte multiply-add with 64-bit input -> 2 lanes of i32.
   def : Pat<(v2i32 (int_riscv_pm4add (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),

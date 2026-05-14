@@ -796,6 +796,35 @@ def sha_i64  : RISCVBuiltin<"int64_t(int64_t, int)">;
 def shar_i64 : RISCVBuiltin<"int64_t(int64_t, int)">;
 def shl_u64  : RISCVBuiltin<"uint64_t(uint64_t, int)">;
 def shlr_u64 : RISCVBuiltin<"uint64_t(uint64_t, int)">;
+
+// Packed Narrowing Zip (RV64 only).
+def pnzip_i8x8   : RISCVBuiltin<"_Vector<8, signed char>(_Vector<4, short>, _Vector<4, short>)">;
+def pnzip_u8x8   : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<4, unsigned short>, _Vector<4, unsigned short>)">;
+def pnzip_i16x4  : RISCVBuiltin<"_Vector<4, short>(_Vector<2, int>, _Vector<2, int>)">;
+def pnzip_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<2, unsigned int>, _Vector<2, unsigned int>)">;
+def pnziph_i8x8  : RISCVBuiltin<"_Vector<8, signed char>(_Vector<4, short>, _Vector<4, short>)">;
+def pnziph_u8x8  : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<4, unsigned short>, _Vector<4, unsigned short>)">;
+def pnziph_i16x4 : RISCVBuiltin<"_Vector<4, short>(_Vector<2, int>, _Vector<2, int>)">;
+def pnziph_u16x4 : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<2, unsigned int>, _Vector<2, unsigned int>)">;
+
+// Packed Widening Unzip (RV64 only).
+def pwunzipe_i16x4   : RISCVBuiltin<"_Vector<4, short>(_Vector<8, signed char>)">;
+def pwunzipo_i16x4   : RISCVBuiltin<"_Vector<4, short>(_Vector<8, signed char>)">;
+def pwunzipue_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<8, unsigned char>)">;
+def pwunzipuo_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<8, unsigned char>)">;
+def pwunziphe_i16x4  : RISCVBuiltin<"_Vector<4, short>(_Vector<8, signed char>)">;
+def pwunzipho_i16x4  : RISCVBuiltin<"_Vector<4, short>(_Vector<8, signed char>)">;
+def pwunziphe_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<8, unsigned char>)">;
+def pwunzipho_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<8, unsigned char>)">;
+
+def pwunzipe_i32x2   : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>)">;
+def pwunzipo_i32x2   : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>)">;
+def pwunzipue_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<4, unsigned short>)">;
+def pwunzipuo_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<4, unsigned short>)">;
+def pwunziphe_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>)">;
+def pwunzipho_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>)">;
+def pwunziphe_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<4, unsigned short>)">;
+def pwunzipho_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<4, unsigned short>)">;
 } // Features = "experimental-p,64bit"
 
 } // Attributes = [Const, NoThrow]

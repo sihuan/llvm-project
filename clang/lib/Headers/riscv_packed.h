@@ -867,6 +867,47 @@ __packed_pm_horiz_binary(pmqr2add_i32x2,   int64_t, int32x2_t, int32x2_t)
 __packed_pm_horiz_ternary(pmq2adda_i32x2,  int64_t, int32x2_t, int32x2_t)
 __packed_pm_horiz_ternary(pmqr2adda_i32x2, int64_t, int32x2_t, int32x2_t)
 
+/* Packed Narrowing Zip (RV64 only). */
+#define __packed_pnzip_rv64(name, r_ty, a_ty, b_ty)                            \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(a_ty __rs1, b_ty __rs2) {                                     \
+    return __builtin_riscv_##name(__rs1, __rs2);                               \
+  }
+__packed_pnzip_rv64(pnzip_i8x8,   int8x8_t,   int16x4_t,  int16x4_t)
+__packed_pnzip_rv64(pnzip_u8x8,   uint8x8_t,  uint16x4_t, uint16x4_t)
+__packed_pnzip_rv64(pnzip_i16x4,  int16x4_t,  int32x2_t,  int32x2_t)
+__packed_pnzip_rv64(pnzip_u16x4,  uint16x4_t, uint32x2_t, uint32x2_t)
+__packed_pnzip_rv64(pnziph_i8x8,  int8x8_t,   int16x4_t,  int16x4_t)
+__packed_pnzip_rv64(pnziph_u8x8,  uint8x8_t,  uint16x4_t, uint16x4_t)
+__packed_pnzip_rv64(pnziph_i16x4, int16x4_t,  int32x2_t,  int32x2_t)
+__packed_pnzip_rv64(pnziph_u16x4, uint16x4_t, uint32x2_t, uint32x2_t)
+#undef __packed_pnzip_rv64
+
+/* Packed Widening Unzip (RV64 only). */
+#define __packed_pwunzip_rv64(name, r_ty, a_ty)                                \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(a_ty __rs1) {                                                 \
+    return __builtin_riscv_##name(__rs1);                                      \
+  }
+__packed_pwunzip_rv64(pwunzipe_i16x4,  int16x4_t,  int8x8_t)
+__packed_pwunzip_rv64(pwunzipo_i16x4,  int16x4_t,  int8x8_t)
+__packed_pwunzip_rv64(pwunzipue_u16x4, uint16x4_t, uint8x8_t)
+__packed_pwunzip_rv64(pwunzipuo_u16x4, uint16x4_t, uint8x8_t)
+__packed_pwunzip_rv64(pwunziphe_i16x4, int16x4_t,  int8x8_t)
+__packed_pwunzip_rv64(pwunzipho_i16x4, int16x4_t,  int8x8_t)
+__packed_pwunzip_rv64(pwunziphe_u16x4, uint16x4_t, uint8x8_t)
+__packed_pwunzip_rv64(pwunzipho_u16x4, uint16x4_t, uint8x8_t)
+
+__packed_pwunzip_rv64(pwunzipe_i32x2,  int32x2_t,  int16x4_t)
+__packed_pwunzip_rv64(pwunzipo_i32x2,  int32x2_t,  int16x4_t)
+__packed_pwunzip_rv64(pwunzipue_u32x2, uint32x2_t, uint16x4_t)
+__packed_pwunzip_rv64(pwunzipuo_u32x2, uint32x2_t, uint16x4_t)
+__packed_pwunzip_rv64(pwunziphe_i32x2, int32x2_t,  int16x4_t)
+__packed_pwunzip_rv64(pwunzipho_i32x2, int32x2_t,  int16x4_t)
+__packed_pwunzip_rv64(pwunziphe_u32x2, uint32x2_t, uint16x4_t)
+__packed_pwunzip_rv64(pwunzipho_u32x2, uint32x2_t, uint16x4_t)
+#undef __packed_pwunzip_rv64
+
 __packed_pm_horiz_binary(pm2sadd_i16x4,    int32x2_t, int16x4_t, int16x4_t)
 __packed_pm_horiz_binary(pm2sadd_x_i16x4,  int32x2_t, int16x4_t, int16x4_t)
 

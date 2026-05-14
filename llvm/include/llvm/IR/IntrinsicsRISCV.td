@@ -2332,22 +2332,34 @@ let TargetPrefix = "riscv" in {
   // vectors shape as the widening add/sub family.
   def int_riscv_pzip : RVPWAddSub;
 
-  // Packed Narrowing Zip (RV32 only). Both inputs and result are 32-bit
-  // packed vectors held in a single GPR. The byte-level interpretation
-  // is fixed by the underlying ppair*.b instruction, so the IR shape uses
-  // v4i8 for all three operands; callers bitcast around it.
+  // Packed Narrowing Zip. Both inputs are packed vectors of one width; the
+  // result is a packed vector of the next-narrower element width with the
+  // same total size held in a single GPR. The IR shape is polymorphic to
+  // cover both the RV32 case (v4i8 result / v4i8 input — byte-level
+  // interpretation fixed by ppair*.b) and the RV64 cases
+  // (v8i8 result / v4i16 input via ppaire.b/ppairo.b,
+  //  v4i16 result / v2i32 input via ppaire.h/ppairo.h). Callers bitcast
+  // around it.
   class RVPNarrowingZip
-      : DefaultAttrsIntrinsic<[llvm_v4i8_ty],
-                              [llvm_v4i8_ty, llvm_v4i8_ty],
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [llvm_anyvector_ty, LLVMMatchType<1>],
                               [IntrNoMem, IntrSpeculatable]>;
   def int_riscv_pnzip  : RVPNarrowingZip;
   def int_riscv_pnziph : RVPNarrowingZip;
 
-  // psext.h.b: sign-extend the even bytes of a 32-bit packed input into a
+  // psext.h.b: sign-extend the even bytes of a packed input into a
   // halfword vector. Used by the widening unzip "even / signed" variant.
+  // Polymorphic to cover both v4i8 -> v2i16 (RV32) and v8i8 -> v4i16 (RV64).
   def int_riscv_psext_h_b
-      : DefaultAttrsIntrinsic<[llvm_v2i16_ty],
-                              [llvm_v4i8_ty],
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [llvm_anyvector_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  // psext.w.h: sign-extend the even halfwords of a 64-bit packed input
+  // (v4i16) into a word vector (v2i32). RV64 only.
+  def int_riscv_psext_w_h
+      : DefaultAttrsIntrinsic<[llvm_v2i32_ty],
+                              [llvm_v4i16_ty],
                               [IntrNoMem, IntrSpeculatable]>;
 } // TargetPrefix = "riscv"
 
