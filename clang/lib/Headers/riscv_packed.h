@@ -600,6 +600,16 @@ __packed_pwcvt(pwcvth_i16x4, int16x4_t,  int8x4_t)
 __packed_pwcvt(pwcvth_u16x4, uint16x4_t, uint8x4_t)
 __packed_pwcvt(pwcvth_i32x2, int32x2_t,  int16x2_t)
 __packed_pwcvt(pwcvth_u32x2, uint32x2_t, uint16x2_t)
+
+/* Packed Narrowing Convert (RV32 only). */
+__packed_pwcvt(pncvt_i8x4,   int8x4_t,   int16x4_t)
+__packed_pwcvt(pncvt_u8x4,   uint8x4_t,  uint16x4_t)
+__packed_pwcvt(pncvt_i16x2,  int16x2_t,  int32x2_t)
+__packed_pwcvt(pncvt_u16x2,  uint16x2_t, uint32x2_t)
+__packed_pwcvt(pncvth_i8x4,  int8x4_t,   int16x4_t)
+__packed_pwcvt(pncvth_u8x4,  uint8x4_t,  uint16x4_t)
+__packed_pwcvt(pncvth_i16x2, int16x2_t,  int32x2_t)
+__packed_pwcvt(pncvth_u16x2, uint16x2_t, uint32x2_t)
 #endif
 
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).

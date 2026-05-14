@@ -324,6 +324,17 @@ def pwcvth_i16x4  : RISCVBuiltin<"_Vector<4, short>(_Vector<4, signed char>)">;
 def pwcvth_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned char>)">;
 def pwcvth_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, short>)">;
 def pwcvth_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned short>)">;
+
+// Packed Narrowing Convert (RV32 only). Implemented via pnsrli with the
+// shift amount selecting the low (imm=0) or high (imm=element-width) half.
+def pncvt_i8x4    : RISCVBuiltin<"_Vector<4, signed char>(_Vector<4, short>)">;
+def pncvt_u8x4    : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned short>)">;
+def pncvt_i16x2   : RISCVBuiltin<"_Vector<2, short>(_Vector<2, int>)">;
+def pncvt_u16x2   : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned int>)">;
+def pncvth_i8x4   : RISCVBuiltin<"_Vector<4, signed char>(_Vector<4, short>)">;
+def pncvth_u8x4   : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned short>)">;
+def pncvth_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<2, int>)">;
+def pncvth_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned int>)">;
 } // Features = "experimental-p,32bit"
 
 // Packed Exchanged Addition and Subtraction (halfword form, RV32 and RV64).

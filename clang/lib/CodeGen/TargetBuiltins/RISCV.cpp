@@ -1677,6 +1677,43 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return Builder.CreateCall(F, Ops);
   }
 
+  // Packed Narrowing Convert (RV32 only). Maps directly to pnsrli with
+  // imm=0 (low half) or imm=element-width (high half); we delegate to the
+  // existing pnsrl IR intrinsic with the matching shift amount.
+  case RISCV::BI__builtin_riscv_pncvt_i8x4:
+  case RISCV::BI__builtin_riscv_pncvt_u8x4:
+  case RISCV::BI__builtin_riscv_pncvt_i16x2:
+  case RISCV::BI__builtin_riscv_pncvt_u16x2:
+  case RISCV::BI__builtin_riscv_pncvth_i8x4:
+  case RISCV::BI__builtin_riscv_pncvth_u8x4:
+  case RISCV::BI__builtin_riscv_pncvth_i16x2:
+  case RISCV::BI__builtin_riscv_pncvth_u16x2: {
+    unsigned Shamt;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_pncvt_i8x4:
+    case RISCV::BI__builtin_riscv_pncvt_u8x4:
+    case RISCV::BI__builtin_riscv_pncvt_i16x2:
+    case RISCV::BI__builtin_riscv_pncvt_u16x2:
+      Shamt = 0;
+      break;
+    case RISCV::BI__builtin_riscv_pncvth_i8x4:
+    case RISCV::BI__builtin_riscv_pncvth_u8x4:
+      Shamt = 8;
+      break;
+    case RISCV::BI__builtin_riscv_pncvth_i16x2:
+    case RISCV::BI__builtin_riscv_pncvth_u16x2:
+      Shamt = 16;
+      break;
+    }
+    Ops[0] = Builder.CreateBitCast(Ops[0], Int64Ty);
+    Ops.push_back(Builder.getInt32(Shamt));
+    llvm::Function *F =
+        CGM.getIntrinsic(Intrinsic::riscv_pnsrl, ConvertType(E->getType()));
+    llvm::Value *Call = Builder.CreateCall(F, Ops);
+    return Builder.CreateBitCast(Call, ResultType);
+  }
+
   // Packed Widening Convert (RV32 only). Single narrow-vector input,
   // widened i64-shaped result; bitcast result to the 64-bit vector type.
   case RISCV::BI__builtin_riscv_pwcvt_i16x4:
