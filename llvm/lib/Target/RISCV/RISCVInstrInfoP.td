@@ -1951,6 +1951,25 @@ let Predicates = [HasStdExtP] in {
             (MERGE GPR:$mask, GPR:$false_v, GPR:$true_v)>;
   def : Pat<(XLenVecI16VT (vselect (XLenVecI16VT GPR:$mask), GPR:$true_v, GPR:$false_v)),
             (MERGE GPR:$mask, GPR:$false_v, GPR:$true_v)>;
+
+  // Packed Pair (32-bit table, both XLENs). byte-element forms (v4i8) and
+  // the three non-ppaire halfword forms (v2i16) — ppaire.h on RV32 is
+  // realized as PACK and is added under the RV32-only block below; on RV64
+  // it uses the real PPAIRE_H instruction and is added under the RV64 block.
+  def : Pat<(v4i8 (int_riscv_ppaire   (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PPAIRE_B   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i8 (int_riscv_ppaireo  (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PPAIREO_B  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i8 (int_riscv_ppairoe  (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PPAIROE_B  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i8 (int_riscv_ppairo   (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PPAIRO_B   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_ppaireo (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PPAIREO_H  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_ppairoe (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PPAIROE_H  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_ppairo  (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PPAIRO_H   GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP]
 
 let Predicates = [HasStdExtP, IsRV32] in {
@@ -1961,6 +1980,11 @@ let Predicates = [HasStdExtP, IsRV32] in {
             (PPAIRO_B GPR:$rs1, GPR:$rs2)>;
   def : Pat<(v2i16 (int_riscv_psext_h_b (v4i8 GPR:$rs1))),
             (PSEXT_H_B GPR:$rs1)>;
+
+  // Packed Pair: ppaire.h on RV32 has no dedicated encoding and is realized
+  // as PACK (also reflected via the ppaire.h InstAlias above).
+  def : Pat<(v2i16 (int_riscv_ppaire (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PACK GPR:$rs1, GPR:$rs2)>;
 
   def : PatGpr<bitreverse, REV_RV32>;
 
@@ -2475,6 +2499,41 @@ let Predicates = [HasStdExtP, IsRV64] in {
             (PSEXT_H_B GPR:$rs1)>;
   def : Pat<(v2i32 (int_riscv_psext_w_h (v4i16 GPR:$rs1))),
             (PSEXT_W_H GPR:$rs1)>;
+
+  // Packed Pair (RV64). v2i16 ppaire uses the dedicated PPAIRE_H instruction.
+  // v8i8 / v4i16 use the byte / halfword forms of the ppair* instructions;
+  // v2i32 32x2 ppaire is just bit-concat -> PACK (matching the "ppaire.w"
+  // InstAlias). The eo/oe/o word variants use PPAIREO_W / PPAIROE_W /
+  // PPAIRO_W.
+  def : Pat<(v2i16 (int_riscv_ppaire  (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PPAIRE_H  GPR:$rs1, GPR:$rs2)>;
+
+  def : Pat<(v8i8 (int_riscv_ppaire   (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PPAIRE_B  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v8i8 (int_riscv_ppaireo  (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PPAIREO_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v8i8 (int_riscv_ppairoe  (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PPAIROE_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v8i8 (int_riscv_ppairo   (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PPAIRO_B  GPR:$rs1, GPR:$rs2)>;
+
+  def : Pat<(v4i16 (int_riscv_ppaire  (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PPAIRE_H  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_ppaireo (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PPAIREO_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_ppairoe (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PPAIROE_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_ppairo  (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PPAIRO_H  GPR:$rs1, GPR:$rs2)>;
+
+  def : Pat<(v2i32 (int_riscv_ppaire  (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PACK      GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_ppaireo (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PPAIREO_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_ppairoe (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PPAIROE_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_ppairo  (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PPAIRO_W  GPR:$rs1, GPR:$rs2)>;
 
   // Packed Multiplication with Horizontal Addition (64-bit, RV64 only)
   // 4-way byte multiply-add with 64-bit input -> 2 lanes of i32.

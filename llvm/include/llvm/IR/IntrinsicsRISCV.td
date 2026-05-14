@@ -2361,6 +2361,21 @@ let TargetPrefix = "riscv" in {
       : DefaultAttrsIntrinsic<[llvm_v2i32_ty],
                               [llvm_v4i16_ty],
                               [IntrNoMem, IntrSpeculatable]>;
+
+  // Packed Pair. Each variant takes two packed vectors of identical type and
+  // returns a packed vector of the same type whose elements interleave the
+  // even-/odd-indexed lanes of the two inputs (ppaire = even/even,
+  // ppaireo = even/odd, ppairoe = odd/even, ppairo = odd/odd). Polymorphic on
+  // the vector type to cover the 32-bit table (v4i8 / v2i16, both XLENs) and
+  // the RV64-only 64-bit table (v8i8 / v4i16 / v2i32).
+  class RVPPair
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+  def int_riscv_ppaire   : RVPPair;
+  def int_riscv_ppaireo  : RVPPair;
+  def int_riscv_ppairoe  : RVPPair;
+  def int_riscv_ppairo   : RVPPair;
 } // TargetPrefix = "riscv"
 
 

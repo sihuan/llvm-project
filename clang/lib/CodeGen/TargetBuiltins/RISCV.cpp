@@ -1914,6 +1914,169 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return Builder.CreateBitCast(Call, ResultType);
   }
 
+  // Packed Pair. Four operations (ppaire/eo/oe/o) over the 32-bit table
+  // (v4i8 / v2i16, both XLENs) and the RV64-only 64-bit table
+  // (v8i8 / v4i16 / v2i32). The IR intrinsic is polymorphic on the vector
+  // type with both inputs / result of the same type; clang bitcasts the
+  // scalar argument coercions to the vector type and bitcasts the call
+  // result back to the scalar return type.
+  case RISCV::BI__builtin_riscv_ppaire_i8x4:
+  case RISCV::BI__builtin_riscv_ppaire_u8x4:
+  case RISCV::BI__builtin_riscv_ppaireo_i8x4:
+  case RISCV::BI__builtin_riscv_ppaireo_u8x4:
+  case RISCV::BI__builtin_riscv_ppairoe_i8x4:
+  case RISCV::BI__builtin_riscv_ppairoe_u8x4:
+  case RISCV::BI__builtin_riscv_ppairo_i8x4:
+  case RISCV::BI__builtin_riscv_ppairo_u8x4:
+  case RISCV::BI__builtin_riscv_ppaire_i16x2:
+  case RISCV::BI__builtin_riscv_ppaire_u16x2:
+  case RISCV::BI__builtin_riscv_ppaireo_i16x2:
+  case RISCV::BI__builtin_riscv_ppaireo_u16x2:
+  case RISCV::BI__builtin_riscv_ppairoe_i16x2:
+  case RISCV::BI__builtin_riscv_ppairoe_u16x2:
+  case RISCV::BI__builtin_riscv_ppairo_i16x2:
+  case RISCV::BI__builtin_riscv_ppairo_u16x2:
+  case RISCV::BI__builtin_riscv_ppaire_i8x8:
+  case RISCV::BI__builtin_riscv_ppaire_u8x8:
+  case RISCV::BI__builtin_riscv_ppaireo_i8x8:
+  case RISCV::BI__builtin_riscv_ppaireo_u8x8:
+  case RISCV::BI__builtin_riscv_ppairoe_i8x8:
+  case RISCV::BI__builtin_riscv_ppairoe_u8x8:
+  case RISCV::BI__builtin_riscv_ppairo_i8x8:
+  case RISCV::BI__builtin_riscv_ppairo_u8x8:
+  case RISCV::BI__builtin_riscv_ppaire_i16x4:
+  case RISCV::BI__builtin_riscv_ppaire_u16x4:
+  case RISCV::BI__builtin_riscv_ppaireo_i16x4:
+  case RISCV::BI__builtin_riscv_ppaireo_u16x4:
+  case RISCV::BI__builtin_riscv_ppairoe_i16x4:
+  case RISCV::BI__builtin_riscv_ppairoe_u16x4:
+  case RISCV::BI__builtin_riscv_ppairo_i16x4:
+  case RISCV::BI__builtin_riscv_ppairo_u16x4:
+  case RISCV::BI__builtin_riscv_ppaire_i32x2:
+  case RISCV::BI__builtin_riscv_ppaire_u32x2:
+  case RISCV::BI__builtin_riscv_ppaireo_i32x2:
+  case RISCV::BI__builtin_riscv_ppaireo_u32x2:
+  case RISCV::BI__builtin_riscv_ppairoe_i32x2:
+  case RISCV::BI__builtin_riscv_ppairoe_u32x2:
+  case RISCV::BI__builtin_riscv_ppairo_i32x2:
+  case RISCV::BI__builtin_riscv_ppairo_u32x2: {
+    unsigned IntID;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_ppaire_i8x4:
+    case RISCV::BI__builtin_riscv_ppaire_u8x4:
+    case RISCV::BI__builtin_riscv_ppaire_i16x2:
+    case RISCV::BI__builtin_riscv_ppaire_u16x2:
+    case RISCV::BI__builtin_riscv_ppaire_i8x8:
+    case RISCV::BI__builtin_riscv_ppaire_u8x8:
+    case RISCV::BI__builtin_riscv_ppaire_i16x4:
+    case RISCV::BI__builtin_riscv_ppaire_u16x4:
+    case RISCV::BI__builtin_riscv_ppaire_i32x2:
+    case RISCV::BI__builtin_riscv_ppaire_u32x2:
+      IntID = Intrinsic::riscv_ppaire;
+      break;
+    case RISCV::BI__builtin_riscv_ppaireo_i8x4:
+    case RISCV::BI__builtin_riscv_ppaireo_u8x4:
+    case RISCV::BI__builtin_riscv_ppaireo_i16x2:
+    case RISCV::BI__builtin_riscv_ppaireo_u16x2:
+    case RISCV::BI__builtin_riscv_ppaireo_i8x8:
+    case RISCV::BI__builtin_riscv_ppaireo_u8x8:
+    case RISCV::BI__builtin_riscv_ppaireo_i16x4:
+    case RISCV::BI__builtin_riscv_ppaireo_u16x4:
+    case RISCV::BI__builtin_riscv_ppaireo_i32x2:
+    case RISCV::BI__builtin_riscv_ppaireo_u32x2:
+      IntID = Intrinsic::riscv_ppaireo;
+      break;
+    case RISCV::BI__builtin_riscv_ppairoe_i8x4:
+    case RISCV::BI__builtin_riscv_ppairoe_u8x4:
+    case RISCV::BI__builtin_riscv_ppairoe_i16x2:
+    case RISCV::BI__builtin_riscv_ppairoe_u16x2:
+    case RISCV::BI__builtin_riscv_ppairoe_i8x8:
+    case RISCV::BI__builtin_riscv_ppairoe_u8x8:
+    case RISCV::BI__builtin_riscv_ppairoe_i16x4:
+    case RISCV::BI__builtin_riscv_ppairoe_u16x4:
+    case RISCV::BI__builtin_riscv_ppairoe_i32x2:
+    case RISCV::BI__builtin_riscv_ppairoe_u32x2:
+      IntID = Intrinsic::riscv_ppairoe;
+      break;
+    case RISCV::BI__builtin_riscv_ppairo_i8x4:
+    case RISCV::BI__builtin_riscv_ppairo_u8x4:
+    case RISCV::BI__builtin_riscv_ppairo_i16x2:
+    case RISCV::BI__builtin_riscv_ppairo_u16x2:
+    case RISCV::BI__builtin_riscv_ppairo_i8x8:
+    case RISCV::BI__builtin_riscv_ppairo_u8x8:
+    case RISCV::BI__builtin_riscv_ppairo_i16x4:
+    case RISCV::BI__builtin_riscv_ppairo_u16x4:
+    case RISCV::BI__builtin_riscv_ppairo_i32x2:
+    case RISCV::BI__builtin_riscv_ppairo_u32x2:
+      IntID = Intrinsic::riscv_ppairo;
+      break;
+    }
+    // The vector type for both operands and the result is the natural type
+    // of the builtin: 32-bit-table builtins use a 32-bit vector and the
+    // result is bitcast back to i32; 64-bit-table builtins use a 64-bit
+    // vector and the result is bitcast back to i64.
+    llvm::Type *VecTy;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_ppaire_i8x4:
+    case RISCV::BI__builtin_riscv_ppaire_u8x4:
+    case RISCV::BI__builtin_riscv_ppaireo_i8x4:
+    case RISCV::BI__builtin_riscv_ppaireo_u8x4:
+    case RISCV::BI__builtin_riscv_ppairoe_i8x4:
+    case RISCV::BI__builtin_riscv_ppairoe_u8x4:
+    case RISCV::BI__builtin_riscv_ppairo_i8x4:
+    case RISCV::BI__builtin_riscv_ppairo_u8x4:
+      VecTy = llvm::FixedVectorType::get(Int8Ty, 4);
+      break;
+    case RISCV::BI__builtin_riscv_ppaire_i16x2:
+    case RISCV::BI__builtin_riscv_ppaire_u16x2:
+    case RISCV::BI__builtin_riscv_ppaireo_i16x2:
+    case RISCV::BI__builtin_riscv_ppaireo_u16x2:
+    case RISCV::BI__builtin_riscv_ppairoe_i16x2:
+    case RISCV::BI__builtin_riscv_ppairoe_u16x2:
+    case RISCV::BI__builtin_riscv_ppairo_i16x2:
+    case RISCV::BI__builtin_riscv_ppairo_u16x2:
+      VecTy = llvm::FixedVectorType::get(Int16Ty, 2);
+      break;
+    case RISCV::BI__builtin_riscv_ppaire_i8x8:
+    case RISCV::BI__builtin_riscv_ppaire_u8x8:
+    case RISCV::BI__builtin_riscv_ppaireo_i8x8:
+    case RISCV::BI__builtin_riscv_ppaireo_u8x8:
+    case RISCV::BI__builtin_riscv_ppairoe_i8x8:
+    case RISCV::BI__builtin_riscv_ppairoe_u8x8:
+    case RISCV::BI__builtin_riscv_ppairo_i8x8:
+    case RISCV::BI__builtin_riscv_ppairo_u8x8:
+      VecTy = llvm::FixedVectorType::get(Int8Ty, 8);
+      break;
+    case RISCV::BI__builtin_riscv_ppaire_i16x4:
+    case RISCV::BI__builtin_riscv_ppaire_u16x4:
+    case RISCV::BI__builtin_riscv_ppaireo_i16x4:
+    case RISCV::BI__builtin_riscv_ppaireo_u16x4:
+    case RISCV::BI__builtin_riscv_ppairoe_i16x4:
+    case RISCV::BI__builtin_riscv_ppairoe_u16x4:
+    case RISCV::BI__builtin_riscv_ppairo_i16x4:
+    case RISCV::BI__builtin_riscv_ppairo_u16x4:
+      VecTy = llvm::FixedVectorType::get(Int16Ty, 4);
+      break;
+    case RISCV::BI__builtin_riscv_ppaire_i32x2:
+    case RISCV::BI__builtin_riscv_ppaire_u32x2:
+    case RISCV::BI__builtin_riscv_ppaireo_i32x2:
+    case RISCV::BI__builtin_riscv_ppaireo_u32x2:
+    case RISCV::BI__builtin_riscv_ppairoe_i32x2:
+    case RISCV::BI__builtin_riscv_ppairoe_u32x2:
+    case RISCV::BI__builtin_riscv_ppairo_i32x2:
+    case RISCV::BI__builtin_riscv_ppairo_u32x2:
+      VecTy = llvm::FixedVectorType::get(Int32Ty, 2);
+      break;
+    }
+    Ops[0] = Builder.CreateBitCast(Ops[0], VecTy);
+    Ops[1] = Builder.CreateBitCast(Ops[1], VecTy);
+    llvm::Function *F = CGM.getIntrinsic(IntID, VecTy);
+    llvm::Value *Call = Builder.CreateCall(F, Ops);
+    return Builder.CreateBitCast(Call, ResultType);
+  }
+
   // Packed Narrowing Convert / Packed Unzip (RV32 only). Both map directly
   // to pnsrli with imm=0 (low half / even lanes) or imm=element-width
   // (high half / odd lanes); we delegate to the existing pnsrl IR intrinsic
