@@ -577,6 +577,14 @@ def msgt_u32  : RISCVBuiltin<"uint32_t(int32_t, int32_t)">;
 def msltu_u32 : RISCVBuiltin<"uint32_t(uint32_t, uint32_t)">;
 def msgtu_u32 : RISCVBuiltin<"uint32_t(uint32_t, uint32_t)">;
 
+// Saturating compound shifts with signed shift amount (negative = right
+// shift). RV32 emits ssha / sshar / sshl / sshlr; RV64 emits the
+// packed-word forms pssha.ws / psshar.ws / psshl.ws / psshlr.ws.
+def ssha_i32  : RISCVBuiltin<"int32_t(int32_t, int)">;
+def sshar_i32 : RISCVBuiltin<"int32_t(int32_t, int)">;
+def sshl_u32  : RISCVBuiltin<"uint32_t(int32_t, int)">;
+def sshlr_u32 : RISCVBuiltin<"uint32_t(int32_t, int)">;
+
 } // Features = "experimental-p"
 
 let Features = "experimental-p,64bit" in {
@@ -781,6 +789,13 @@ def unzip8p_64  : RISCVBuiltin<"uint64_t(uint64_t, uint64_t)">;
 def unzip16p_64 : RISCVBuiltin<"uint64_t(uint64_t, uint64_t)">;
 def unzip8hp_64 : RISCVBuiltin<"uint64_t(uint64_t, uint64_t)">;
 def unzip16hp_64 : RISCVBuiltin<"uint64_t(uint64_t, uint64_t)">;
+
+// RV64-only non-saturating compound shifts with signed shift amount
+// (negative = right shift). Emits sha / shar / shl / shlr.
+def sha_i64  : RISCVBuiltin<"int64_t(int64_t, int)">;
+def shar_i64 : RISCVBuiltin<"int64_t(int64_t, int)">;
+def shl_u64  : RISCVBuiltin<"uint64_t(uint64_t, int)">;
+def shlr_u64 : RISCVBuiltin<"uint64_t(uint64_t, int)">;
 } // Features = "experimental-p,64bit"
 
 } // Attributes = [Const, NoThrow]

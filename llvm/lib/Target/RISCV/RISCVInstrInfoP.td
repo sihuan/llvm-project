@@ -2278,6 +2278,16 @@ let Predicates = [HasStdExtP, IsRV32] in {
   def : Pat<(i32 (int_riscv_msltu_i32 (i32 GPR:$rs1), (i32 GPR:$rs2))),
             (MSLTU GPR:$rs1, GPR:$rs2)>;
 
+  // Saturating compound shifts with signed shift amount (RV32 native forms).
+  def : Pat<(i32 (int_riscv_ssha_i32  (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (SSHA  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_sshar_i32 (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (SSHAR GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_sshl_u32  (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (SSHL  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_sshlr_u32 (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (SSHLR GPR:$rs1, GPR:$rs2)>;
+
 } // Predicates = [HasStdExtP, IsRV32]
 
 let Predicates = [HasStdExtP, IsRV64] in {
@@ -2868,4 +2878,26 @@ let Predicates = [HasStdExtP, IsRV64] in {
             (UNZIP8HP  GPR:$rs1, GPR:$rs2)>;
   def : Pat<(i64 (int_riscv_unzip16hp_64 (i64 GPR:$rs1), (i64 GPR:$rs2))),
             (UNZIP16HP GPR:$rs1, GPR:$rs2)>;
+
+  // Saturating compound shifts (common-XLEN intrinsics) on RV64: lower to the
+  // packed-word forms operating on the lower 32 bits of a 64-bit GPR.
+  def : Pat<(i64 (int_riscv_ssha_i32  (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PSSHA_WS  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_sshar_i32 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PSSHAR_WS GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_sshl_u32  (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PSSHL_WS  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_sshlr_u32 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PSSHLR_WS GPR:$rs1, GPR:$rs2)>;
+
+  // RV64-only non-saturating compound shifts: lower to native sha / shar /
+  // shl / shlr.
+  def : Pat<(i64 (int_riscv_sha_i64  (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (SHA  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_shar_i64 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (SHAR GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_shl_u64  (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (SHL  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_shlr_u64 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (SHLR GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV64]

@@ -2430,6 +2430,32 @@ let TargetPrefix = "riscv" in {
   // RV64-only: reverse 16-bit chunks.
   def int_riscv_rev16 : RVPScalarUnary;
 
+  // Saturating compound shifts with signed shift amount. Both rs1 and the
+  // shift amount are XLenVT-typed in the IR intrinsic (Clang's CodeGen
+  // sign-extends the i32 shift amount before the call so the SDAG operand
+  // is XLenVT and matches a GPR cleanly on either XLEN). RV32 lowers to
+  // ssha / sshar / sshl / sshlr; RV64 lowers to the packed-word forms
+  // pssha.ws / psshar.ws / psshl.ws / psshlr.ws.
+  class RVPScalarSatShift
+      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+  def int_riscv_ssha_i32  : RVPScalarSatShift;
+  def int_riscv_sshar_i32 : RVPScalarSatShift;
+  def int_riscv_sshl_u32  : RVPScalarSatShift;
+  def int_riscv_sshlr_u32 : RVPScalarSatShift;
+
+  // RV64-only non-saturating compound shifts with signed shift amount. The
+  // result, rs1, and rs2 are all i64. Lowers to sha / shar / shl / shlr.
+  class RVPScalarShift64
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_i64_ty, llvm_i64_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+  def int_riscv_sha_i64  : RVPScalarShift64;
+  def int_riscv_shar_i64 : RVPScalarShift64;
+  def int_riscv_shl_u64  : RVPScalarShift64;
+  def int_riscv_shlr_u64 : RVPScalarShift64;
+
   // Q-format multiply with widening accumulate (i64 accumulator + 2 x narrow
   // XLEN-shaped inputs). On RV32 the i64 accumulator is held in a GPR pair
   // (see ReplaceNodeResults in RISCVISelLowering.cpp); on RV64 it's a single

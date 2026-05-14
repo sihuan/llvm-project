@@ -1353,6 +1353,28 @@ __riscv_ssh1sadd_i32(int32_t __rs1, int32_t __rs2) {
   return __builtin_riscv_ssh1sadd_i32(__rs1, __rs2);
 }
 
+/* Saturating compound shifts with signed shift amount (negative = right
+ * shift). The rounding variants apply rounding when right-shifting. */
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_ssha_i32(int32_t __rs1, int __rs2) {
+  return __builtin_riscv_ssha_i32(__rs1, __rs2);
+}
+
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_sshar_i32(int32_t __rs1, int __rs2) {
+  return __builtin_riscv_sshar_i32(__rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_sshl_u32(int32_t __rs1, int __rs2) {
+  return __builtin_riscv_sshl_u32(__rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_sshlr_u32(int32_t __rs1, int __rs2) {
+  return __builtin_riscv_sshlr_u32(__rs1, __rs2);
+}
+
 /* Rounding multiply-high. */
 static __inline__ int32_t __DEFAULT_FN_ATTRS
 __riscv_mulhr_i32(int32_t __rs1, int32_t __rs2) {
@@ -1573,6 +1595,28 @@ __riscv_unzip8hp_64(uint64_t __rs1, uint64_t __rs2) {
 static __inline__ uint64_t __DEFAULT_FN_ATTRS
 __riscv_unzip16hp_64(uint64_t __rs1, uint64_t __rs2) {
   return __builtin_riscv_unzip16hp_64(__rs1, __rs2);
+}
+
+/* Non-saturating compound shifts with signed shift amount (negative = right
+ * shift). The rounding variant applies rounding when right-shifting. */
+static __inline__ int64_t __DEFAULT_FN_ATTRS
+__riscv_sha_i64(int64_t __rs1, int __rs2) {
+  return __builtin_riscv_sha_i64(__rs1, __rs2);
+}
+
+static __inline__ int64_t __DEFAULT_FN_ATTRS
+__riscv_shar_i64(int64_t __rs1, int __rs2) {
+  return __builtin_riscv_shar_i64(__rs1, __rs2);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_shl_u64(uint64_t __rs1, int __rs2) {
+  return __builtin_riscv_shl_u64(__rs1, __rs2);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_shlr_u64(uint64_t __rs1, int __rs2) {
+  return __builtin_riscv_shlr_u64(__rs1, __rs2);
 }
 
 #endif /* __riscv_xlen == 64 */
