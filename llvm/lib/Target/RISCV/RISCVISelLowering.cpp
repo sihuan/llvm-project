@@ -558,6 +558,9 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2i16, Custom);
     } else {
       VTs = RV32VTs;
+      // Packed widening add/sub on RV32 returns a 64-bit value in a GPR pair;
+      // custom-legalize the i64 intrinsic result.
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::i64, Custom);
     }
     // By default everything must be expanded.
     for (unsigned Op = 0; Op < ISD::BUILTIN_OP_END; ++Op)
@@ -15921,6 +15924,45 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
       Results.push_back(
           DAG.getNode(ISD::BUILD_PAIR, DL, MVT::i64, EltLo, EltHi));
       break;
+    }
+    case Intrinsic::riscv_pwadd:
+    case Intrinsic::riscv_pwaddu:
+    case Intrinsic::riscv_pwsub:
+    case Intrinsic::riscv_pwsubu: {
+      // Packed Widening add/sub on RV32: the underlying instruction writes a
+      // GPR pair (untyped, 64-bit). Emit the machine instruction directly,
+      // then split the pair into two i32s and reassemble as i64 for the
+      // legal-type representation of the intrinsic's i64 result.
+      if (Subtarget.is64Bit() || N->getValueType(0) != MVT::i64)
+        return;
+      MVT InVT = N->getOperand(1).getSimpleValueType();
+      unsigned Opc;
+      if (InVT == MVT::v4i8) {
+        switch (IntNo) {
+        case Intrinsic::riscv_pwadd:  Opc = RISCV::PWADD_B;  break;
+        case Intrinsic::riscv_pwaddu: Opc = RISCV::PWADDU_B; break;
+        case Intrinsic::riscv_pwsub:  Opc = RISCV::PWSUB_B;  break;
+        case Intrinsic::riscv_pwsubu: Opc = RISCV::PWSUBU_B; break;
+        }
+      } else if (InVT == MVT::v2i16) {
+        switch (IntNo) {
+        case Intrinsic::riscv_pwadd:  Opc = RISCV::PWADD_H;  break;
+        case Intrinsic::riscv_pwaddu: Opc = RISCV::PWADDU_H; break;
+        case Intrinsic::riscv_pwsub:  Opc = RISCV::PWSUB_H;  break;
+        case Intrinsic::riscv_pwsubu: Opc = RISCV::PWSUBU_H; break;
+        }
+      } else {
+        return;
+      }
+      SDValue Pair = SDValue(
+          DAG.getMachineNode(Opc, DL, MVT::Untyped, N->getOperand(1),
+                             N->getOperand(2)),
+          0);
+      SDValue Split = DAG.getNode(RISCVISD::SplitGPRPair, DL,
+                                  DAG.getVTList(MVT::i32, MVT::i32), Pair);
+      Results.push_back(DAG.getNode(ISD::BUILD_PAIR, DL, MVT::i64,
+                                    Split.getValue(0), Split.getValue(1)));
+      return;
     }
     }
     break;

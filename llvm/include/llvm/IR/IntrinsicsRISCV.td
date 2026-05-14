@@ -2214,6 +2214,24 @@ let TargetPrefix = "riscv" in {
 } // TargetPrefix = "riscv"
 
 
+// Packed SIMD extensions: Packed Widening Addition and Subtraction (RV32)
+//===----------------------------------------------------------------------===//
+//
+// These widen each lane to a wider type before adding/subtracting, producing
+// a 64-bit result. They are RV32 only; the result is held in a GPR pair.
+let TargetPrefix = "riscv" in {
+  class RVPWAddSub
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_anyvector_ty, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  def int_riscv_pwadd  : RVPWAddSub;
+  def int_riscv_pwaddu : RVPWAddSub;
+  def int_riscv_pwsub  : RVPWAddSub;
+  def int_riscv_pwsubu : RVPWAddSub;
+} // TargetPrefix = "riscv"
+
+
 //===----------------------------------------------------------------------===//
 // Zvfofp8min - OFP8 conversion extension
 // The Zvfofp8min extension provides basic support for the two 8-bit

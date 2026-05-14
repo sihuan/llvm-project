@@ -1530,6 +1530,42 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
 #undef RVP_MULPA_CASES
 #undef RVP_MULHPA_CASES
 
+  // Packed Widening Addition and Subtraction (RV32 only). The IR intrinsic
+  // returns i64 (matching the GPR pair ABI on RV32); the builtin's declared
+  // result is a 64-bit vector. Bitcast the call result to the vector type.
+  case RISCV::BI__builtin_riscv_pwadd_i16x4:
+  case RISCV::BI__builtin_riscv_pwadd_i32x2:
+  case RISCV::BI__builtin_riscv_pwaddu_u16x4:
+  case RISCV::BI__builtin_riscv_pwaddu_u32x2:
+  case RISCV::BI__builtin_riscv_pwsub_i16x4:
+  case RISCV::BI__builtin_riscv_pwsub_i32x2:
+  case RISCV::BI__builtin_riscv_pwsubu_u16x4:
+  case RISCV::BI__builtin_riscv_pwsubu_u32x2: {
+    unsigned IntID;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_pwadd_i16x4:
+    case RISCV::BI__builtin_riscv_pwadd_i32x2:
+      IntID = Intrinsic::riscv_pwadd;
+      break;
+    case RISCV::BI__builtin_riscv_pwaddu_u16x4:
+    case RISCV::BI__builtin_riscv_pwaddu_u32x2:
+      IntID = Intrinsic::riscv_pwaddu;
+      break;
+    case RISCV::BI__builtin_riscv_pwsub_i16x4:
+    case RISCV::BI__builtin_riscv_pwsub_i32x2:
+      IntID = Intrinsic::riscv_pwsub;
+      break;
+    case RISCV::BI__builtin_riscv_pwsubu_u16x4:
+    case RISCV::BI__builtin_riscv_pwsubu_u32x2:
+      IntID = Intrinsic::riscv_pwsubu;
+      break;
+    }
+    llvm::Function *F = CGM.getIntrinsic(IntID, Ops[0]->getType());
+    llvm::Value *Call = Builder.CreateCall(F, Ops);
+    return Builder.CreateBitCast(Call, ResultType);
+  }
+
   case RISCV::BI__builtin_riscv_clz_32:
   case RISCV::BI__builtin_riscv_clz_64: {
     Function *F = CGM.getIntrinsic(Intrinsic::ctlz, Ops[0]->getType());
