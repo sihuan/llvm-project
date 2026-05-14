@@ -443,6 +443,41 @@ __packed_exchange_add_sub(ppairoe_u16x2, uint16x2_t)
 __packed_exchange_add_sub(ppairo_i16x2,  int16x2_t)
 __packed_exchange_add_sub(ppairo_u16x2,  uint16x2_t)
 
+/* Packed Comparisons (32-bit table, RV32 and RV64). Result is always the
+ * unsigned packed lane type regardless of input signedness. Three native
+ * ops (pmseq / pmslt / pmsltu) + nine derived ops (pmsne / pmsgt / pmsgtu /
+ * pmsge / pmsle / pmsleu / pmsgeu); derived ops are realized by clang
+ * CodeGen via operand-swap and/or xor-with-all-ones. */
+#define __packed_pmcompare(name, r_ty, a_ty)                                   \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(a_ty __rs1, a_ty __rs2) {                                     \
+    return __builtin_riscv_##name(__rs1, __rs2);                               \
+  }
+__packed_pmcompare(pmseq_i8x4_u8x4,    uint8x4_t,  int8x4_t)
+__packed_pmcompare(pmseq_u8x4_u8x4,    uint8x4_t,  uint8x4_t)
+__packed_pmcompare(pmseq_i16x2_u16x2,  uint16x2_t, int16x2_t)
+__packed_pmcompare(pmseq_u16x2_u16x2,  uint16x2_t, uint16x2_t)
+__packed_pmcompare(pmslt_u8x4,         uint8x4_t,  int8x4_t)
+__packed_pmcompare(pmslt_u16x2,        uint16x2_t, int16x2_t)
+__packed_pmcompare(pmsgt_u8x4,         uint8x4_t,  int8x4_t)
+__packed_pmcompare(pmsgt_u16x2,        uint16x2_t, int16x2_t)
+__packed_pmcompare(pmsltu_u8x4,        uint8x4_t,  uint8x4_t)
+__packed_pmcompare(pmsltu_u16x2,       uint16x2_t, uint16x2_t)
+__packed_pmcompare(pmsgtu_u8x4,        uint8x4_t,  uint8x4_t)
+__packed_pmcompare(pmsgtu_u16x2,       uint16x2_t, uint16x2_t)
+__packed_pmcompare(pmsne_i8x4_u8x4,    uint8x4_t,  int8x4_t)
+__packed_pmcompare(pmsne_u8x4_u8x4,    uint8x4_t,  uint8x4_t)
+__packed_pmcompare(pmsne_i16x2_u16x2,  uint16x2_t, int16x2_t)
+__packed_pmcompare(pmsne_u16x2_u16x2,  uint16x2_t, uint16x2_t)
+__packed_pmcompare(pmsge_u8x4,         uint8x4_t,  int8x4_t)
+__packed_pmcompare(pmsge_u16x2,        uint16x2_t, int16x2_t)
+__packed_pmcompare(pmsle_u8x4,         uint8x4_t,  int8x4_t)
+__packed_pmcompare(pmsle_u16x2,        uint16x2_t, int16x2_t)
+__packed_pmcompare(pmsleu_u8x4,        uint8x4_t,  uint8x4_t)
+__packed_pmcompare(pmsleu_u16x2,       uint16x2_t, uint16x2_t)
+__packed_pmcompare(pmsgeu_u8x4,        uint8x4_t,  uint8x4_t)
+__packed_pmcompare(pmsgeu_u16x2,       uint16x2_t, uint16x2_t)
+
 /* Packed Load and Store (element-aligned). */
 #define __packed_pld(name, r_ty, p_ty)                                         \
   static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
@@ -960,6 +995,46 @@ __packed_ppair_rv64(ppairoe_u32x2, uint32x2_t)
 __packed_ppair_rv64(ppairo_i32x2,  int32x2_t)
 __packed_ppair_rv64(ppairo_u32x2,  uint32x2_t)
 #undef __packed_ppair_rv64
+
+/* Packed Comparisons (64-bit table, RV64 only). RV32 64-bit-table forms
+ * requiring p*.d* register-pair instructions are deferred. */
+__packed_pmcompare(pmseq_i8x8_u8x8,    uint8x8_t,  int8x8_t)
+__packed_pmcompare(pmseq_u8x8_u8x8,    uint8x8_t,  uint8x8_t)
+__packed_pmcompare(pmseq_i16x4_u16x4,  uint16x4_t, int16x4_t)
+__packed_pmcompare(pmseq_u16x4_u16x4,  uint16x4_t, uint16x4_t)
+__packed_pmcompare(pmseq_i32x2_u32x2,  uint32x2_t, int32x2_t)
+__packed_pmcompare(pmseq_u32x2_u32x2,  uint32x2_t, uint32x2_t)
+__packed_pmcompare(pmslt_u8x8,         uint8x8_t,  int8x8_t)
+__packed_pmcompare(pmslt_u16x4,        uint16x4_t, int16x4_t)
+__packed_pmcompare(pmslt_u32x2,        uint32x2_t, int32x2_t)
+__packed_pmcompare(pmsgt_u8x8,         uint8x8_t,  int8x8_t)
+__packed_pmcompare(pmsgt_u16x4,        uint16x4_t, int16x4_t)
+__packed_pmcompare(pmsgt_u32x2,        uint32x2_t, int32x2_t)
+__packed_pmcompare(pmsltu_u8x8,        uint8x8_t,  uint8x8_t)
+__packed_pmcompare(pmsltu_u16x4,       uint16x4_t, uint16x4_t)
+__packed_pmcompare(pmsltu_u32x2,       uint32x2_t, uint32x2_t)
+__packed_pmcompare(pmsgtu_u8x8,        uint8x8_t,  uint8x8_t)
+__packed_pmcompare(pmsgtu_u16x4,       uint16x4_t, uint16x4_t)
+__packed_pmcompare(pmsgtu_u32x2,       uint32x2_t, uint32x2_t)
+__packed_pmcompare(pmsne_i8x8_u8x8,    uint8x8_t,  int8x8_t)
+__packed_pmcompare(pmsne_u8x8_u8x8,    uint8x8_t,  uint8x8_t)
+__packed_pmcompare(pmsne_i16x4_u16x4,  uint16x4_t, int16x4_t)
+__packed_pmcompare(pmsne_u16x4_u16x4,  uint16x4_t, uint16x4_t)
+__packed_pmcompare(pmsne_i32x2_u32x2,  uint32x2_t, int32x2_t)
+__packed_pmcompare(pmsne_u32x2_u32x2,  uint32x2_t, uint32x2_t)
+__packed_pmcompare(pmsge_u8x8,         uint8x8_t,  int8x8_t)
+__packed_pmcompare(pmsge_u16x4,        uint16x4_t, int16x4_t)
+__packed_pmcompare(pmsge_u32x2,        uint32x2_t, int32x2_t)
+__packed_pmcompare(pmsle_u8x8,         uint8x8_t,  int8x8_t)
+__packed_pmcompare(pmsle_u16x4,        uint16x4_t, int16x4_t)
+__packed_pmcompare(pmsle_u32x2,        uint32x2_t, int32x2_t)
+__packed_pmcompare(pmsleu_u8x8,        uint8x8_t,  uint8x8_t)
+__packed_pmcompare(pmsleu_u16x4,       uint16x4_t, uint16x4_t)
+__packed_pmcompare(pmsleu_u32x2,       uint32x2_t, uint32x2_t)
+__packed_pmcompare(pmsgeu_u8x8,        uint8x8_t,  uint8x8_t)
+__packed_pmcompare(pmsgeu_u16x4,       uint16x4_t, uint16x4_t)
+__packed_pmcompare(pmsgeu_u32x2,       uint32x2_t, uint32x2_t)
+#undef __packed_pmcompare
 
 __packed_pm_horiz_binary(pm2sadd_i16x4,    int32x2_t, int16x4_t, int16x4_t)
 __packed_pm_horiz_binary(pm2sadd_x_i16x4,  int32x2_t, int16x4_t, int16x4_t)

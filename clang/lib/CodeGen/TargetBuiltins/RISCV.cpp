@@ -2077,6 +2077,372 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return Builder.CreateBitCast(Call, ResultType);
   }
 
+  // Packed Comparisons. Three native IR intrinsics (pmseq / pmslt / pmsltu)
+  // over the 32-bit table (v4i8 / v2i16, both XLENs) and the RV64-only
+  // 64-bit table (v8i8 / v4i16 / v2i32). Nine derived ops (pmsne / pmsgt /
+  // pmsgtu / pmsge / pmsle / pmsleu / pmsgeu) are realized here by swapping
+  // operands and/or xor-ing the result with the all-ones vector.
+  case RISCV::BI__builtin_riscv_pmseq_i8x4_u8x4:
+  case RISCV::BI__builtin_riscv_pmseq_u8x4_u8x4:
+  case RISCV::BI__builtin_riscv_pmseq_i16x2_u16x2:
+  case RISCV::BI__builtin_riscv_pmseq_u16x2_u16x2:
+  case RISCV::BI__builtin_riscv_pmslt_u8x4:
+  case RISCV::BI__builtin_riscv_pmslt_u16x2:
+  case RISCV::BI__builtin_riscv_pmsgt_u8x4:
+  case RISCV::BI__builtin_riscv_pmsgt_u16x2:
+  case RISCV::BI__builtin_riscv_pmsltu_u8x4:
+  case RISCV::BI__builtin_riscv_pmsltu_u16x2:
+  case RISCV::BI__builtin_riscv_pmsgtu_u8x4:
+  case RISCV::BI__builtin_riscv_pmsgtu_u16x2:
+  case RISCV::BI__builtin_riscv_pmsne_i8x4_u8x4:
+  case RISCV::BI__builtin_riscv_pmsne_u8x4_u8x4:
+  case RISCV::BI__builtin_riscv_pmsne_i16x2_u16x2:
+  case RISCV::BI__builtin_riscv_pmsne_u16x2_u16x2:
+  case RISCV::BI__builtin_riscv_pmsge_u8x4:
+  case RISCV::BI__builtin_riscv_pmsge_u16x2:
+  case RISCV::BI__builtin_riscv_pmsle_u8x4:
+  case RISCV::BI__builtin_riscv_pmsle_u16x2:
+  case RISCV::BI__builtin_riscv_pmsleu_u8x4:
+  case RISCV::BI__builtin_riscv_pmsleu_u16x2:
+  case RISCV::BI__builtin_riscv_pmsgeu_u8x4:
+  case RISCV::BI__builtin_riscv_pmsgeu_u16x2:
+  case RISCV::BI__builtin_riscv_pmseq_i8x8_u8x8:
+  case RISCV::BI__builtin_riscv_pmseq_u8x8_u8x8:
+  case RISCV::BI__builtin_riscv_pmseq_i16x4_u16x4:
+  case RISCV::BI__builtin_riscv_pmseq_u16x4_u16x4:
+  case RISCV::BI__builtin_riscv_pmseq_i32x2_u32x2:
+  case RISCV::BI__builtin_riscv_pmseq_u32x2_u32x2:
+  case RISCV::BI__builtin_riscv_pmslt_u8x8:
+  case RISCV::BI__builtin_riscv_pmslt_u16x4:
+  case RISCV::BI__builtin_riscv_pmslt_u32x2:
+  case RISCV::BI__builtin_riscv_pmsgt_u8x8:
+  case RISCV::BI__builtin_riscv_pmsgt_u16x4:
+  case RISCV::BI__builtin_riscv_pmsgt_u32x2:
+  case RISCV::BI__builtin_riscv_pmsltu_u8x8:
+  case RISCV::BI__builtin_riscv_pmsltu_u16x4:
+  case RISCV::BI__builtin_riscv_pmsltu_u32x2:
+  case RISCV::BI__builtin_riscv_pmsgtu_u8x8:
+  case RISCV::BI__builtin_riscv_pmsgtu_u16x4:
+  case RISCV::BI__builtin_riscv_pmsgtu_u32x2:
+  case RISCV::BI__builtin_riscv_pmsne_i8x8_u8x8:
+  case RISCV::BI__builtin_riscv_pmsne_u8x8_u8x8:
+  case RISCV::BI__builtin_riscv_pmsne_i16x4_u16x4:
+  case RISCV::BI__builtin_riscv_pmsne_u16x4_u16x4:
+  case RISCV::BI__builtin_riscv_pmsne_i32x2_u32x2:
+  case RISCV::BI__builtin_riscv_pmsne_u32x2_u32x2:
+  case RISCV::BI__builtin_riscv_pmsge_u8x8:
+  case RISCV::BI__builtin_riscv_pmsge_u16x4:
+  case RISCV::BI__builtin_riscv_pmsge_u32x2:
+  case RISCV::BI__builtin_riscv_pmsle_u8x8:
+  case RISCV::BI__builtin_riscv_pmsle_u16x4:
+  case RISCV::BI__builtin_riscv_pmsle_u32x2:
+  case RISCV::BI__builtin_riscv_pmsleu_u8x8:
+  case RISCV::BI__builtin_riscv_pmsleu_u16x4:
+  case RISCV::BI__builtin_riscv_pmsleu_u32x2:
+  case RISCV::BI__builtin_riscv_pmsgeu_u8x8:
+  case RISCV::BI__builtin_riscv_pmsgeu_u16x4:
+  case RISCV::BI__builtin_riscv_pmsgeu_u32x2: {
+    // Pick the base IR intrinsic.
+    //   pmseq / pmsne                    -> riscv_pmseq
+    //   pmslt / pmsgt / pmsge / pmsle    -> riscv_pmslt
+    //   pmsltu / pmsgtu / pmsleu / pmsgeu -> riscv_pmsltu
+    unsigned IntID;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_pmseq_i8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmseq_u8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmseq_i16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmseq_u16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmsne_i8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmsne_u8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmsne_i16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmsne_u16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmseq_i8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmseq_u8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmseq_i16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmseq_u16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmseq_i32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmseq_u32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmsne_i8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmsne_u8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmsne_i16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmsne_u16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmsne_i32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmsne_u32x2_u32x2:
+      IntID = Intrinsic::riscv_pmseq;
+      break;
+    case RISCV::BI__builtin_riscv_pmslt_u8x4:
+    case RISCV::BI__builtin_riscv_pmslt_u16x2:
+    case RISCV::BI__builtin_riscv_pmsgt_u8x4:
+    case RISCV::BI__builtin_riscv_pmsgt_u16x2:
+    case RISCV::BI__builtin_riscv_pmsge_u8x4:
+    case RISCV::BI__builtin_riscv_pmsge_u16x2:
+    case RISCV::BI__builtin_riscv_pmsle_u8x4:
+    case RISCV::BI__builtin_riscv_pmsle_u16x2:
+    case RISCV::BI__builtin_riscv_pmslt_u8x8:
+    case RISCV::BI__builtin_riscv_pmslt_u16x4:
+    case RISCV::BI__builtin_riscv_pmslt_u32x2:
+    case RISCV::BI__builtin_riscv_pmsgt_u8x8:
+    case RISCV::BI__builtin_riscv_pmsgt_u16x4:
+    case RISCV::BI__builtin_riscv_pmsgt_u32x2:
+    case RISCV::BI__builtin_riscv_pmsge_u8x8:
+    case RISCV::BI__builtin_riscv_pmsge_u16x4:
+    case RISCV::BI__builtin_riscv_pmsge_u32x2:
+    case RISCV::BI__builtin_riscv_pmsle_u8x8:
+    case RISCV::BI__builtin_riscv_pmsle_u16x4:
+    case RISCV::BI__builtin_riscv_pmsle_u32x2:
+      IntID = Intrinsic::riscv_pmslt;
+      break;
+    case RISCV::BI__builtin_riscv_pmsltu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsltu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsgtu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsgtu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsleu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsleu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsgeu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsgeu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsltu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsltu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsltu_u32x2:
+    case RISCV::BI__builtin_riscv_pmsgtu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsgtu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsgtu_u32x2:
+    case RISCV::BI__builtin_riscv_pmsleu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsleu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsleu_u32x2:
+    case RISCV::BI__builtin_riscv_pmsgeu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsgeu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsgeu_u32x2:
+      IntID = Intrinsic::riscv_pmsltu;
+      break;
+    }
+    // Swap operands? Needed for gt/sgt (rs1 > rs2  == rs2 < rs1) and for
+    // le/leu (rs1 <= rs2 == !(rs2 < rs1)).
+    bool Swap;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_pmsgt_u8x4:
+    case RISCV::BI__builtin_riscv_pmsgt_u16x2:
+    case RISCV::BI__builtin_riscv_pmsgtu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsgtu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsle_u8x4:
+    case RISCV::BI__builtin_riscv_pmsle_u16x2:
+    case RISCV::BI__builtin_riscv_pmsleu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsleu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsgt_u8x8:
+    case RISCV::BI__builtin_riscv_pmsgt_u16x4:
+    case RISCV::BI__builtin_riscv_pmsgt_u32x2:
+    case RISCV::BI__builtin_riscv_pmsgtu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsgtu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsgtu_u32x2:
+    case RISCV::BI__builtin_riscv_pmsle_u8x8:
+    case RISCV::BI__builtin_riscv_pmsle_u16x4:
+    case RISCV::BI__builtin_riscv_pmsle_u32x2:
+    case RISCV::BI__builtin_riscv_pmsleu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsleu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsleu_u32x2:
+      Swap = true;
+      break;
+    case RISCV::BI__builtin_riscv_pmseq_i8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmseq_u8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmseq_i16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmseq_u16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmslt_u8x4:
+    case RISCV::BI__builtin_riscv_pmslt_u16x2:
+    case RISCV::BI__builtin_riscv_pmsltu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsltu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsne_i8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmsne_u8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmsne_i16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmsne_u16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmsge_u8x4:
+    case RISCV::BI__builtin_riscv_pmsge_u16x2:
+    case RISCV::BI__builtin_riscv_pmsgeu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsgeu_u16x2:
+    case RISCV::BI__builtin_riscv_pmseq_i8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmseq_u8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmseq_i16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmseq_u16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmseq_i32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmseq_u32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmslt_u8x8:
+    case RISCV::BI__builtin_riscv_pmslt_u16x4:
+    case RISCV::BI__builtin_riscv_pmslt_u32x2:
+    case RISCV::BI__builtin_riscv_pmsltu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsltu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsltu_u32x2:
+    case RISCV::BI__builtin_riscv_pmsne_i8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmsne_u8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmsne_i16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmsne_u16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmsne_i32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmsne_u32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmsge_u8x8:
+    case RISCV::BI__builtin_riscv_pmsge_u16x4:
+    case RISCV::BI__builtin_riscv_pmsge_u32x2:
+    case RISCV::BI__builtin_riscv_pmsgeu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsgeu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsgeu_u32x2:
+      Swap = false;
+      break;
+    }
+    // Invert (xor with all-ones)? Needed for ne / ge / le / leu / geu.
+    bool Invert;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_pmsne_i8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmsne_u8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmsne_i16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmsne_u16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmsge_u8x4:
+    case RISCV::BI__builtin_riscv_pmsge_u16x2:
+    case RISCV::BI__builtin_riscv_pmsle_u8x4:
+    case RISCV::BI__builtin_riscv_pmsle_u16x2:
+    case RISCV::BI__builtin_riscv_pmsleu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsleu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsgeu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsgeu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsne_i8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmsne_u8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmsne_i16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmsne_u16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmsne_i32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmsne_u32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmsge_u8x8:
+    case RISCV::BI__builtin_riscv_pmsge_u16x4:
+    case RISCV::BI__builtin_riscv_pmsge_u32x2:
+    case RISCV::BI__builtin_riscv_pmsle_u8x8:
+    case RISCV::BI__builtin_riscv_pmsle_u16x4:
+    case RISCV::BI__builtin_riscv_pmsle_u32x2:
+    case RISCV::BI__builtin_riscv_pmsleu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsleu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsleu_u32x2:
+    case RISCV::BI__builtin_riscv_pmsgeu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsgeu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsgeu_u32x2:
+      Invert = true;
+      break;
+    case RISCV::BI__builtin_riscv_pmseq_i8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmseq_u8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmseq_i16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmseq_u16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmslt_u8x4:
+    case RISCV::BI__builtin_riscv_pmslt_u16x2:
+    case RISCV::BI__builtin_riscv_pmsgt_u8x4:
+    case RISCV::BI__builtin_riscv_pmsgt_u16x2:
+    case RISCV::BI__builtin_riscv_pmsltu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsltu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsgtu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsgtu_u16x2:
+    case RISCV::BI__builtin_riscv_pmseq_i8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmseq_u8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmseq_i16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmseq_u16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmseq_i32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmseq_u32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmslt_u8x8:
+    case RISCV::BI__builtin_riscv_pmslt_u16x4:
+    case RISCV::BI__builtin_riscv_pmslt_u32x2:
+    case RISCV::BI__builtin_riscv_pmsgt_u8x8:
+    case RISCV::BI__builtin_riscv_pmsgt_u16x4:
+    case RISCV::BI__builtin_riscv_pmsgt_u32x2:
+    case RISCV::BI__builtin_riscv_pmsltu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsltu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsltu_u32x2:
+    case RISCV::BI__builtin_riscv_pmsgtu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsgtu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsgtu_u32x2:
+      Invert = false;
+      break;
+    }
+    // Pick the IR vector type from the lane shape.
+    llvm::Type *VecTy;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_pmseq_i8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmseq_u8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmslt_u8x4:
+    case RISCV::BI__builtin_riscv_pmsgt_u8x4:
+    case RISCV::BI__builtin_riscv_pmsltu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsgtu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsne_i8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmsne_u8x4_u8x4:
+    case RISCV::BI__builtin_riscv_pmsge_u8x4:
+    case RISCV::BI__builtin_riscv_pmsle_u8x4:
+    case RISCV::BI__builtin_riscv_pmsleu_u8x4:
+    case RISCV::BI__builtin_riscv_pmsgeu_u8x4:
+      VecTy = llvm::FixedVectorType::get(Int8Ty, 4);
+      break;
+    case RISCV::BI__builtin_riscv_pmseq_i16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmseq_u16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmslt_u16x2:
+    case RISCV::BI__builtin_riscv_pmsgt_u16x2:
+    case RISCV::BI__builtin_riscv_pmsltu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsgtu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsne_i16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmsne_u16x2_u16x2:
+    case RISCV::BI__builtin_riscv_pmsge_u16x2:
+    case RISCV::BI__builtin_riscv_pmsle_u16x2:
+    case RISCV::BI__builtin_riscv_pmsleu_u16x2:
+    case RISCV::BI__builtin_riscv_pmsgeu_u16x2:
+      VecTy = llvm::FixedVectorType::get(Int16Ty, 2);
+      break;
+    case RISCV::BI__builtin_riscv_pmseq_i8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmseq_u8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmslt_u8x8:
+    case RISCV::BI__builtin_riscv_pmsgt_u8x8:
+    case RISCV::BI__builtin_riscv_pmsltu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsgtu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsne_i8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmsne_u8x8_u8x8:
+    case RISCV::BI__builtin_riscv_pmsge_u8x8:
+    case RISCV::BI__builtin_riscv_pmsle_u8x8:
+    case RISCV::BI__builtin_riscv_pmsleu_u8x8:
+    case RISCV::BI__builtin_riscv_pmsgeu_u8x8:
+      VecTy = llvm::FixedVectorType::get(Int8Ty, 8);
+      break;
+    case RISCV::BI__builtin_riscv_pmseq_i16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmseq_u16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmslt_u16x4:
+    case RISCV::BI__builtin_riscv_pmsgt_u16x4:
+    case RISCV::BI__builtin_riscv_pmsltu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsgtu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsne_i16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmsne_u16x4_u16x4:
+    case RISCV::BI__builtin_riscv_pmsge_u16x4:
+    case RISCV::BI__builtin_riscv_pmsle_u16x4:
+    case RISCV::BI__builtin_riscv_pmsleu_u16x4:
+    case RISCV::BI__builtin_riscv_pmsgeu_u16x4:
+      VecTy = llvm::FixedVectorType::get(Int16Ty, 4);
+      break;
+    case RISCV::BI__builtin_riscv_pmseq_i32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmseq_u32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmslt_u32x2:
+    case RISCV::BI__builtin_riscv_pmsgt_u32x2:
+    case RISCV::BI__builtin_riscv_pmsltu_u32x2:
+    case RISCV::BI__builtin_riscv_pmsgtu_u32x2:
+    case RISCV::BI__builtin_riscv_pmsne_i32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmsne_u32x2_u32x2:
+    case RISCV::BI__builtin_riscv_pmsge_u32x2:
+    case RISCV::BI__builtin_riscv_pmsle_u32x2:
+    case RISCV::BI__builtin_riscv_pmsleu_u32x2:
+    case RISCV::BI__builtin_riscv_pmsgeu_u32x2:
+      VecTy = llvm::FixedVectorType::get(Int32Ty, 2);
+      break;
+    }
+    llvm::Value *LHS = Builder.CreateBitCast(Ops[0], VecTy);
+    llvm::Value *RHS = Builder.CreateBitCast(Ops[1], VecTy);
+    if (Swap)
+      std::swap(LHS, RHS);
+    llvm::Function *F = CGM.getIntrinsic(IntID, VecTy);
+    llvm::Value *Call = Builder.CreateCall(F, {LHS, RHS});
+    if (Invert) {
+      llvm::Value *AllOnes = llvm::Constant::getAllOnesValue(VecTy);
+      Call = Builder.CreateXor(Call, AllOnes);
+    }
+    return Builder.CreateBitCast(Call, ResultType);
+  }
+
   // Packed Narrowing Convert / Packed Unzip (RV32 only). Both map directly
   // to pnsrli with imm=0 (low half / even lanes) or imm=element-width
   // (high half / odd lanes); we delegate to the existing pnsrl IR intrinsic

@@ -2376,6 +2376,15 @@ let TargetPrefix = "riscv" in {
   def int_riscv_ppaireo  : RVPPair;
   def int_riscv_ppairoe  : RVPPair;
   def int_riscv_ppairo   : RVPPair;
+
+  // Packed Comparisons. Polymorphic on the vector type (v4i8 / v2i16 on both
+  // XLENs; v8i8 / v4i16 / v2i32 on RV64). The result is the same packed
+  // vector type as the inputs (all-ones lane on true, zero on false); the
+  // derived ops (gt / ne / ge / le / leu / geu / gtu) are synthesized in
+  // clang by swapping operands and/or xor-ing the result with all-ones.
+  def int_riscv_pmseq  : RVPPair;
+  def int_riscv_pmslt  : RVPPair;
+  def int_riscv_pmsltu : RVPPair;
 } // TargetPrefix = "riscv"
 
 

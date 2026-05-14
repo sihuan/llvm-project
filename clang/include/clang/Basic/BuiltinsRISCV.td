@@ -605,6 +605,35 @@ def ppairoe_u16x2 : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned
 def ppairo_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<2, short>)">;
 def ppairo_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
 
+// Packed Comparisons (32-bit table, both XLENs). Result is an unsigned packed
+// vector of the same lane shape. Three native operations (pmseq / pmslt /
+// pmsltu) and nine derived ops (pmsne / pmsgt / pmsgtu / pmsge / pmsle /
+// pmsleu / pmsgeu) realized via operand-swap + XOR in clang CodeGen.
+def pmseq_i8x4_u8x4    : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, signed char>, _Vector<4, signed char>)">;
+def pmseq_u8x4_u8x4    : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned char>, _Vector<4, unsigned char>)">;
+def pmseq_i16x2_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, short>, _Vector<2, short>)">;
+def pmseq_u16x2_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+def pmslt_u8x4         : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, signed char>, _Vector<4, signed char>)">;
+def pmslt_u16x2        : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, short>, _Vector<2, short>)">;
+def pmsgt_u8x4         : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, signed char>, _Vector<4, signed char>)">;
+def pmsgt_u16x2        : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, short>, _Vector<2, short>)">;
+def pmsltu_u8x4        : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned char>, _Vector<4, unsigned char>)">;
+def pmsltu_u16x2       : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+def pmsgtu_u8x4        : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned char>, _Vector<4, unsigned char>)">;
+def pmsgtu_u16x2       : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+def pmsne_i8x4_u8x4    : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, signed char>, _Vector<4, signed char>)">;
+def pmsne_u8x4_u8x4    : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned char>, _Vector<4, unsigned char>)">;
+def pmsne_i16x2_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, short>, _Vector<2, short>)">;
+def pmsne_u16x2_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+def pmsge_u8x4         : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, signed char>, _Vector<4, signed char>)">;
+def pmsge_u16x2        : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, short>, _Vector<2, short>)">;
+def pmsle_u8x4         : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, signed char>, _Vector<4, signed char>)">;
+def pmsle_u16x2        : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, short>, _Vector<2, short>)">;
+def pmsleu_u8x4        : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned char>, _Vector<4, unsigned char>)">;
+def pmsleu_u16x2       : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+def pmsgeu_u8x4        : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned char>, _Vector<4, unsigned char>)">;
+def pmsgeu_u16x2       : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+
 } // Features = "experimental-p"
 
 let Features = "experimental-p,64bit" in {
@@ -872,6 +901,46 @@ def ppairoe_i32x2 : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, in
 def ppairoe_u32x2 : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<2, unsigned int>)">;
 def ppairo_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>)">;
 def ppairo_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<2, unsigned int>)">;
+
+// Packed Comparisons (64-bit table, RV64 only). RV32 64-bit-table forms
+// requiring p*.d* register-pair instructions are deferred. Same 12
+// operations as the 32-bit table; result lane type is unsigned.
+def pmseq_i8x8_u8x8    : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, signed char>, _Vector<8, signed char>)">;
+def pmseq_u8x8_u8x8    : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, unsigned char>, _Vector<8, unsigned char>)">;
+def pmseq_i16x4_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, short>, _Vector<4, short>)">;
+def pmseq_u16x4_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, _Vector<4, unsigned short>)">;
+def pmseq_i32x2_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, int>, _Vector<2, int>)">;
+def pmseq_u32x2_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<2, unsigned int>)">;
+def pmslt_u8x8         : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, signed char>, _Vector<8, signed char>)">;
+def pmslt_u16x4        : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, short>, _Vector<4, short>)">;
+def pmslt_u32x2        : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, int>, _Vector<2, int>)">;
+def pmsgt_u8x8         : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, signed char>, _Vector<8, signed char>)">;
+def pmsgt_u16x4        : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, short>, _Vector<4, short>)">;
+def pmsgt_u32x2        : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, int>, _Vector<2, int>)">;
+def pmsltu_u8x8        : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, unsigned char>, _Vector<8, unsigned char>)">;
+def pmsltu_u16x4       : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, _Vector<4, unsigned short>)">;
+def pmsltu_u32x2       : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<2, unsigned int>)">;
+def pmsgtu_u8x8        : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, unsigned char>, _Vector<8, unsigned char>)">;
+def pmsgtu_u16x4       : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, _Vector<4, unsigned short>)">;
+def pmsgtu_u32x2       : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<2, unsigned int>)">;
+def pmsne_i8x8_u8x8    : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, signed char>, _Vector<8, signed char>)">;
+def pmsne_u8x8_u8x8    : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, unsigned char>, _Vector<8, unsigned char>)">;
+def pmsne_i16x4_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, short>, _Vector<4, short>)">;
+def pmsne_u16x4_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, _Vector<4, unsigned short>)">;
+def pmsne_i32x2_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, int>, _Vector<2, int>)">;
+def pmsne_u32x2_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<2, unsigned int>)">;
+def pmsge_u8x8         : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, signed char>, _Vector<8, signed char>)">;
+def pmsge_u16x4        : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, short>, _Vector<4, short>)">;
+def pmsge_u32x2        : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, int>, _Vector<2, int>)">;
+def pmsle_u8x8         : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, signed char>, _Vector<8, signed char>)">;
+def pmsle_u16x4        : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, short>, _Vector<4, short>)">;
+def pmsle_u32x2        : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, int>, _Vector<2, int>)">;
+def pmsleu_u8x8        : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, unsigned char>, _Vector<8, unsigned char>)">;
+def pmsleu_u16x4       : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, _Vector<4, unsigned short>)">;
+def pmsleu_u32x2       : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<2, unsigned int>)">;
+def pmsgeu_u8x8        : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, unsigned char>, _Vector<8, unsigned char>)">;
+def pmsgeu_u16x4       : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, _Vector<4, unsigned short>)">;
+def pmsgeu_u32x2       : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<2, unsigned int>)">;
 } // Features = "experimental-p,64bit"
 
 } // Attributes = [Const, NoThrow]

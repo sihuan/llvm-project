@@ -1970,6 +1970,23 @@ let Predicates = [HasStdExtP] in {
             (PPAIROE_H  GPR:$rs1, GPR:$rs2)>;
   def : Pat<(v2i16 (int_riscv_ppairo  (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
             (PPAIRO_H   GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Comparisons (32-bit table, both XLENs). Map the three native
+  // comparison intrinsics directly to the byte/halfword instructions; the
+  // derived ops (gt/ne/ge/le/leu/geu/gtu) are realized in clang by swapping
+  // operands and/or xor-ing the result with all-ones before they reach IR.
+  def : Pat<(v4i8 (int_riscv_pmseq  (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMSEQ_B  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i8 (int_riscv_pmslt  (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMSLT_B  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i8 (int_riscv_pmsltu (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMSLTU_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmseq  (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PMSEQ_H  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmslt  (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PMSLT_H  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmsltu (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PMSLTU_H GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP]
 
 let Predicates = [HasStdExtP, IsRV32] in {
@@ -2534,6 +2551,30 @@ let Predicates = [HasStdExtP, IsRV64] in {
             (PPAIROE_W GPR:$rs1, GPR:$rs2)>;
   def : Pat<(v2i32 (int_riscv_ppairo  (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
             (PPAIRO_W  GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Comparisons (64-bit table, RV64 only). v8i8 / v4i16 use the
+  // byte / halfword forms (also valid on RV32 — but listed here because the
+  // 32-bit-table v4i8 / v2i16 patterns are in the both-XLENs block above and
+  // the v8i8 / v4i16 types only become legal under RV64). v2i32 uses the
+  // RV64-only word variants.
+  def : Pat<(v8i8 (int_riscv_pmseq  (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMSEQ_B  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v8i8 (int_riscv_pmslt  (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMSLT_B  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v8i8 (int_riscv_pmsltu (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMSLTU_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmseq  (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMSEQ_H  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmslt  (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMSLT_H  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmsltu (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMSLTU_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmseq  (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PMSEQ_W  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmslt  (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PMSLT_W  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmsltu (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PMSLTU_W GPR:$rs1, GPR:$rs2)>;
 
   // Packed Multiplication with Horizontal Addition (64-bit, RV64 only)
   // 4-way byte multiply-add with 64-bit input -> 2 lanes of i32.
