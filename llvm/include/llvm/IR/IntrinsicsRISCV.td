@@ -2255,6 +2255,11 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pwmacc   : RVPWAddSubAcc;
   def int_riscv_pwmaccu  : RVPWAddSubAcc;
   def int_riscv_pwmaccsu : RVPWAddSubAcc;
+
+  // Packed Q-format Multiply with Widening Accumulate (RV32 only). Same
+  // i64 GPR-pair accumulator shape as the widening multiply accumulate family.
+  def int_riscv_pmqwacc  : RVPWAddSubAcc;
+  def int_riscv_pmqrwacc : RVPWAddSubAcc;
 } // TargetPrefix = "riscv"
 
 

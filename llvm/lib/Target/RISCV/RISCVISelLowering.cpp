@@ -15979,7 +15979,9 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
     case Intrinsic::riscv_pwsubau:
     case Intrinsic::riscv_pwmacc:
     case Intrinsic::riscv_pwmaccu:
-    case Intrinsic::riscv_pwmaccsu: {
+    case Intrinsic::riscv_pwmaccsu:
+    case Intrinsic::riscv_pmqwacc:
+    case Intrinsic::riscv_pmqrwacc: {
       // Like pwadd, but with an i64 accumulator rd that must be passed as a
       // GPR pair. Split rd into i32 lo/hi, BuildGPRPair, emit the machine
       // node, split the output pair, BUILD_PAIR the i64 result.
@@ -15993,7 +15995,7 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
         case Intrinsic::riscv_pwaddau: Opc = RISCV::PWADDAU_B; break;
         case Intrinsic::riscv_pwsuba:  Opc = RISCV::PWSUBA_B;  break;
         case Intrinsic::riscv_pwsubau: Opc = RISCV::PWSUBAU_B; break;
-        // pwmacc has no .b variant.
+        // pwmacc / pmqwacc have no .b variant.
         default: return;
         }
       } else if (InVT == MVT::v2i16) {
@@ -16005,6 +16007,8 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
         case Intrinsic::riscv_pwmacc:   Opc = RISCV::PWMACC_H;   break;
         case Intrinsic::riscv_pwmaccu:  Opc = RISCV::PWMACCU_H;  break;
         case Intrinsic::riscv_pwmaccsu: Opc = RISCV::PWMACCSU_H; break;
+        case Intrinsic::riscv_pmqwacc:  Opc = RISCV::PMQWACC_H;  break;
+        case Intrinsic::riscv_pmqrwacc: Opc = RISCV::PMQRWACC_H; break;
         }
       } else {
         return;

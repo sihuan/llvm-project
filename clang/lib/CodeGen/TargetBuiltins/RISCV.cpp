@@ -1597,7 +1597,9 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   case RISCV::BI__builtin_riscv_pwsubau_u32x2:
   case RISCV::BI__builtin_riscv_pwmacc_i32x2:
   case RISCV::BI__builtin_riscv_pwmaccu_u32x2:
-  case RISCV::BI__builtin_riscv_pwmaccsu_i32x2: {
+  case RISCV::BI__builtin_riscv_pwmaccsu_i32x2:
+  case RISCV::BI__builtin_riscv_pmqwacc_i32x2:
+  case RISCV::BI__builtin_riscv_pmqrwacc_i32x2: {
     unsigned IntID;
     switch (BuiltinID) {
     default: llvm_unreachable("unexpected builtin");
@@ -1625,6 +1627,12 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
       break;
     case RISCV::BI__builtin_riscv_pwmaccsu_i32x2:
       IntID = Intrinsic::riscv_pwmaccsu;
+      break;
+    case RISCV::BI__builtin_riscv_pmqwacc_i32x2:
+      IntID = Intrinsic::riscv_pmqwacc;
+      break;
+    case RISCV::BI__builtin_riscv_pmqrwacc_i32x2:
+      IntID = Intrinsic::riscv_pmqrwacc;
       break;
     }
     // Bitcast rd from the 64-bit vector type to i64.
