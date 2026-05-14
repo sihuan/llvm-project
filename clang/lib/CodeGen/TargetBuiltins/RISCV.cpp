@@ -2004,6 +2004,20 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   case RISCV::BI__builtin_riscv_pset_u32_u32x2:
     return Builder.CreateInsertElement(Ops[0], Ops[1], Ops[2]);
 
+  // Packed Subvector Join. Concatenate two 32-bit subvectors into a 64-bit
+  // packed vector via shufflevector.
+  case RISCV::BI__builtin_riscv_pjoin2_i8x8:
+  case RISCV::BI__builtin_riscv_pjoin2_u8x8:
+  case RISCV::BI__builtin_riscv_pjoin2_i16x4:
+  case RISCV::BI__builtin_riscv_pjoin2_u16x4: {
+    auto *SubVT = cast<llvm::FixedVectorType>(Ops[0]->getType());
+    unsigned N = SubVT->getNumElements();
+    SmallVector<int, 8> Mask;
+    for (unsigned I = 0; I < 2 * N; ++I)
+      Mask.push_back(static_cast<int>(I));
+    return Builder.CreateShuffleVector(Ops[0], Ops[1], Mask);
+  }
+
   // Packed Subvector Insert and Extract. Extract / insert a half-sized
   // subvector at index 0 (low) or 1 (high) of a 64-bit packed vector. idx
   // is a compile-time constant.

@@ -491,6 +491,18 @@ __packed_pst(pst_u32x2, uint32x2_t, uint32_t)
 #define __riscv_pset_i16x2_i16x4(v, s, idx) __builtin_riscv_pset_i16x2_i16x4((v), (s), (idx))
 #define __riscv_pset_u16x2_u16x4(v, s, idx) __builtin_riscv_pset_u16x2_u16x4((v), (s), (idx))
 
+/* Packed Subvector Join (two 32-bit subvectors -> 64-bit packed vector). */
+#define __packed_psubv_join(name, r_ty, s_ty)                                  \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(s_ty __lo, s_ty __hi) {                                       \
+    return __builtin_riscv_##name(__lo, __hi);                                 \
+  }
+__packed_psubv_join(pjoin2_i8x8,  int8x8_t,   int8x4_t)
+__packed_psubv_join(pjoin2_u8x8,  uint8x8_t,  uint8x4_t)
+__packed_psubv_join(pjoin2_i16x4, int16x4_t,  int16x2_t)
+__packed_psubv_join(pjoin2_u16x4, uint16x4_t, uint16x2_t)
+#undef __packed_psubv_join
+
 /* Packed Element Join. */
 #define __packed_pjoin4(name, r_ty, e_ty)                                      \
   static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
