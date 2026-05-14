@@ -1991,7 +1991,7 @@ let TargetPrefix = "riscv" in
 def int_riscv_pause : DefaultAttrsIntrinsic<[], [], [IntrNoMem, IntrHasSideEffects]>;
 
 
-// Packed SIMD extensions: Packed Multiplication with Horizontal Addition
+// Packed SIMD extensions
 //===----------------------------------------------------------------------===//
 let TargetPrefix = "riscv" in {
   class RVPMHorizAddBinary
@@ -2004,6 +2004,184 @@ let TargetPrefix = "riscv" in {
                                LLVMMatchType<1>],
                               [IntrNoMem, IntrSpeculatable]>;
 
+  class RVPExchangeAddSub
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  class RVPSh1AddBinary
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  class RVPQFormatMul
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  class RVPMulParts
+      : DefaultAttrsIntrinsic<[llvm_any_ty],
+                              [llvm_anyvector_ty, LLVMMatchType<1>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  class RVPMulPartsAcc
+      : DefaultAttrsIntrinsic<[llvm_any_ty],
+                              [LLVMMatchType<0>, llvm_anyvector_ty,
+                               LLVMMatchType<1>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  class RVPMulHighParts
+      : DefaultAttrsIntrinsic<[llvm_any_ty],
+                              [LLVMMatchType<0>, llvm_anyvector_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  class RVPMulHighPartsAcc
+      : DefaultAttrsIntrinsic<[llvm_any_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>,
+                               llvm_anyvector_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  class RVPWAddSub
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_anyvector_ty, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+  class RVPWAddSubAcc
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_i64_ty, llvm_anyvector_ty,
+                               LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+  class RVPWideningShift
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_anyvector_ty, llvm_i32_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+  class RVPNarrowingShift
+      : DefaultAttrsIntrinsic<[llvm_any_ty],
+                              [llvm_i64_ty, llvm_i32_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+  class RVPWConvert
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_anyvector_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  class RVPNarrowingZip
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [llvm_anyvector_ty, LLVMMatchType<1>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  class RVPPair
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  class RVPScalarBinary
+      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+  class RVPScalarTernary
+      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>,
+                               LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+  class RVPScalarUnary
+      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                              [LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+  class RVPScalarSatImm
+      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                              [LLVMMatchType<0>, llvm_i32_ty],
+                              [IntrNoMem, IntrSpeculatable, ImmArg<ArgIndex<1>>]>;
+  class RVPScalarSatShift
+      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+  class RVPScalarShift64
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_i64_ty, llvm_i64_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+  class RVPMQWAcc
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_i64_ty, llvm_anyint_ty,
+                               LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+  class RVPZipPair
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_i64_ty, llvm_i64_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+} // TargetPrefix = "riscv"
+
+
+// Packed SIMD extensions: Scalar
+let TargetPrefix = "riscv" in {
+  def int_riscv_asub_i32  : RVPScalarBinary;
+  def int_riscv_asubu_i32 : RVPScalarBinary;
+
+  def int_riscv_sati_i32  : RVPScalarSatImm;
+  def int_riscv_usati_i32 : RVPScalarSatImm;
+  def int_riscv_sati_i64  : RVPScalarSatImm;
+  def int_riscv_usati_i64 : RVPScalarSatImm;
+
+  def int_riscv_ssh1sadd_i32 : RVPScalarBinary;
+
+  def int_riscv_mulhr_i32   : RVPScalarBinary;
+  def int_riscv_mulhru_i32  : RVPScalarBinary;
+  def int_riscv_mulhrsu_i32 : RVPScalarBinary;
+
+  def int_riscv_mhacc_i32    : RVPScalarTernary;
+  def int_riscv_mhracc_i32   : RVPScalarTernary;
+  def int_riscv_mhaccu_i32   : RVPScalarTernary;
+  def int_riscv_mhraccu_i32  : RVPScalarTernary;
+  def int_riscv_mhaccsu_i32  : RVPScalarTernary;
+  def int_riscv_mhraccsu_i32 : RVPScalarTernary;
+
+  def int_riscv_mulq_i32  : RVPScalarBinary;
+  def int_riscv_mulqr_i32 : RVPScalarBinary;
+
+  def int_riscv_mseq_i32  : RVPScalarBinary;
+  def int_riscv_mslt_i32  : RVPScalarBinary;
+  def int_riscv_msltu_i32 : RVPScalarBinary;
+
+  def int_riscv_rev16 : RVPScalarUnary;
+
+  def int_riscv_ssha_i32  : RVPScalarSatShift;
+  def int_riscv_sshar_i32 : RVPScalarSatShift;
+  def int_riscv_sshl_u32  : RVPScalarSatShift;
+  def int_riscv_sshlr_u32 : RVPScalarSatShift;
+
+  def int_riscv_sha_i64  : RVPScalarShift64;
+  def int_riscv_shar_i64 : RVPScalarShift64;
+  def int_riscv_shl_u64  : RVPScalarShift64;
+  def int_riscv_shlr_u64 : RVPScalarShift64;
+
+  def int_riscv_mqwacc_i64  : RVPMQWAcc;
+  def int_riscv_mqrwacc_i64 : RVPMQWAcc;
+
+  def int_riscv_zip8p_64    : RVPZipPair;
+  def int_riscv_zip16p_64   : RVPZipPair;
+  def int_riscv_zip8hp_64   : RVPZipPair;
+  def int_riscv_zip16hp_64  : RVPZipPair;
+  def int_riscv_unzip8p_64    : RVPZipPair;
+  def int_riscv_unzip16p_64   : RVPZipPair;
+  def int_riscv_unzip8hp_64   : RVPZipPair;
+  def int_riscv_unzip16hp_64  : RVPZipPair;
+} // TargetPrefix = "riscv"
+
+
+// Packed SIMD extensions: Packed SH1ADD and SSH1SADD
+//===----------------------------------------------------------------------===//
+let TargetPrefix = "riscv" in {
+  def int_riscv_psh1add   : RVPSh1AddBinary;
+  def int_riscv_pssh1sadd : RVPSh1AddBinary;
+
+  def int_riscv_ppaire   : RVPPair;
+  def int_riscv_ppaireo  : RVPPair;
+  def int_riscv_ppairoe  : RVPPair;
+  def int_riscv_ppairo   : RVPPair;
+} // TargetPrefix = "riscv"
+
+
+// Packed SIMD extensions: Packed Multiplication with Horizontal Addition
+//===----------------------------------------------------------------------===//
+let TargetPrefix = "riscv" in {
   def int_riscv_pm4add    : RVPMHorizAddBinary;
   def int_riscv_pm4adda   : RVPMHorizAddTernary;
   def int_riscv_pm4addu   : RVPMHorizAddBinary;
@@ -2038,41 +2216,22 @@ let TargetPrefix = "riscv" in {
 // Packed SIMD extensions: Packed Exchanged Addition and Subtraction
 //===----------------------------------------------------------------------===//
 let TargetPrefix = "riscv" in {
-  class RVPExchangeAddSub
-      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                              [LLVMMatchType<0>, LLVMMatchType<0>],
-                              [IntrNoMem, IntrSpeculatable]>;
-
   def int_riscv_pas_x  : RVPExchangeAddSub;
   def int_riscv_psa_x  : RVPExchangeAddSub;
   def int_riscv_psas_x : RVPExchangeAddSub;
   def int_riscv_pssa_x : RVPExchangeAddSub;
   def int_riscv_paas_x : RVPExchangeAddSub;
   def int_riscv_pasa_x : RVPExchangeAddSub;
-} // TargetPrefix = "riscv"
 
-
-// Packed SIMD extensions: Packed SH1ADD and SSH1SADD
-//===----------------------------------------------------------------------===//
-let TargetPrefix = "riscv" in {
-  class RVPSh1AddBinary
-      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                              [LLVMMatchType<0>, LLVMMatchType<0>],
-                              [IntrNoMem, IntrSpeculatable]>;
-
-  def int_riscv_psh1add   : RVPSh1AddBinary;
-  def int_riscv_pssh1sadd : RVPSh1AddBinary;
+  def int_riscv_pmseq  : RVPPair;
+  def int_riscv_pmslt  : RVPPair;
+  def int_riscv_pmsltu : RVPPair;
 } // TargetPrefix = "riscv"
 
 
 // Packed SIMD extensions: Packed "Q-format" Multiplication
 //===----------------------------------------------------------------------===//
 let TargetPrefix = "riscv" in {
-  class RVPQFormatMul
-      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                              [LLVMMatchType<0>, LLVMMatchType<0>],
-                              [IntrNoMem, IntrSpeculatable]>;
-
   def int_riscv_pmulq  : RVPQFormatMul;
   def int_riscv_pmulqr : RVPQFormatMul;
 } // TargetPrefix = "riscv"
@@ -2081,12 +2240,6 @@ let TargetPrefix = "riscv" in {
 // Packed SIMD extensions: Packed Multiply Parts
 //===----------------------------------------------------------------------===//
 let TargetPrefix = "riscv" in {
-  class RVPMulParts
-      : DefaultAttrsIntrinsic<[llvm_any_ty],
-                              [llvm_anyvector_ty, LLVMMatchType<1>],
-                              [IntrNoMem, IntrSpeculatable]>;
-
-  // Byte-pair multiply (.h.b00 / .h.b01 / .h.b11 family).
   def int_riscv_pmul_b00    : RVPMulParts;
   def int_riscv_pmul_b01    : RVPMulParts;
   def int_riscv_pmul_b11    : RVPMulParts;
@@ -2096,8 +2249,6 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pmulsu_b00  : RVPMulParts;
   def int_riscv_pmulsu_b11  : RVPMulParts;
 
-  // Halfword-pair multiply (.w.h00 / .w.h01 / .w.h11 family; also mul.h*
-  // scalar form on RV32).
   def int_riscv_pmul_h00    : RVPMulParts;
   def int_riscv_pmul_h01    : RVPMulParts;
   def int_riscv_pmul_h11    : RVPMulParts;
@@ -2107,7 +2258,6 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pmulsu_h00  : RVPMulParts;
   def int_riscv_pmulsu_h11  : RVPMulParts;
 
-  // Word-pair multiply (mul.w* scalar form on RV64).
   def int_riscv_pmul_w00    : RVPMulParts;
   def int_riscv_pmul_w01    : RVPMulParts;
   def int_riscv_pmul_w11    : RVPMulParts;
@@ -2122,14 +2272,6 @@ let TargetPrefix = "riscv" in {
 // Packed SIMD extensions: Packed Multiply Parts Accumulate
 //===----------------------------------------------------------------------===//
 let TargetPrefix = "riscv" in {
-  class RVPMulPartsAcc
-      : DefaultAttrsIntrinsic<[llvm_any_ty],
-                              [LLVMMatchType<0>, llvm_anyvector_ty,
-                               LLVMMatchType<1>],
-                              [IntrNoMem, IntrSpeculatable]>;
-
-  // Halfword-pair multiply-accumulate (.w.h00 / .h01 / .h11 family; also
-  // macc.h* scalar form on RV32).
   def int_riscv_pmacc_h00    : RVPMulPartsAcc;
   def int_riscv_pmacc_h01    : RVPMulPartsAcc;
   def int_riscv_pmacc_h11    : RVPMulPartsAcc;
@@ -2139,7 +2281,6 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pmaccsu_h00  : RVPMulPartsAcc;
   def int_riscv_pmaccsu_h11  : RVPMulPartsAcc;
 
-  // Word-pair multiply-accumulate (macc.w* scalar form on RV64).
   def int_riscv_pmacc_w00    : RVPMulPartsAcc;
   def int_riscv_pmacc_w01    : RVPMulPartsAcc;
   def int_riscv_pmacc_w11    : RVPMulPartsAcc;
@@ -2149,7 +2290,6 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pmaccsu_w00  : RVPMulPartsAcc;
   def int_riscv_pmaccsu_w11  : RVPMulPartsAcc;
 
-  // Packed "Q-format" Multiply Parts Accumulate (halfword and word families).
   def int_riscv_pmqacc_h00  : RVPMulPartsAcc;
   def int_riscv_pmqacc_h01  : RVPMulPartsAcc;
   def int_riscv_pmqacc_h11  : RVPMulPartsAcc;
@@ -2167,23 +2307,13 @@ let TargetPrefix = "riscv" in {
 
 // Packed SIMD extensions: Packed Multiply High Parts
 //===----------------------------------------------------------------------===//
-//
-// Wider rs1 times the b0/b1/h0/h1 lane subset of narrower rs2, producing
-// a result of the same width as rs1 (the "high parts" of an asymmetric
-// widening multiply).
 let TargetPrefix = "riscv" in {
-  class RVPMulHighParts
-      : DefaultAttrsIntrinsic<[llvm_any_ty],
-                              [LLVMMatchType<0>, llvm_anyvector_ty],
-                              [IntrNoMem, IntrSpeculatable]>;
-
   // Byte-lane subset (.h.b0 / .h.b1 family).
   def int_riscv_pmulh_b0    : RVPMulHighParts;
   def int_riscv_pmulh_b1    : RVPMulHighParts;
   def int_riscv_pmulhsu_b0  : RVPMulHighParts;
   def int_riscv_pmulhsu_b1  : RVPMulHighParts;
 
-  // Halfword-lane subset (.w.h0 / .w.h1 family; mulh.h* scalar on RV32).
   def int_riscv_pmulh_h0    : RVPMulHighParts;
   def int_riscv_pmulh_h1    : RVPMulHighParts;
   def int_riscv_pmulhsu_h0  : RVPMulHighParts;
@@ -2194,19 +2324,11 @@ let TargetPrefix = "riscv" in {
 // Packed SIMD extensions: Packed Multiply High Parts Accumulate
 //===----------------------------------------------------------------------===//
 let TargetPrefix = "riscv" in {
-  class RVPMulHighPartsAcc
-      : DefaultAttrsIntrinsic<[llvm_any_ty],
-                              [LLVMMatchType<0>, LLVMMatchType<0>,
-                               llvm_anyvector_ty],
-                              [IntrNoMem, IntrSpeculatable]>;
-
-  // Byte-lane subset (.h.b0 / .h.b1 accumulate family).
   def int_riscv_pmhacc_b0    : RVPMulHighPartsAcc;
   def int_riscv_pmhacc_b1    : RVPMulHighPartsAcc;
   def int_riscv_pmhaccsu_b0  : RVPMulHighPartsAcc;
   def int_riscv_pmhaccsu_b1  : RVPMulHighPartsAcc;
 
-  // Halfword-lane subset (.w.h0 / .w.h1 accumulate; mhacc.h* scalar on RV32).
   def int_riscv_pmhacc_h0    : RVPMulHighPartsAcc;
   def int_riscv_pmhacc_h1    : RVPMulHighPartsAcc;
   def int_riscv_pmhaccsu_h0  : RVPMulHighPartsAcc;
@@ -2214,89 +2336,49 @@ let TargetPrefix = "riscv" in {
 } // TargetPrefix = "riscv"
 
 
-// Packed SIMD extensions: Packed Widening Addition and Subtraction (RV32)
-//===----------------------------------------------------------------------===//
-//
-// These widen each lane to a wider type before adding/subtracting, producing
-// a 64-bit result. They are RV32 only; the result is held in a GPR pair.
 let TargetPrefix = "riscv" in {
-  class RVPWAddSub
-      : DefaultAttrsIntrinsic<[llvm_i64_ty],
-                              [llvm_anyvector_ty, LLVMMatchType<0>],
-                              [IntrNoMem, IntrSpeculatable]>;
-
+  // Packed Widening Addition and Subtraction (RV32)
   def int_riscv_pwadd  : RVPWAddSub;
   def int_riscv_pwaddu : RVPWAddSub;
   def int_riscv_pwsub  : RVPWAddSub;
   def int_riscv_pwsubu : RVPWAddSub;
 
-  // Packed Widening Add/Sub Accumulate (RV32 only): rd is the 64-bit
-  // accumulator (a GPR pair).
-  class RVPWAddSubAcc
-      : DefaultAttrsIntrinsic<[llvm_i64_ty],
-                              [llvm_i64_ty, llvm_anyvector_ty,
-                               LLVMMatchType<0>],
-                              [IntrNoMem, IntrSpeculatable]>;
-
+  // Packed Widening Add/Sub Accumulate (RV32 only)
   def int_riscv_pwadda  : RVPWAddSubAcc;
   def int_riscv_pwaddau : RVPWAddSubAcc;
   def int_riscv_pwsuba  : RVPWAddSubAcc;
   def int_riscv_pwsubau : RVPWAddSubAcc;
 
-  // Packed Widening Multiply (RV32 only). Same i64 GPR-pair-result shape
-  // as the widening add/sub family.
+  // Packed Widening Multiply (RV32 only)
   def int_riscv_pwmul   : RVPWAddSub;
   def int_riscv_pwmulu  : RVPWAddSub;
   def int_riscv_pwmulsu : RVPWAddSub;
 
-  // Packed Widening Multiply Accumulate (RV32 only). i64 accumulator rd + two
-  // narrow vector inputs; same i64-pair shape as the widening add/sub
-  // accumulate family.
+  // Packed Widening Multiply Accumulate (RV32 only)
   def int_riscv_pwmacc   : RVPWAddSubAcc;
   def int_riscv_pwmaccu  : RVPWAddSubAcc;
   def int_riscv_pwmaccsu : RVPWAddSubAcc;
 
-  // Packed Q-format Multiply with Widening Accumulate (RV32 only). Same
-  // i64 GPR-pair accumulator shape as the widening multiply accumulate family.
+  // Packed Q-format Multiply with Widening Accumulate (RV32 only)
   def int_riscv_pmqwacc  : RVPWAddSubAcc;
   def int_riscv_pmqrwacc : RVPWAddSubAcc;
 
-  // Packed Widening Shift Left (RV32 only): narrow vector shifted by an i32
-  // scalar amount, producing an i64 (GPR-pair) widened result. ISel picks
-  // the immediate vs register form based on the shift amount.
-  class RVPWideningShift
-      : DefaultAttrsIntrinsic<[llvm_i64_ty],
-                              [llvm_anyvector_ty, llvm_i32_ty],
-                              [IntrNoMem, IntrSpeculatable]>;
-
+  // Packed Widening Shift Left (RV32 only)
   def int_riscv_pwsll : RVPWideningShift;
   def int_riscv_pwsla : RVPWideningShift;
 
-  // Packed Narrowing Shift Right (RV32 only): wide source (i64 GPR pair)
-  // shifted by an i32 scalar amount, producing a narrow vector (or i32 scalar
-  // for the scalar nclip / nsrar forms) result. ISel picks the immediate vs
-  // register form based on the shift amount, and the narrowing-shift family
-  // selects the scalar form when the result type is i32.
-  class RVPNarrowingShift
-      : DefaultAttrsIntrinsic<[llvm_any_ty],
-                              [llvm_i64_ty, llvm_i32_ty],
-                              [IntrNoMem, IntrSpeculatable]>;
-
+  // Packed Narrowing Shift Right (RV32 only)
   def int_riscv_pnsrl  : RVPNarrowingShift;
   def int_riscv_pnsra  : RVPNarrowingShift;
   def int_riscv_pnsrar : RVPNarrowingShift;
 
-  // Packed Narrowing Clip (RV32 only). Same wide-source / narrow-result
-  // shape as the narrowing shift family; the four base operations are the
-  // signed / unsigned cross rounded / non-rounded saturating right-shifts.
+  // Packed Narrowing Clip (RV32 only)
   def int_riscv_pnclipu  : RVPNarrowingShift;
   def int_riscv_pnclipru : RVPNarrowingShift;
   def int_riscv_pnclip   : RVPNarrowingShift;
   def int_riscv_pnclipr  : RVPNarrowingShift;
 
   // Packed Multiplication with Widening Horizontal Addition (RV32 only).
-  // Same i64-result / pair-of-narrow-vectors shape as the widening add/sub/
-  // multiply family. The .h instructions only have v2i16 inputs.
   def int_riscv_pm2wadd     : RVPWAddSub;
   def int_riscv_pm2wadd_x   : RVPWAddSub;
   def int_riscv_pm2waddu    : RVPWAddSub;
@@ -2304,8 +2386,6 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pm2wsub_x   : RVPWAddSub;
   def int_riscv_pm2waddsu   : RVPWAddSub;
 
-  // Accumulating variants (RV32 only). Same i64 accumulator shape as the
-  // widening add/sub accumulate family.
   def int_riscv_pm2wadda    : RVPWAddSubAcc;
   def int_riscv_pm2wadda_x  : RVPWAddSubAcc;
   def int_riscv_pm2waddau   : RVPWAddSubAcc;
@@ -2313,211 +2393,29 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pm2wsuba_x  : RVPWAddSubAcc;
   def int_riscv_pm2waddasu  : RVPWAddSubAcc;
 
-  // Packed Widening Convert (RV32 only). Single narrow-vector input
-  // widened to an i64 (GPR-pair) result. The three operations select the
-  // low-half signed widen, low-half unsigned widen, and high-half widen
-  // forms (each maps to a single pwadd / wzip*p instruction with one
-  // operand pinned to x0).
-  class RVPWConvert
-      : DefaultAttrsIntrinsic<[llvm_i64_ty],
-                              [llvm_anyvector_ty],
-                              [IntrNoMem, IntrSpeculatable]>;
-
+  // Packed Widening Convert (RV32 only)
   def int_riscv_pwcvt  : RVPWConvert;
   def int_riscv_pwcvtu : RVPWConvert;
   def int_riscv_pwcvth : RVPWConvert;
 
-  // Packed Zip (RV32 only). Interleave two narrow vectors into one wide
-  // (i64 GPR-pair) result via wzip*p. Same i64-result / pair-of-narrow-
-  // vectors shape as the widening add/sub family.
+  // Packed Zip (RV32 only)
   def int_riscv_pzip : RVPWAddSub;
 
-  // Packed Narrowing Zip. Both inputs are packed vectors of one width; the
-  // result is a packed vector of the next-narrower element width with the
-  // same total size held in a single GPR. The IR shape is polymorphic to
-  // cover both the RV32 case (v4i8 result / v4i8 input — byte-level
-  // interpretation fixed by ppair*.b) and the RV64 cases
-  // (v8i8 result / v4i16 input via ppaire.b/ppairo.b,
-  //  v4i16 result / v2i32 input via ppaire.h/ppairo.h). Callers bitcast
-  // around it.
-  class RVPNarrowingZip
-      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                              [llvm_anyvector_ty, LLVMMatchType<1>],
-                              [IntrNoMem, IntrSpeculatable]>;
+  // Packed Narrowing Zip
   def int_riscv_pnzip  : RVPNarrowingZip;
   def int_riscv_pnziph : RVPNarrowingZip;
 
-  // psext.h.b: sign-extend the even bytes of a packed input into a
-  // halfword vector. Used by the widening unzip "even / signed" variant.
-  // Polymorphic to cover both v4i8 -> v2i16 (RV32) and v8i8 -> v4i16 (RV64).
+
   def int_riscv_psext_h_b
       : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
                               [llvm_anyvector_ty],
                               [IntrNoMem, IntrSpeculatable]>;
 
-  // psext.w.h: sign-extend the even halfwords of a 64-bit packed input
-  // (v4i16) into a word vector (v2i32). RV64 only.
+
   def int_riscv_psext_w_h
       : DefaultAttrsIntrinsic<[llvm_v2i32_ty],
                               [llvm_v4i16_ty],
                               [IntrNoMem, IntrSpeculatable]>;
-
-  // Packed Pair. Each variant takes two packed vectors of identical type and
-  // returns a packed vector of the same type whose elements interleave the
-  // even-/odd-indexed lanes of the two inputs (ppaire = even/even,
-  // ppaireo = even/odd, ppairoe = odd/even, ppairo = odd/odd). Polymorphic on
-  // the vector type to cover the 32-bit table (v4i8 / v2i16, both XLENs) and
-  // the RV64-only 64-bit table (v8i8 / v4i16 / v2i32).
-  class RVPPair
-      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
-                              [LLVMMatchType<0>, LLVMMatchType<0>],
-                              [IntrNoMem, IntrSpeculatable]>;
-  def int_riscv_ppaire   : RVPPair;
-  def int_riscv_ppaireo  : RVPPair;
-  def int_riscv_ppairoe  : RVPPair;
-  def int_riscv_ppairo   : RVPPair;
-
-  // Packed Comparisons. Polymorphic on the vector type (v4i8 / v2i16 on both
-  // XLENs; v8i8 / v4i16 / v2i32 on RV64). The result is the same packed
-  // vector type as the inputs (all-ones lane on true, zero on false); the
-  // derived ops (gt / ne / ge / le / leu / geu / gtu) are synthesized in
-  // clang by swapping operands and/or xor-ing the result with all-ones.
-  def int_riscv_pmseq  : RVPPair;
-  def int_riscv_pmslt  : RVPPair;
-  def int_riscv_pmsltu : RVPPair;
-} // TargetPrefix = "riscv"
-
-
-// Packed SIMD extensions: Scalar P Intrinsics (C class).
-//===----------------------------------------------------------------------===//
-//
-// These intrinsics correspond to the "Scalar Intrinsics Common to RV32 and
-// RV64" and "RV64 Only Scalar Intrinsics" tables in the P-extension intrinsic
-// spec. The IR intrinsic itself is overloaded on an integer type; Clang's
-// CodeGen extends the i32 arguments to the XLen type on RV64 (and truncates
-// the result back), so the underlying intrinsic always uses XLenVT. This
-// keeps the tablegen patterns simple (one pattern per XLEN).
-let TargetPrefix = "riscv" in {
-  // Binary scalar: (rs1, rs2) -> rd. All operands the same integer type.
-  class RVPScalarBinary
-      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
-                              [LLVMMatchType<0>, LLVMMatchType<0>],
-                              [IntrNoMem, IntrSpeculatable]>;
-
-  // Ternary scalar accumulating: (rd, rs1, rs2) -> rd. All operands the same
-  // integer type.
-  class RVPScalarTernary
-      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
-                              [LLVMMatchType<0>, LLVMMatchType<0>,
-                               LLVMMatchType<0>],
-                              [IntrNoMem, IntrSpeculatable]>;
-
-  // Unary scalar: (rs1) -> rd. Used by rev16.
-  class RVPScalarUnary
-      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
-                              [LLVMMatchType<0>],
-                              [IntrNoMem, IntrSpeculatable]>;
-
-  // Saturate-immediate: (rs1, imm) -> rd. The shift amount is a constant
-  // 32-bit unsigned integer regardless of XLen.
-  class RVPScalarSatImm
-      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
-                              [LLVMMatchType<0>, llvm_i32_ty],
-                              [IntrNoMem, IntrSpeculatable, ImmArg<ArgIndex<1>>]>;
-
-  // Averaging subtract.
-  def int_riscv_asub_i32  : RVPScalarBinary;
-  def int_riscv_asubu_i32 : RVPScalarBinary;
-
-  // Saturate-immediate. Distinct intrinsics for the i32 (saturating within
-  // the lower 32 bits, lowers to {sati/psati.w} on RV32/RV64) and i64
-  // (saturating within 64 bits, RV64-only, lowers to the SATI / USATI .d
-  // instruction) variants.
-  def int_riscv_sati_i32  : RVPScalarSatImm;
-  def int_riscv_usati_i32 : RVPScalarSatImm;
-  def int_riscv_sati_i64  : RVPScalarSatImm;
-  def int_riscv_usati_i64 : RVPScalarSatImm;
-
-  // Saturating sh1add.
-  def int_riscv_ssh1sadd_i32 : RVPScalarBinary;
-
-  // Rounding multiply-high.
-  def int_riscv_mulhr_i32   : RVPScalarBinary;
-  def int_riscv_mulhru_i32  : RVPScalarBinary;
-  def int_riscv_mulhrsu_i32 : RVPScalarBinary;
-
-  // Multiply-high accumulate (rounding / non-rounding, signed/unsigned/mixed).
-  def int_riscv_mhacc_i32    : RVPScalarTernary;
-  def int_riscv_mhracc_i32   : RVPScalarTernary;
-  def int_riscv_mhaccu_i32   : RVPScalarTernary;
-  def int_riscv_mhraccu_i32  : RVPScalarTernary;
-  def int_riscv_mhaccsu_i32  : RVPScalarTernary;
-  def int_riscv_mhraccsu_i32 : RVPScalarTernary;
-
-  // Q-format multiply.
-  def int_riscv_mulq_i32  : RVPScalarBinary;
-  def int_riscv_mulqr_i32 : RVPScalarBinary;
-
-  // Compare: produce all-ones (-1) or zero. Operands are i32; result is i32.
-  def int_riscv_mseq_i32  : RVPScalarBinary;
-  def int_riscv_mslt_i32  : RVPScalarBinary;
-  def int_riscv_msltu_i32 : RVPScalarBinary;
-
-  // RV64-only: reverse 16-bit chunks.
-  def int_riscv_rev16 : RVPScalarUnary;
-
-  // Saturating compound shifts with signed shift amount. Both rs1 and the
-  // shift amount are XLenVT-typed in the IR intrinsic (Clang's CodeGen
-  // sign-extends the i32 shift amount before the call so the SDAG operand
-  // is XLenVT and matches a GPR cleanly on either XLEN). RV32 lowers to
-  // ssha / sshar / sshl / sshlr; RV64 lowers to the packed-word forms
-  // pssha.ws / psshar.ws / psshl.ws / psshlr.ws.
-  class RVPScalarSatShift
-      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
-                              [LLVMMatchType<0>, LLVMMatchType<0>],
-                              [IntrNoMem, IntrSpeculatable]>;
-  def int_riscv_ssha_i32  : RVPScalarSatShift;
-  def int_riscv_sshar_i32 : RVPScalarSatShift;
-  def int_riscv_sshl_u32  : RVPScalarSatShift;
-  def int_riscv_sshlr_u32 : RVPScalarSatShift;
-
-  // RV64-only non-saturating compound shifts with signed shift amount. The
-  // result, rs1, and rs2 are all i64. Lowers to sha / shar / shl / shlr.
-  class RVPScalarShift64
-      : DefaultAttrsIntrinsic<[llvm_i64_ty],
-                              [llvm_i64_ty, llvm_i64_ty],
-                              [IntrNoMem, IntrSpeculatable]>;
-  def int_riscv_sha_i64  : RVPScalarShift64;
-  def int_riscv_shar_i64 : RVPScalarShift64;
-  def int_riscv_shl_u64  : RVPScalarShift64;
-  def int_riscv_shlr_u64 : RVPScalarShift64;
-
-  // Q-format multiply with widening accumulate (i64 accumulator + 2 x narrow
-  // XLEN-shaped inputs). On RV32 the i64 accumulator is held in a GPR pair
-  // (see ReplaceNodeResults in RISCVISelLowering.cpp); on RV64 it's a single
-  // GPR. The narrow inputs are overloaded to XLenVT (i32 on RV32, i64 on
-  // RV64) so that both XLENs lower cleanly without manual operand promotion.
-  class RVPMQWAcc
-      : DefaultAttrsIntrinsic<[llvm_i64_ty],
-                              [llvm_i64_ty, llvm_anyint_ty,
-                               LLVMMatchType<0>],
-                              [IntrNoMem, IntrSpeculatable]>;
-  def int_riscv_mqwacc_i64  : RVPMQWAcc;
-  def int_riscv_mqrwacc_i64 : RVPMQWAcc;
-
-  // RV64-only 64-bit zip / unzip pairs. Both operands and result are i64.
-  class RVPZipPair
-      : DefaultAttrsIntrinsic<[llvm_i64_ty],
-                              [llvm_i64_ty, llvm_i64_ty],
-                              [IntrNoMem, IntrSpeculatable]>;
-  def int_riscv_zip8p_64    : RVPZipPair;
-  def int_riscv_zip16p_64   : RVPZipPair;
-  def int_riscv_zip8hp_64   : RVPZipPair;
-  def int_riscv_zip16hp_64  : RVPZipPair;
-  def int_riscv_unzip8p_64    : RVPZipPair;
-  def int_riscv_unzip16p_64   : RVPZipPair;
-  def int_riscv_unzip8hp_64   : RVPZipPair;
-  def int_riscv_unzip16hp_64  : RVPZipPair;
 } // TargetPrefix = "riscv"
 
 
