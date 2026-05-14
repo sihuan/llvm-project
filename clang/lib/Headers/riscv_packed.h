@@ -1287,6 +1287,38 @@ __riscv_ssubu_u32(uint32_t __rs1, uint32_t __rs2) {
   return __builtin_elementwise_sub_sat(__rs1, __rs2);
 }
 
+/* Averaging add: (a + b) >> 1 in full-width intermediate (no overflow).
+ * RV32 matches the existing PatGprGpr<avgfloors/u, AADD/AADDU> and emits one
+ * aadd/aaddu instruction. On RV64 it lowers to add + srai (or add.uw for
+ * the unsigned variant), which is functionally equivalent. */
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_aadd_i32(int32_t __rs1, int32_t __rs2) {
+  return (int32_t)(((int64_t)__rs1 + __rs2) >> 1);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_aaddu_u32(uint32_t __rs1, uint32_t __rs2) {
+  return (uint32_t)(((uint64_t)__rs1 + __rs2) >> 1);
+}
+
+/* Multiply-high (non-rounding). The natural i64 form folds to the M-extension
+ * mulh/mulhu/mulhsu on RV32 (a single instruction). On RV64 it lowers to a
+ * 64-bit mul + shift, functionally equivalent to pmulh.w. */
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_mulh_i32(int32_t __rs1, int32_t __rs2) {
+  return (int32_t)(((int64_t)__rs1 * __rs2) >> 32);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_mulhu_u32(uint32_t __rs1, uint32_t __rs2) {
+  return (uint32_t)(((uint64_t)__rs1 * __rs2) >> 32);
+}
+
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_mulhsu_i32(int32_t __rs1, uint32_t __rs2) {
+  return (int32_t)(((int64_t)__rs1 * (int64_t)__rs2) >> 32);
+}
+
 /* Funnel shift. */
 static __inline__ uint32_t __DEFAULT_FN_ATTRS
 __riscv_slx_32(uint32_t __rd, uint32_t __rs1, unsigned __shamt) {
