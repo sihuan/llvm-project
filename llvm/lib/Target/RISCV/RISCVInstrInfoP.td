@@ -2175,6 +2175,20 @@ let Predicates = [HasStdExtP, IsRV32] in {
             (MACCSU_H00 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
   def : Pat<(i32 (int_riscv_pmaccsu_h11 (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
             (MACCSU_H11 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Packed "Q-format" Multiply Parts Accumulate: halfword scalar (RV32 only).
+  def : Pat<(i32 (int_riscv_pmqacc_h00  (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MQACC_H00  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmqacc_h01  (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MQACC_H01  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmqacc_h11  (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MQACC_H11  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmqracc_h00 (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MQRACC_H00 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmqracc_h01 (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MQRACC_H01 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmqracc_h11 (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MQRACC_H11 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV32]
 
 let Predicates = [HasStdExtP, IsRV64] in {
@@ -2618,4 +2632,32 @@ let Predicates = [HasStdExtP, IsRV64] in {
             (MACCSU_W00 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
   def : Pat<(i64 (int_riscv_pmaccsu_w11 (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
             (MACCSU_W11 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Packed "Q-format" Multiply Parts Accumulate: halfword vector (RV64 only).
+  def : Pat<(v2i32 (int_riscv_pmqacc_h00  (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMQACC_W_H00  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmqacc_h01  (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMQACC_W_H01  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmqacc_h11  (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMQACC_W_H11  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmqracc_h00 (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMQRACC_W_H00 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmqracc_h01 (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMQRACC_W_H01 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmqracc_h11 (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMQRACC_W_H11 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Packed "Q-format" Multiply Parts Accumulate: word scalar (RV64 only).
+  def : Pat<(i64 (int_riscv_pmqacc_w00  (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MQACC_W00  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmqacc_w01  (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MQACC_W01  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmqacc_w11  (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MQACC_W11  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmqracc_w00 (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MQRACC_W00 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmqracc_w01 (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MQRACC_W01 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmqracc_w11 (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MQRACC_W11 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV64]

@@ -416,6 +416,14 @@ __packed_pmul_parts_acc(maccu_h01_u32,  uint32_t, uint16x2_t, uint16x2_t)
 __packed_pmul_parts_acc(maccu_h11_u32,  uint32_t, uint16x2_t, uint16x2_t)
 __packed_pmul_parts_acc(maccsu_h00_i32, int32_t,  int16x2_t,  uint16x2_t)
 __packed_pmul_parts_acc(maccsu_h11_i32, int32_t,  int16x2_t,  uint16x2_t)
+
+/* Packed "Q-format" Multiply Parts Accumulate (RV32 scalar form). */
+__packed_pmul_parts_acc(mqacc_h00_i32,  int32_t, int16x2_t, int16x2_t)
+__packed_pmul_parts_acc(mqacc_h01_i32,  int32_t, int16x2_t, int16x2_t)
+__packed_pmul_parts_acc(mqacc_h11_i32,  int32_t, int16x2_t, int16x2_t)
+__packed_pmul_parts_acc(mqracc_h00_i32, int32_t, int16x2_t, int16x2_t)
+__packed_pmul_parts_acc(mqracc_h01_i32, int32_t, int16x2_t, int16x2_t)
+__packed_pmul_parts_acc(mqracc_h11_i32, int32_t, int16x2_t, int16x2_t)
 #endif
 
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
@@ -687,6 +695,44 @@ __packed_pmul_parts_acc_rv64_scalar(maccsu_h00_i32, int32_t,  int32x2_t,
 __packed_pmul_parts_acc_rv64_scalar(maccsu_h11_i32, int32_t,  int32x2_t,
                                     int16x2_t, int16x4_t, uint16x2_t, uint16x4_t,
                                     pmaccsu_h11_i32x2)
+
+/* Packed "Q-format" Multiply Parts Accumulate: halfword vector form
+ * (RV64 only, pmqacc.w.h* / pmqracc.w.h*). */
+__packed_pmul_parts_acc(pmqacc_h00_i32x2,  int32x2_t, int16x4_t, int16x4_t)
+__packed_pmul_parts_acc(pmqacc_h01_i32x2,  int32x2_t, int16x4_t, int16x4_t)
+__packed_pmul_parts_acc(pmqacc_h11_i32x2,  int32x2_t, int16x4_t, int16x4_t)
+__packed_pmul_parts_acc(pmqracc_h00_i32x2, int32x2_t, int16x4_t, int16x4_t)
+__packed_pmul_parts_acc(pmqracc_h01_i32x2, int32x2_t, int16x4_t, int16x4_t)
+__packed_pmul_parts_acc(pmqracc_h11_i32x2, int32x2_t, int16x4_t, int16x4_t)
+
+/* Packed "Q-format" Multiply Parts Accumulate: word scalar form
+ * (RV64 only, mqacc.w* / mqracc.w*). */
+__packed_pmul_parts_acc(mqacc_w00_i64,  int64_t, int32x2_t, int32x2_t)
+__packed_pmul_parts_acc(mqacc_w01_i64,  int64_t, int32x2_t, int32x2_t)
+__packed_pmul_parts_acc(mqacc_w11_i64,  int64_t, int32x2_t, int32x2_t)
+__packed_pmul_parts_acc(mqracc_w00_i64, int64_t, int32x2_t, int32x2_t)
+__packed_pmul_parts_acc(mqracc_w01_i64, int64_t, int32x2_t, int32x2_t)
+__packed_pmul_parts_acc(mqracc_w11_i64, int64_t, int32x2_t, int32x2_t)
+
+/* Cross-XLEN mqacc.h_i32 / mqracc.h_i32 forms on RV64 (wrap pmqacc.w.h). */
+__packed_pmul_parts_acc_rv64_scalar(mqacc_h00_i32,  int32_t, int32x2_t,
+                                    int16x2_t, int16x4_t, int16x2_t, int16x4_t,
+                                    pmqacc_h00_i32x2)
+__packed_pmul_parts_acc_rv64_scalar(mqacc_h01_i32,  int32_t, int32x2_t,
+                                    int16x2_t, int16x4_t, int16x2_t, int16x4_t,
+                                    pmqacc_h01_i32x2)
+__packed_pmul_parts_acc_rv64_scalar(mqacc_h11_i32,  int32_t, int32x2_t,
+                                    int16x2_t, int16x4_t, int16x2_t, int16x4_t,
+                                    pmqacc_h11_i32x2)
+__packed_pmul_parts_acc_rv64_scalar(mqracc_h00_i32, int32_t, int32x2_t,
+                                    int16x2_t, int16x4_t, int16x2_t, int16x4_t,
+                                    pmqracc_h00_i32x2)
+__packed_pmul_parts_acc_rv64_scalar(mqracc_h01_i32, int32_t, int32x2_t,
+                                    int16x2_t, int16x4_t, int16x2_t, int16x4_t,
+                                    pmqracc_h01_i32x2)
+__packed_pmul_parts_acc_rv64_scalar(mqracc_h11_i32, int32_t, int32x2_t,
+                                    int16x2_t, int16x4_t, int16x2_t, int16x4_t,
+                                    pmqracc_h11_i32x2)
 #endif
 
 #undef __packed_splat2

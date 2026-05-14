@@ -1454,6 +1454,28 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   RVP_MULPA_CASES(maccu_w11_u64,  riscv_pmaccu_w11);
   RVP_MULPA_CASES(maccsu_w00_i64, riscv_pmaccsu_w00);
   RVP_MULPA_CASES(maccsu_w11_i64, riscv_pmaccsu_w11);
+
+  // Packed "Q-format" Multiply Parts Accumulate.
+  RVP_MULPA_CASES(mqacc_h00_i32,    riscv_pmqacc_h00);
+  RVP_MULPA_CASES(mqacc_h01_i32,    riscv_pmqacc_h01);
+  RVP_MULPA_CASES(mqacc_h11_i32,    riscv_pmqacc_h11);
+  RVP_MULPA_CASES(mqracc_h00_i32,   riscv_pmqracc_h00);
+  RVP_MULPA_CASES(mqracc_h01_i32,   riscv_pmqracc_h01);
+  RVP_MULPA_CASES(mqracc_h11_i32,   riscv_pmqracc_h11);
+
+  RVP_MULPA_CASES(pmqacc_h00_i32x2,  riscv_pmqacc_h00);
+  RVP_MULPA_CASES(pmqacc_h01_i32x2,  riscv_pmqacc_h01);
+  RVP_MULPA_CASES(pmqacc_h11_i32x2,  riscv_pmqacc_h11);
+  RVP_MULPA_CASES(pmqracc_h00_i32x2, riscv_pmqracc_h00);
+  RVP_MULPA_CASES(pmqracc_h01_i32x2, riscv_pmqracc_h01);
+  RVP_MULPA_CASES(pmqracc_h11_i32x2, riscv_pmqracc_h11);
+
+  RVP_MULPA_CASES(mqacc_w00_i64,    riscv_pmqacc_w00);
+  RVP_MULPA_CASES(mqacc_w01_i64,    riscv_pmqacc_w01);
+  RVP_MULPA_CASES(mqacc_w11_i64,    riscv_pmqacc_w11);
+  RVP_MULPA_CASES(mqracc_w00_i64,   riscv_pmqracc_w00);
+  RVP_MULPA_CASES(mqracc_w01_i64,   riscv_pmqracc_w01);
+  RVP_MULPA_CASES(mqracc_w11_i64,   riscv_pmqracc_w11);
 #undef RVP_EAS_CASES
 #undef RVP_MULP_CASES
 #undef RVP_MULPA_CASES

@@ -2148,6 +2148,20 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pmaccu_w11   : RVPMulPartsAcc;
   def int_riscv_pmaccsu_w00  : RVPMulPartsAcc;
   def int_riscv_pmaccsu_w11  : RVPMulPartsAcc;
+
+  // Packed "Q-format" Multiply Parts Accumulate (halfword and word families).
+  def int_riscv_pmqacc_h00  : RVPMulPartsAcc;
+  def int_riscv_pmqacc_h01  : RVPMulPartsAcc;
+  def int_riscv_pmqacc_h11  : RVPMulPartsAcc;
+  def int_riscv_pmqracc_h00 : RVPMulPartsAcc;
+  def int_riscv_pmqracc_h01 : RVPMulPartsAcc;
+  def int_riscv_pmqracc_h11 : RVPMulPartsAcc;
+  def int_riscv_pmqacc_w00  : RVPMulPartsAcc;
+  def int_riscv_pmqacc_w01  : RVPMulPartsAcc;
+  def int_riscv_pmqacc_w11  : RVPMulPartsAcc;
+  def int_riscv_pmqracc_w00 : RVPMulPartsAcc;
+  def int_riscv_pmqracc_w01 : RVPMulPartsAcc;
+  def int_riscv_pmqracc_w11 : RVPMulPartsAcc;
 } // TargetPrefix = "riscv"
 
 
