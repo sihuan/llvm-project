@@ -259,6 +259,14 @@ def pwsuba_i16x4   : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<
 def pwsuba_i32x2   : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, short>, _Vector<2, short>)">;
 def pwsubau_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, _Vector<4, unsigned char>, _Vector<4, unsigned char>)">;
 def pwsubau_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+
+// Packed Widening Multiply (RV32 only).
+def pwmul_i16x4    : RISCVBuiltin<"_Vector<4, short>(_Vector<4, signed char>, _Vector<4, signed char>)">;
+def pwmul_i32x2    : RISCVBuiltin<"_Vector<2, int>(_Vector<2, short>, _Vector<2, short>)">;
+def pwmulu_u16x4   : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned char>, _Vector<4, unsigned char>)">;
+def pwmulu_u32x2   : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+def pwmulsu_i16x4  : RISCVBuiltin<"_Vector<4, short>(_Vector<4, signed char>, _Vector<4, unsigned char>)">;
+def pwmulsu_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, short>, _Vector<2, unsigned short>)">;
 } // Features = "experimental-p,32bit"
 
 // Packed Exchanged Addition and Subtraction (halfword form, RV32 and RV64).

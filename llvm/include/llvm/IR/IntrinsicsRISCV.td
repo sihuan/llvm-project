@@ -2242,6 +2242,12 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pwaddau : RVPWAddSubAcc;
   def int_riscv_pwsuba  : RVPWAddSubAcc;
   def int_riscv_pwsubau : RVPWAddSubAcc;
+
+  // Packed Widening Multiply (RV32 only). Same i64 GPR-pair-result shape
+  // as the widening add/sub family.
+  def int_riscv_pwmul   : RVPWAddSub;
+  def int_riscv_pwmulu  : RVPWAddSub;
+  def int_riscv_pwmulsu : RVPWAddSub;
 } // TargetPrefix = "riscv"
 
 

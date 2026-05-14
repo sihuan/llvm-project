@@ -1540,7 +1540,13 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   case RISCV::BI__builtin_riscv_pwsub_i16x4:
   case RISCV::BI__builtin_riscv_pwsub_i32x2:
   case RISCV::BI__builtin_riscv_pwsubu_u16x4:
-  case RISCV::BI__builtin_riscv_pwsubu_u32x2: {
+  case RISCV::BI__builtin_riscv_pwsubu_u32x2:
+  case RISCV::BI__builtin_riscv_pwmul_i16x4:
+  case RISCV::BI__builtin_riscv_pwmul_i32x2:
+  case RISCV::BI__builtin_riscv_pwmulu_u16x4:
+  case RISCV::BI__builtin_riscv_pwmulu_u32x2:
+  case RISCV::BI__builtin_riscv_pwmulsu_i16x4:
+  case RISCV::BI__builtin_riscv_pwmulsu_i32x2: {
     unsigned IntID;
     switch (BuiltinID) {
     default: llvm_unreachable("unexpected builtin");
@@ -1559,6 +1565,18 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     case RISCV::BI__builtin_riscv_pwsubu_u16x4:
     case RISCV::BI__builtin_riscv_pwsubu_u32x2:
       IntID = Intrinsic::riscv_pwsubu;
+      break;
+    case RISCV::BI__builtin_riscv_pwmul_i16x4:
+    case RISCV::BI__builtin_riscv_pwmul_i32x2:
+      IntID = Intrinsic::riscv_pwmul;
+      break;
+    case RISCV::BI__builtin_riscv_pwmulu_u16x4:
+    case RISCV::BI__builtin_riscv_pwmulu_u32x2:
+      IntID = Intrinsic::riscv_pwmulu;
+      break;
+    case RISCV::BI__builtin_riscv_pwmulsu_i16x4:
+    case RISCV::BI__builtin_riscv_pwmulsu_i32x2:
+      IntID = Intrinsic::riscv_pwmulsu;
       break;
     }
     llvm::Function *F = CGM.getIntrinsic(IntID, Ops[0]->getType());
