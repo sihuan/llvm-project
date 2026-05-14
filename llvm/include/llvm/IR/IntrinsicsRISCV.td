@@ -2052,6 +2052,19 @@ let TargetPrefix = "riscv" in {
 } // TargetPrefix = "riscv"
 
 
+// Packed SIMD extensions: Packed SH1ADD and SSH1SADD
+//===----------------------------------------------------------------------===//
+let TargetPrefix = "riscv" in {
+  class RVPSh1AddBinary
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  def int_riscv_psh1add   : RVPSh1AddBinary;
+  def int_riscv_pssh1sadd : RVPSh1AddBinary;
+} // TargetPrefix = "riscv"
+
+
 //===----------------------------------------------------------------------===//
 // Zvfofp8min - OFP8 conversion extension
 // The Zvfofp8min extension provides basic support for the two 8-bit

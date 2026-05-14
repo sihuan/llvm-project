@@ -1348,6 +1348,16 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   RVP_EAS_CASES(pasa_x_i16x2, riscv_pasa_x);
   RVP_EAS_CASES(pasa_x_i16x4, riscv_pasa_x);
   RVP_EAS_CASES(pasa_x_i32x2, riscv_pasa_x);
+
+  RVP_EAS_CASES(psh1add_i16x2, riscv_psh1add);
+  RVP_EAS_CASES(psh1add_u16x2, riscv_psh1add);
+  RVP_EAS_CASES(psh1add_i16x4, riscv_psh1add);
+  RVP_EAS_CASES(psh1add_u16x4, riscv_psh1add);
+  RVP_EAS_CASES(psh1add_i32x2, riscv_psh1add);
+  RVP_EAS_CASES(psh1add_u32x2, riscv_psh1add);
+  RVP_EAS_CASES(pssh1sadd_i16x2, riscv_pssh1sadd);
+  RVP_EAS_CASES(pssh1sadd_i16x4, riscv_pssh1sadd);
+  RVP_EAS_CASES(pssh1sadd_i32x2, riscv_pssh1sadd);
 #undef RVP_EAS_CASES
 
   case RISCV::BI__builtin_riscv_clz_32:

@@ -2087,6 +2087,12 @@ let Predicates = [HasStdExtP, IsRV32] in {
             (PAAS_HX GPR:$rs1, GPR:$rs2)>;
   def : Pat<(v2i16 (int_riscv_pasa_x (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
             (PASA_HX GPR:$rs1, GPR:$rs2)>;
+
+  // Packed SH1ADD / SSH1SADD (32-bit, RV32 only).
+  def : Pat<(v2i16 (int_riscv_psh1add (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PSH1ADD_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pssh1sadd (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PSSH1SADD_H GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV32]
 
 let Predicates = [HasStdExtP, IsRV64] in {
@@ -2396,4 +2402,16 @@ let Predicates = [HasStdExtP, IsRV64] in {
             (PAAS_WX GPR:$rs1, GPR:$rs2)>;
   def : Pat<(v2i32 (int_riscv_pasa_x (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
             (PASA_WX GPR:$rs1, GPR:$rs2)>;
+
+  // Packed SH1ADD / SSH1SADD (halfword, RV64).
+  def : Pat<(v4i16 (int_riscv_psh1add (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PSH1ADD_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pssh1sadd (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PSSH1SADD_H GPR:$rs1, GPR:$rs2)>;
+
+  // Packed SH1ADD / SSH1SADD (word, RV64 only).
+  def : Pat<(v2i32 (int_riscv_psh1add (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PSH1ADD_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pssh1sadd (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PSSH1SADD_W GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV64]

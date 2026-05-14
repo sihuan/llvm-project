@@ -286,6 +286,11 @@ __packed_exchange_add_sub(pssa_x_i16x2, int16x2_t)
 __packed_exchange_add_sub(paas_x_i16x2, int16x2_t)
 __packed_exchange_add_sub(pasa_x_i16x2, int16x2_t)
 
+/* Packed SH1ADD / SSH1SADD (halfword, 32-bit, RV32 and RV64) */
+__packed_exchange_add_sub(psh1add_i16x2,   int16x2_t)
+__packed_exchange_add_sub(psh1add_u16x2,   uint16x2_t)
+__packed_exchange_add_sub(pssh1sadd_i16x2, int16x2_t)
+
 #if __riscv_xlen == 64
 /* Packed Multiplication with Horizontal Addition (64-bit, RV64 only) */
 __packed_pm_horiz_binary(pm4add_i8x8,     int32x2_t,  int8x8_t,  int8x8_t)
@@ -357,6 +362,14 @@ __packed_exchange_add_sub(psas_x_i32x2, int32x2_t)
 __packed_exchange_add_sub(pssa_x_i32x2, int32x2_t)
 __packed_exchange_add_sub(paas_x_i32x2, int32x2_t)
 __packed_exchange_add_sub(pasa_x_i32x2, int32x2_t)
+
+/* Packed SH1ADD / SSH1SADD (64-bit, RV64 only) */
+__packed_exchange_add_sub(psh1add_i16x4,   int16x4_t)
+__packed_exchange_add_sub(psh1add_u16x4,   uint16x4_t)
+__packed_exchange_add_sub(psh1add_i32x2,   int32x2_t)
+__packed_exchange_add_sub(psh1add_u32x2,   uint32x2_t)
+__packed_exchange_add_sub(pssh1sadd_i16x4, int16x4_t)
+__packed_exchange_add_sub(pssh1sadd_i32x2, int32x2_t)
 #endif
 
 #undef __packed_splat2
