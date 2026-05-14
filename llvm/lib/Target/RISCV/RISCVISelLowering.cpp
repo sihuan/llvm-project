@@ -16029,6 +16029,45 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
                                     Split.getValue(0), Split.getValue(1)));
       return;
     }
+    case Intrinsic::riscv_pwsll:
+    case Intrinsic::riscv_pwsla: {
+      // Packed Widening Shift Left on RV32: narrow vector rs1 shifted by an
+      // i32 scalar; instruction writes a GPR pair. Pick the immediate vs
+      // register form based on the shift amount, then split the pair into
+      // two i32s for the legal i64 result.
+      if (Subtarget.is64Bit() || N->getValueType(0) != MVT::i64)
+        return;
+      MVT InVT = N->getOperand(1).getSimpleValueType();
+      SDValue Shamt = N->getOperand(2);
+      bool IsArith = IntNo == Intrinsic::riscv_pwsla;
+      auto *CN = dyn_cast<ConstantSDNode>(Shamt);
+      unsigned ImmMax = InVT == MVT::v4i8 ? 16 : 32;
+      bool UseImm = CN && CN->getZExtValue() < ImmMax;
+      unsigned Opc;
+      if (InVT == MVT::v4i8) {
+        if (UseImm)
+          Opc = IsArith ? RISCV::PWSLAI_B : RISCV::PWSLLI_B;
+        else
+          Opc = IsArith ? RISCV::PWSLA_BS : RISCV::PWSLL_BS;
+      } else if (InVT == MVT::v2i16) {
+        if (UseImm)
+          Opc = IsArith ? RISCV::PWSLAI_H : RISCV::PWSLLI_H;
+        else
+          Opc = IsArith ? RISCV::PWSLA_HS : RISCV::PWSLL_HS;
+      } else {
+        return;
+      }
+      SDValue ShOp =
+          UseImm ? DAG.getTargetConstant(CN->getZExtValue(), DL, MVT::i32)
+                 : Shamt;
+      SDValue Pair = SDValue(
+          DAG.getMachineNode(Opc, DL, MVT::Untyped, N->getOperand(1), ShOp), 0);
+      SDValue Split = DAG.getNode(RISCVISD::SplitGPRPair, DL,
+                                  DAG.getVTList(MVT::i32, MVT::i32), Pair);
+      Results.push_back(DAG.getNode(ISD::BUILD_PAIR, DL, MVT::i64,
+                                    Split.getValue(0), Split.getValue(1)));
+      return;
+    }
     }
     break;
   }

@@ -276,6 +276,12 @@ def pwmaccsu_i32x2 : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, s
 // Packed Q-format Multiply with Widening Accumulate (RV32 only).
 def pmqwacc_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, short>, _Vector<2, short>)">;
 def pmqrwacc_i32x2 : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, short>, _Vector<2, short>)">;
+
+// Packed Widening Shift Left (RV32 only).
+def pwsll_s_u16x4 : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned char>, unsigned int)">;
+def pwsll_s_u32x2 : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned short>, unsigned int)">;
+def pwsla_s_i16x4 : RISCVBuiltin<"_Vector<4, short>(_Vector<4, signed char>, unsigned int)">;
+def pwsla_s_i32x2 : RISCVBuiltin<"_Vector<2, int>(_Vector<2, short>, unsigned int)">;
 } // Features = "experimental-p,32bit"
 
 // Packed Exchanged Addition and Subtraction (halfword form, RV32 and RV64).

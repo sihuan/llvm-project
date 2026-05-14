@@ -534,6 +534,17 @@ __packed_pwadd_sub_acc(pwmaccsu_i32x2, int32x2_t,  int16x2_t,  uint16x2_t)
 /* Packed Q-format Multiply with Widening Accumulate (RV32 only). */
 __packed_pwadd_sub_acc(pmqwacc_i32x2,  int32x2_t, int16x2_t, int16x2_t)
 __packed_pwadd_sub_acc(pmqrwacc_i32x2, int32x2_t, int16x2_t, int16x2_t)
+
+/* Packed Widening Shift Left (RV32 only). */
+#define __packed_pwshift(name, r_ty, a_ty)                                     \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(a_ty __rs1, unsigned __shamt) {                               \
+    return __builtin_riscv_##name(__rs1, __shamt);                             \
+  }
+__packed_pwshift(pwsll_s_u16x4, uint16x4_t, uint8x4_t)
+__packed_pwshift(pwsll_s_u32x2, uint32x2_t, uint16x2_t)
+__packed_pwshift(pwsla_s_i16x4, int16x4_t,  int8x4_t)
+__packed_pwshift(pwsla_s_i32x2, int32x2_t,  int16x2_t)
 #endif
 
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
@@ -971,6 +982,7 @@ __packed_pmulh_parts_acc_rv64_scalar(mhaccsu_h1_i32,  int32_t, int32x2_t,
 #undef __packed_pmhacc_b_rv64_half
 #undef __packed_pwadd_sub
 #undef __packed_pwadd_sub_acc
+#undef __packed_pwshift
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)

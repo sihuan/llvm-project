@@ -2260,6 +2260,17 @@ let TargetPrefix = "riscv" in {
   // i64 GPR-pair accumulator shape as the widening multiply accumulate family.
   def int_riscv_pmqwacc  : RVPWAddSubAcc;
   def int_riscv_pmqrwacc : RVPWAddSubAcc;
+
+  // Packed Widening Shift Left (RV32 only): narrow vector shifted by an i32
+  // scalar amount, producing an i64 (GPR-pair) widened result. ISel picks
+  // the immediate vs register form based on the shift amount.
+  class RVPWideningShift
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_anyvector_ty, llvm_i32_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  def int_riscv_pwsll : RVPWideningShift;
+  def int_riscv_pwsla : RVPWideningShift;
 } // TargetPrefix = "riscv"
 
 

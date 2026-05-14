@@ -1642,6 +1642,29 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return Builder.CreateBitCast(Call, ResultType);
   }
 
+  // Packed Widening Shift Left (RV32 only). Same i64 -> vector bitcast shape
+  // as the widening add/sub/multiply family, with an i32 shift amount.
+  case RISCV::BI__builtin_riscv_pwsll_s_u16x4:
+  case RISCV::BI__builtin_riscv_pwsll_s_u32x2:
+  case RISCV::BI__builtin_riscv_pwsla_s_i16x4:
+  case RISCV::BI__builtin_riscv_pwsla_s_i32x2: {
+    unsigned IntID;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_pwsll_s_u16x4:
+    case RISCV::BI__builtin_riscv_pwsll_s_u32x2:
+      IntID = Intrinsic::riscv_pwsll;
+      break;
+    case RISCV::BI__builtin_riscv_pwsla_s_i16x4:
+    case RISCV::BI__builtin_riscv_pwsla_s_i32x2:
+      IntID = Intrinsic::riscv_pwsla;
+      break;
+    }
+    llvm::Function *F = CGM.getIntrinsic(IntID, Ops[0]->getType());
+    llvm::Value *Call = Builder.CreateCall(F, Ops);
+    return Builder.CreateBitCast(Call, ResultType);
+  }
+
   case RISCV::BI__builtin_riscv_clz_32:
   case RISCV::BI__builtin_riscv_clz_64: {
     Function *F = CGM.getIntrinsic(Intrinsic::ctlz, Ops[0]->getType());
