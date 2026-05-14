@@ -91,6 +91,28 @@ typedef uint32_t uint32x2_t __attribute__((__vector_size__(8), __aligned__(8)));
     return __builtin_riscv_##name(__rs1, __rs2);                               \
   }
 
+/* Packed multiply-high: take the high half of an element-wise widening
+ * multiply. LLVM's DAG combiner recognizes the (sext * sext) >> N pattern and
+ * lowers it to pmulh.{h,w} (and unsigned/mixed-sign variants). */
+#define __packed_pmulh(name, r_ty, a_ty, b_ty, prod_ty, SHIFT)                 \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(a_ty __rs1, b_ty __rs2) {                                     \
+    prod_ty __p = __builtin_convertvector(__rs1, prod_ty) *                    \
+                  __builtin_convertvector(__rs2, prod_ty);                     \
+    return __builtin_convertvector(__p >> (SHIFT), r_ty);                      \
+  }
+
+/* Packed rounding multiply-high: add 1<<(SHIFT-1) before the shift.
+ * The rounding constant uses 1LL to avoid UB when SHIFT == 32. */
+#define __packed_pmulhr(name, r_ty, a_ty, b_ty, prod_ty, SHIFT)                \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(a_ty __rs1, b_ty __rs2) {                                     \
+    prod_ty __p = __builtin_convertvector(__rs1, prod_ty) *                    \
+                  __builtin_convertvector(__rs2, prod_ty);                     \
+    return __builtin_convertvector((__p + (1LL << ((SHIFT) - 1))) >> (SHIFT),  \
+                                   r_ty);                                      \
+  }
+
 /* Packed Splat (32-bit) */
 __packed_splat(pmv_s_u8x4, uint8x4_t, uint8_t, __packed_splat4)
 __packed_splat(pmv_s_i8x4, int8x4_t, int8_t, __packed_splat4)
@@ -291,6 +313,16 @@ __packed_exchange_add_sub(psh1add_i16x2,   int16x2_t)
 __packed_exchange_add_sub(psh1add_u16x2,   uint16x2_t)
 __packed_exchange_add_sub(pssh1sadd_i16x2, int16x2_t)
 
+/* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
+ * Intermediate product is a 32-bit-element-wide vector with the same lane
+ * count as the input. */
+__packed_pmulh (pmulh_i16x2,    int16x2_t,  int16x2_t,  int16x2_t,  int32x2_t,  16)
+__packed_pmulhr(pmulhr_i16x2,   int16x2_t,  int16x2_t,  int16x2_t,  int32x2_t,  16)
+__packed_pmulh (pmulhu_u16x2,   uint16x2_t, uint16x2_t, uint16x2_t, uint32x2_t, 16)
+__packed_pmulhr(pmulhru_u16x2,  uint16x2_t, uint16x2_t, uint16x2_t, uint32x2_t, 16)
+__packed_pmulh (pmulhsu_i16x2,  int16x2_t,  int16x2_t,  uint16x2_t, int32x2_t,  16)
+__packed_pmulhr(pmulhrsu_i16x2, int16x2_t,  int16x2_t,  uint16x2_t, int32x2_t,  16)
+
 #if __riscv_xlen == 64
 /* Packed Multiplication with Horizontal Addition (64-bit, RV64 only) */
 __packed_pm_horiz_binary(pm4add_i8x8,     int32x2_t,  int8x8_t,  int8x8_t)
@@ -370,6 +402,29 @@ __packed_exchange_add_sub(psh1add_i32x2,   int32x2_t)
 __packed_exchange_add_sub(psh1add_u32x2,   uint32x2_t)
 __packed_exchange_add_sub(pssh1sadd_i16x4, int16x4_t)
 __packed_exchange_add_sub(pssh1sadd_i32x2, int32x2_t)
+
+/* Wider intermediate vector types used by Packed Multiply High wrappers
+ * below. Prefixed with __riscv_ to avoid leaking into the user namespace. */
+typedef int32_t  __riscv_int32x4_t  __attribute__((__vector_size__(16), __aligned__(16)));
+typedef uint32_t __riscv_uint32x4_t __attribute__((__vector_size__(16), __aligned__(16)));
+typedef int64_t  __riscv_int64x2_t  __attribute__((__vector_size__(16), __aligned__(16)));
+typedef uint64_t __riscv_uint64x2_t __attribute__((__vector_size__(16), __aligned__(16)));
+
+/* Packed Multiply High (halfword, 64-bit, RV64 only) */
+__packed_pmulh (pmulh_i16x4,    int16x4_t,  int16x4_t,  int16x4_t,  __riscv_int32x4_t,  16)
+__packed_pmulhr(pmulhr_i16x4,   int16x4_t,  int16x4_t,  int16x4_t,  __riscv_int32x4_t,  16)
+__packed_pmulh (pmulhu_u16x4,   uint16x4_t, uint16x4_t, uint16x4_t, __riscv_uint32x4_t, 16)
+__packed_pmulhr(pmulhru_u16x4,  uint16x4_t, uint16x4_t, uint16x4_t, __riscv_uint32x4_t, 16)
+__packed_pmulh (pmulhsu_i16x4,  int16x4_t,  int16x4_t,  uint16x4_t, __riscv_int32x4_t,  16)
+__packed_pmulhr(pmulhrsu_i16x4, int16x4_t,  int16x4_t,  uint16x4_t, __riscv_int32x4_t,  16)
+
+/* Packed Multiply High (word, 64-bit, RV64 only) */
+__packed_pmulh (pmulh_i32x2,    int32x2_t,  int32x2_t,  int32x2_t,  __riscv_int64x2_t,  32)
+__packed_pmulhr(pmulhr_i32x2,   int32x2_t,  int32x2_t,  int32x2_t,  __riscv_int64x2_t,  32)
+__packed_pmulh (pmulhu_u32x2,   uint32x2_t, uint32x2_t, uint32x2_t, __riscv_uint64x2_t, 32)
+__packed_pmulhr(pmulhru_u32x2,  uint32x2_t, uint32x2_t, uint32x2_t, __riscv_uint64x2_t, 32)
+__packed_pmulh (pmulhsu_i32x2,  int32x2_t,  int32x2_t,  uint32x2_t, __riscv_int64x2_t,  32)
+__packed_pmulhr(pmulhrsu_i32x2, int32x2_t,  int32x2_t,  uint32x2_t, __riscv_int64x2_t,  32)
 #endif
 
 #undef __packed_splat2
@@ -387,6 +442,8 @@ __packed_exchange_add_sub(pssh1sadd_i32x2, int32x2_t)
 #undef __packed_pm_horiz_binary
 #undef __packed_pm_horiz_ternary
 #undef __packed_exchange_add_sub
+#undef __packed_pmulh
+#undef __packed_pmulhr
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)
