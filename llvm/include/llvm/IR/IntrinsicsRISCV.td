@@ -2229,6 +2229,19 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pwaddu : RVPWAddSub;
   def int_riscv_pwsub  : RVPWAddSub;
   def int_riscv_pwsubu : RVPWAddSub;
+
+  // Packed Widening Add/Sub Accumulate (RV32 only): rd is the 64-bit
+  // accumulator (a GPR pair).
+  class RVPWAddSubAcc
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_i64_ty, llvm_anyvector_ty,
+                               LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  def int_riscv_pwadda  : RVPWAddSubAcc;
+  def int_riscv_pwaddau : RVPWAddSubAcc;
+  def int_riscv_pwsuba  : RVPWAddSubAcc;
+  def int_riscv_pwsubau : RVPWAddSubAcc;
 } // TargetPrefix = "riscv"
 
 

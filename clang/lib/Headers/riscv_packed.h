@@ -502,6 +502,21 @@ __packed_pwadd_sub(pwsub_i16x4,   int16x4_t,  int8x4_t,  int8x4_t)
 __packed_pwadd_sub(pwsub_i32x2,   int32x2_t,  int16x2_t, int16x2_t)
 __packed_pwadd_sub(pwsubu_u16x4,  uint16x4_t, uint8x4_t, uint8x4_t)
 __packed_pwadd_sub(pwsubu_u32x2,  uint32x2_t, uint16x2_t, uint16x2_t)
+
+/* Packed Widening Add/Sub Accumulate (RV32 only). */
+#define __packed_pwadd_sub_acc(name, r_ty, a_ty, b_ty)                         \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(r_ty __rd, a_ty __rs1, b_ty __rs2) {                          \
+    return __builtin_riscv_##name(__rd, __rs1, __rs2);                         \
+  }
+__packed_pwadd_sub_acc(pwadda_i16x4,   int16x4_t,  int8x4_t,  int8x4_t)
+__packed_pwadd_sub_acc(pwadda_i32x2,   int32x2_t,  int16x2_t, int16x2_t)
+__packed_pwadd_sub_acc(pwaddau_u16x4,  uint16x4_t, uint8x4_t, uint8x4_t)
+__packed_pwadd_sub_acc(pwaddau_u32x2,  uint32x2_t, uint16x2_t, uint16x2_t)
+__packed_pwadd_sub_acc(pwsuba_i16x4,   int16x4_t,  int8x4_t,  int8x4_t)
+__packed_pwadd_sub_acc(pwsuba_i32x2,   int32x2_t,  int16x2_t, int16x2_t)
+__packed_pwadd_sub_acc(pwsubau_u16x4,  uint16x4_t, uint8x4_t, uint8x4_t)
+__packed_pwadd_sub_acc(pwsubau_u32x2,  uint32x2_t, uint16x2_t, uint16x2_t)
 #endif
 
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
@@ -938,6 +953,7 @@ __packed_pmulh_parts_acc_rv64_scalar(mhaccsu_h1_i32,  int32_t, int32x2_t,
 #undef __packed_pmulh_parts_acc_rv64_scalar
 #undef __packed_pmhacc_b_rv64_half
 #undef __packed_pwadd_sub
+#undef __packed_pwadd_sub_acc
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)

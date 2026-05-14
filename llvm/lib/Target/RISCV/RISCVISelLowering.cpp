@@ -15964,6 +15964,50 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
                                     Split.getValue(0), Split.getValue(1)));
       return;
     }
+    case Intrinsic::riscv_pwadda:
+    case Intrinsic::riscv_pwaddau:
+    case Intrinsic::riscv_pwsuba:
+    case Intrinsic::riscv_pwsubau: {
+      // Like pwadd, but with an i64 accumulator rd that must be passed as a
+      // GPR pair. Split rd into i32 lo/hi, BuildGPRPair, emit the machine
+      // node, split the output pair, BUILD_PAIR the i64 result.
+      if (Subtarget.is64Bit() || N->getValueType(0) != MVT::i64)
+        return;
+      MVT InVT = N->getOperand(2).getSimpleValueType();
+      unsigned Opc;
+      if (InVT == MVT::v4i8) {
+        switch (IntNo) {
+        case Intrinsic::riscv_pwadda:  Opc = RISCV::PWADDA_B;  break;
+        case Intrinsic::riscv_pwaddau: Opc = RISCV::PWADDAU_B; break;
+        case Intrinsic::riscv_pwsuba:  Opc = RISCV::PWSUBA_B;  break;
+        case Intrinsic::riscv_pwsubau: Opc = RISCV::PWSUBAU_B; break;
+        }
+      } else if (InVT == MVT::v2i16) {
+        switch (IntNo) {
+        case Intrinsic::riscv_pwadda:  Opc = RISCV::PWADDA_H;  break;
+        case Intrinsic::riscv_pwaddau: Opc = RISCV::PWADDAU_H; break;
+        case Intrinsic::riscv_pwsuba:  Opc = RISCV::PWSUBA_H;  break;
+        case Intrinsic::riscv_pwsubau: Opc = RISCV::PWSUBAU_H; break;
+        }
+      } else {
+        return;
+      }
+      SDValue RdLo = DAG.getNode(ISD::EXTRACT_ELEMENT, DL, MVT::i32,
+                                  N->getOperand(1), DAG.getIntPtrConstant(0, DL));
+      SDValue RdHi = DAG.getNode(ISD::EXTRACT_ELEMENT, DL, MVT::i32,
+                                  N->getOperand(1), DAG.getIntPtrConstant(1, DL));
+      SDValue RdPair = DAG.getNode(RISCVISD::BuildGPRPair, DL, MVT::Untyped,
+                                    RdLo, RdHi);
+      SDValue Pair = SDValue(
+          DAG.getMachineNode(Opc, DL, MVT::Untyped, RdPair, N->getOperand(2),
+                             N->getOperand(3)),
+          0);
+      SDValue Split = DAG.getNode(RISCVISD::SplitGPRPair, DL,
+                                  DAG.getVTList(MVT::i32, MVT::i32), Pair);
+      Results.push_back(DAG.getNode(ISD::BUILD_PAIR, DL, MVT::i64,
+                                    Split.getValue(0), Split.getValue(1)));
+      return;
+    }
     }
     break;
   }
