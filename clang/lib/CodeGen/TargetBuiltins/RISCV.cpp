@@ -2004,6 +2004,69 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   case RISCV::BI__builtin_riscv_pset_u32_u32x2:
     return Builder.CreateInsertElement(Ops[0], Ops[1], Ops[2]);
 
+  // Slide by variable element count. rs2 is masked to log2(N) bits and
+  // multiplied by elt_bits to get a bit-level shift amount, then we funnel
+  // shift the (rd:rs1) concatenation.
+  //   pslideupx:   result = fshl(rd, rs1, (rs2 & (N-1)) * elt_bits)
+  //   pslidedownx: result = fshr(rs1, rd, (rs2 & (N-1)) * elt_bits)
+  case RISCV::BI__builtin_riscv_pslideupx_i8x4:
+  case RISCV::BI__builtin_riscv_pslideupx_u8x4:
+  case RISCV::BI__builtin_riscv_pslideupx_i16x2:
+  case RISCV::BI__builtin_riscv_pslideupx_u16x2:
+  case RISCV::BI__builtin_riscv_pslideupx_i8x8:
+  case RISCV::BI__builtin_riscv_pslideupx_u8x8:
+  case RISCV::BI__builtin_riscv_pslideupx_i16x4:
+  case RISCV::BI__builtin_riscv_pslideupx_u16x4:
+  case RISCV::BI__builtin_riscv_pslideupx_i32x2:
+  case RISCV::BI__builtin_riscv_pslideupx_u32x2:
+  case RISCV::BI__builtin_riscv_pslidedownx_i8x4:
+  case RISCV::BI__builtin_riscv_pslidedownx_u8x4:
+  case RISCV::BI__builtin_riscv_pslidedownx_i16x2:
+  case RISCV::BI__builtin_riscv_pslidedownx_u16x2:
+  case RISCV::BI__builtin_riscv_pslidedownx_i8x8:
+  case RISCV::BI__builtin_riscv_pslidedownx_u8x8:
+  case RISCV::BI__builtin_riscv_pslidedownx_i16x4:
+  case RISCV::BI__builtin_riscv_pslidedownx_u16x4:
+  case RISCV::BI__builtin_riscv_pslidedownx_i32x2:
+  case RISCV::BI__builtin_riscv_pslidedownx_u32x2: {
+    auto *VecTy = cast<llvm::FixedVectorType>(Ops[0]->getType());
+    unsigned N = VecTy->getNumElements();
+    unsigned EltBits = VecTy->getScalarSizeInBits();
+    unsigned VecBits = N * EltBits;
+    llvm::Type *VecIntTy = Builder.getIntNTy(VecBits);
+    bool IsUp = false;
+    switch (BuiltinID) {
+    case RISCV::BI__builtin_riscv_pslideupx_i8x4:
+    case RISCV::BI__builtin_riscv_pslideupx_u8x4:
+    case RISCV::BI__builtin_riscv_pslideupx_i16x2:
+    case RISCV::BI__builtin_riscv_pslideupx_u16x2:
+    case RISCV::BI__builtin_riscv_pslideupx_i8x8:
+    case RISCV::BI__builtin_riscv_pslideupx_u8x8:
+    case RISCV::BI__builtin_riscv_pslideupx_i16x4:
+    case RISCV::BI__builtin_riscv_pslideupx_u16x4:
+    case RISCV::BI__builtin_riscv_pslideupx_i32x2:
+    case RISCV::BI__builtin_riscv_pslideupx_u32x2:
+      IsUp = true;
+      break;
+    default:
+      break;
+    }
+    llvm::Value *RdInt = Builder.CreateBitCast(Ops[0], VecIntTy);
+    llvm::Value *Rs1Int = Builder.CreateBitCast(Ops[1], VecIntTy);
+    // Mask the element count to log2(N) bits, then multiply by elt_bits.
+    llvm::Value *Rs2 = Builder.CreateAnd(
+        Ops[2], llvm::ConstantInt::get(Ops[2]->getType(), N - 1));
+    llvm::Value *Rs2Vec = Builder.CreateZExtOrTrunc(Rs2, VecIntTy);
+    llvm::Value *Shamt = Builder.CreateMul(
+        Rs2Vec, llvm::ConstantInt::get(VecIntTy, EltBits));
+    llvm::Function *F = CGM.getIntrinsic(
+        IsUp ? Intrinsic::fshl : Intrinsic::fshr, VecIntTy);
+    llvm::Value *Result = IsUp
+        ? Builder.CreateCall(F, {RdInt, Rs1Int, Shamt})
+        : Builder.CreateCall(F, {Rs1Int, RdInt, Shamt});
+    return Builder.CreateBitCast(Result, ConvertType(E->getType()));
+  }
+
   // Slide 1 up / down. rd is the packed vector, rs1 is a scalar new element.
   //   slide1up:   result = (rd << elt_bits) | (rs1 & elt_mask)
   //               i.e. [rs1, rd[0], rd[1], ..., rd[N-2]]

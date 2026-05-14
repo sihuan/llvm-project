@@ -532,6 +532,35 @@ __packed_pslide1(pslide1down_i32x2, int32x2_t,  int32_t)
 __packed_pslide1(pslide1down_u32x2, uint32x2_t, uint32_t)
 #undef __packed_pslide1
 
+/* Slide by variable element count. */
+#define __packed_pslidex(name, v_ty)                                           \
+  static __inline__ v_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(v_ty __rd, v_ty __rs1, unsigned __rs2) {                      \
+    return __builtin_riscv_##name(__rd, __rs1, __rs2);                         \
+  }
+__packed_pslidex(pslideupx_i8x4,     int8x4_t)
+__packed_pslidex(pslideupx_u8x4,     uint8x4_t)
+__packed_pslidex(pslideupx_i16x2,    int16x2_t)
+__packed_pslidex(pslideupx_u16x2,    uint16x2_t)
+__packed_pslidex(pslidedownx_i8x4,   int8x4_t)
+__packed_pslidex(pslidedownx_u8x4,   uint8x4_t)
+__packed_pslidex(pslidedownx_i16x2,  int16x2_t)
+__packed_pslidex(pslidedownx_u16x2,  uint16x2_t)
+
+__packed_pslidex(pslideupx_i8x8,     int8x8_t)
+__packed_pslidex(pslideupx_u8x8,     uint8x8_t)
+__packed_pslidex(pslideupx_i16x4,    int16x4_t)
+__packed_pslidex(pslideupx_u16x4,    uint16x4_t)
+__packed_pslidex(pslideupx_i32x2,    int32x2_t)
+__packed_pslidex(pslideupx_u32x2,    uint32x2_t)
+__packed_pslidex(pslidedownx_i8x8,   int8x8_t)
+__packed_pslidex(pslidedownx_u8x8,   uint8x8_t)
+__packed_pslidex(pslidedownx_i16x4,  int16x4_t)
+__packed_pslidex(pslidedownx_u16x4,  uint16x4_t)
+__packed_pslidex(pslidedownx_i32x2,  int32x2_t)
+__packed_pslidex(pslidedownx_u32x2,  uint32x2_t)
+#undef __packed_pslidex
+
 /* Packed Element Join. */
 #define __packed_pjoin4(name, r_ty, e_ty)                                      \
   static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \

@@ -493,6 +493,32 @@ def pslide1down_i16x4 : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, short
 def pslide1down_u16x4 : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, unsigned short)">;
 def pslide1down_i32x2 : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, int)">;
 def pslide1down_u32x2 : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, unsigned int)">;
+
+// Slide by variable element count. rs2 is masked to log2(N) bits, then the
+// concatenation (rd : rs1) is funnel-shifted.
+//   pslideupx:   result = fshl(rd, rs1, (rs2 & (N-1)) * elt_bits)
+//   pslidedownx: result = fshr(rs1, rd, (rs2 & (N-1)) * elt_bits)
+def pslideupx_i8x4     : RISCVBuiltin<"_Vector<4, signed char>(_Vector<4, signed char>, _Vector<4, signed char>, unsigned int)">;
+def pslideupx_u8x4     : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned char>, _Vector<4, unsigned char>, unsigned int)">;
+def pslideupx_i16x2    : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<2, short>, unsigned int)">;
+def pslideupx_u16x2    : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned short>, _Vector<2, unsigned short>, unsigned int)">;
+def pslidedownx_i8x4   : RISCVBuiltin<"_Vector<4, signed char>(_Vector<4, signed char>, _Vector<4, signed char>, unsigned int)">;
+def pslidedownx_u8x4   : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned char>, _Vector<4, unsigned char>, unsigned int)">;
+def pslidedownx_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<2, short>, unsigned int)">;
+def pslidedownx_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned short>, _Vector<2, unsigned short>, unsigned int)">;
+
+def pslideupx_i8x8     : RISCVBuiltin<"_Vector<8, signed char>(_Vector<8, signed char>, _Vector<8, signed char>, unsigned int)">;
+def pslideupx_u8x8     : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, unsigned char>, _Vector<8, unsigned char>, unsigned int)">;
+def pslideupx_i16x4    : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<4, short>, unsigned int)">;
+def pslideupx_u16x4    : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, _Vector<4, unsigned short>, unsigned int)">;
+def pslideupx_i32x2    : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>, unsigned int)">;
+def pslideupx_u32x2    : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<2, unsigned int>, unsigned int)">;
+def pslidedownx_i8x8   : RISCVBuiltin<"_Vector<8, signed char>(_Vector<8, signed char>, _Vector<8, signed char>, unsigned int)">;
+def pslidedownx_u8x8   : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, unsigned char>, _Vector<8, unsigned char>, unsigned int)">;
+def pslidedownx_i16x4  : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<4, short>, unsigned int)">;
+def pslidedownx_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, _Vector<4, unsigned short>, unsigned int)">;
+def pslidedownx_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>, unsigned int)">;
+def pslidedownx_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<2, unsigned int>, unsigned int)">;
 } // Features = "experimental-p"
 
 let Features = "experimental-p,64bit" in {
