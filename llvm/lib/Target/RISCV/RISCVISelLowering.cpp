@@ -11494,11 +11494,16 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     break; // Don't custom lower most intrinsics.
   case Intrinsic::riscv_pnsrl:
   case Intrinsic::riscv_pnsra:
-  case Intrinsic::riscv_pnsrar: {
-    // Packed Narrowing Shift Right on RV32: wide rs1 is an i64 GPR pair,
-    // shifted by an i32 scalar to a narrow vector result. Build the GPR
-    // pair from the i64 operand and emit the machine instruction directly,
-    // picking the immediate vs register form based on the shift amount.
+  case Intrinsic::riscv_pnsrar:
+  case Intrinsic::riscv_pnclipu:
+  case Intrinsic::riscv_pnclipru:
+  case Intrinsic::riscv_pnclip:
+  case Intrinsic::riscv_pnclipr: {
+    // Packed Narrowing Shift Right / Narrowing Clip on RV32: wide rs1 is an
+    // i64 GPR pair, shifted by an i32 scalar to a narrow vector result.
+    // Build the GPR pair from the i64 operand and emit the machine
+    // instruction directly, picking the immediate vs register form based on
+    // the shift amount.
     if (Subtarget.is64Bit())
       return SDValue();
     MVT OutVT = Op.getSimpleValueType();
@@ -11508,30 +11513,56 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     if (Op1.getValueType() != MVT::i64)
       return SDValue();
     SDValue Shamt = Op.getOperand(2);
-    bool IsArith = IntNo == Intrinsic::riscv_pnsra;
-    bool IsRound = IntNo == Intrinsic::riscv_pnsrar;
     auto *CN = dyn_cast<ConstantSDNode>(Shamt);
     unsigned ImmMax = OutVT == MVT::v4i8 ? 16 : 32;
     bool UseImm = CN && CN->getZExtValue() < ImmMax;
+    bool IsByte = OutVT == MVT::v4i8;
     unsigned Opc;
-    if (OutVT == MVT::v4i8) {
+    switch (IntNo) {
+    case Intrinsic::riscv_pnsrl:
       if (UseImm)
-        Opc = IsRound  ? RISCV::PNSRARI_B
-              : IsArith ? RISCV::PNSRAI_B
-                        : RISCV::PNSRLI_B;
+        Opc = IsByte ? RISCV::PNSRLI_B : RISCV::PNSRLI_H;
       else
-        Opc = IsRound  ? RISCV::PNSRAR_BS
-              : IsArith ? RISCV::PNSRA_BS
-                        : RISCV::PNSRL_BS;
-    } else {
+        Opc = IsByte ? RISCV::PNSRL_BS : RISCV::PNSRL_HS;
+      break;
+    case Intrinsic::riscv_pnsra:
       if (UseImm)
-        Opc = IsRound  ? RISCV::PNSRARI_H
-              : IsArith ? RISCV::PNSRAI_H
-                        : RISCV::PNSRLI_H;
+        Opc = IsByte ? RISCV::PNSRAI_B : RISCV::PNSRAI_H;
       else
-        Opc = IsRound  ? RISCV::PNSRAR_HS
-              : IsArith ? RISCV::PNSRA_HS
-                        : RISCV::PNSRL_HS;
+        Opc = IsByte ? RISCV::PNSRA_BS : RISCV::PNSRA_HS;
+      break;
+    case Intrinsic::riscv_pnsrar:
+      if (UseImm)
+        Opc = IsByte ? RISCV::PNSRARI_B : RISCV::PNSRARI_H;
+      else
+        Opc = IsByte ? RISCV::PNSRAR_BS : RISCV::PNSRAR_HS;
+      break;
+    case Intrinsic::riscv_pnclipu:
+      if (UseImm)
+        Opc = IsByte ? RISCV::PNCLIPIU_B : RISCV::PNCLIPIU_H;
+      else
+        Opc = IsByte ? RISCV::PNCLIPU_BS : RISCV::PNCLIPU_HS;
+      break;
+    case Intrinsic::riscv_pnclipru:
+      if (UseImm)
+        Opc = IsByte ? RISCV::PNCLIPRIU_B : RISCV::PNCLIPRIU_H;
+      else
+        Opc = IsByte ? RISCV::PNCLIPRU_BS : RISCV::PNCLIPRU_HS;
+      break;
+    case Intrinsic::riscv_pnclip:
+      if (UseImm)
+        Opc = IsByte ? RISCV::PNCLIPI_B : RISCV::PNCLIPI_H;
+      else
+        Opc = IsByte ? RISCV::PNCLIP_BS : RISCV::PNCLIP_HS;
+      break;
+    case Intrinsic::riscv_pnclipr:
+      if (UseImm)
+        Opc = IsByte ? RISCV::PNCLIPRI_B : RISCV::PNCLIPRI_H;
+      else
+        Opc = IsByte ? RISCV::PNCLIPR_BS : RISCV::PNCLIPR_HS;
+      break;
+    default:
+      llvm_unreachable("unexpected intrinsic");
     }
     SDValue Lo = DAG.getNode(ISD::EXTRACT_ELEMENT, DL, MVT::i32, Op1,
                              DAG.getIntPtrConstant(0, DL));

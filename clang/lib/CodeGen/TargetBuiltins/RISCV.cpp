@@ -1665,15 +1665,24 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return Builder.CreateBitCast(Call, ResultType);
   }
 
-  // Packed Narrowing Shift Right (RV32 only). The IR intrinsic takes
-  // (i64 rs1, i32 shamt) and returns a narrow vector; the builtin signature
-  // uses a 64-bit vector for rs1, so bitcast the input to i64 before calling.
+  // Packed Narrowing Shift Right / Narrowing Clip (RV32 only). The IR
+  // intrinsic takes (i64 rs1, i32 shamt) and returns a narrow vector; the
+  // builtin signature uses a 64-bit vector for rs1, so bitcast the input to
+  // i64 before calling.
   case RISCV::BI__builtin_riscv_pnsrl_s_u8x4:
   case RISCV::BI__builtin_riscv_pnsrl_s_u16x2:
   case RISCV::BI__builtin_riscv_pnsra_s_i8x4:
   case RISCV::BI__builtin_riscv_pnsra_s_i16x2:
   case RISCV::BI__builtin_riscv_pnsrar_s_i8x4:
-  case RISCV::BI__builtin_riscv_pnsrar_s_i16x2: {
+  case RISCV::BI__builtin_riscv_pnsrar_s_i16x2:
+  case RISCV::BI__builtin_riscv_pnclipu_s_u8x4:
+  case RISCV::BI__builtin_riscv_pnclipu_s_u16x2:
+  case RISCV::BI__builtin_riscv_pnclipru_s_u8x4:
+  case RISCV::BI__builtin_riscv_pnclipru_s_u16x2:
+  case RISCV::BI__builtin_riscv_pnclip_s_i8x4:
+  case RISCV::BI__builtin_riscv_pnclip_s_i16x2:
+  case RISCV::BI__builtin_riscv_pnclipr_s_i8x4:
+  case RISCV::BI__builtin_riscv_pnclipr_s_i16x2: {
     unsigned IntID;
     switch (BuiltinID) {
     default: llvm_unreachable("unexpected builtin");
@@ -1688,6 +1697,22 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     case RISCV::BI__builtin_riscv_pnsrar_s_i8x4:
     case RISCV::BI__builtin_riscv_pnsrar_s_i16x2:
       IntID = Intrinsic::riscv_pnsrar;
+      break;
+    case RISCV::BI__builtin_riscv_pnclipu_s_u8x4:
+    case RISCV::BI__builtin_riscv_pnclipu_s_u16x2:
+      IntID = Intrinsic::riscv_pnclipu;
+      break;
+    case RISCV::BI__builtin_riscv_pnclipru_s_u8x4:
+    case RISCV::BI__builtin_riscv_pnclipru_s_u16x2:
+      IntID = Intrinsic::riscv_pnclipru;
+      break;
+    case RISCV::BI__builtin_riscv_pnclip_s_i8x4:
+    case RISCV::BI__builtin_riscv_pnclip_s_i16x2:
+      IntID = Intrinsic::riscv_pnclip;
+      break;
+    case RISCV::BI__builtin_riscv_pnclipr_s_i8x4:
+    case RISCV::BI__builtin_riscv_pnclipr_s_i16x2:
+      IntID = Intrinsic::riscv_pnclipr;
       break;
     }
     Ops[0] = Builder.CreateBitCast(Ops[0], Int64Ty);

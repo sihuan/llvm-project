@@ -2283,6 +2283,14 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pnsrl  : RVPNarrowingShift;
   def int_riscv_pnsra  : RVPNarrowingShift;
   def int_riscv_pnsrar : RVPNarrowingShift;
+
+  // Packed Narrowing Clip (RV32 only). Same wide-source / narrow-result
+  // shape as the narrowing shift family; the four base operations are the
+  // signed / unsigned cross rounded / non-rounded saturating right-shifts.
+  def int_riscv_pnclipu  : RVPNarrowingShift;
+  def int_riscv_pnclipru : RVPNarrowingShift;
+  def int_riscv_pnclip   : RVPNarrowingShift;
+  def int_riscv_pnclipr  : RVPNarrowingShift;
 } // TargetPrefix = "riscv"
 
 

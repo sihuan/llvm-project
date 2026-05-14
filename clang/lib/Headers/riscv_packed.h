@@ -552,6 +552,15 @@ __packed_pwshift(pnsra_s_i8x4,   int8x4_t,   int16x4_t)
 __packed_pwshift(pnsra_s_i16x2,  int16x2_t,  int32x2_t)
 __packed_pwshift(pnsrar_s_i8x4,  int8x4_t,   int16x4_t)
 __packed_pwshift(pnsrar_s_i16x2, int16x2_t,  int32x2_t)
+
+__packed_pwshift(pnclipu_s_u8x4,    uint8x4_t,  uint16x4_t)
+__packed_pwshift(pnclipu_s_u16x2,   uint16x2_t, uint32x2_t)
+__packed_pwshift(pnclipru_s_u8x4,   uint8x4_t,  uint16x4_t)
+__packed_pwshift(pnclipru_s_u16x2,  uint16x2_t, uint32x2_t)
+__packed_pwshift(pnclip_s_i8x4,     int8x4_t,   int16x4_t)
+__packed_pwshift(pnclip_s_i16x2,    int16x2_t,  int32x2_t)
+__packed_pwshift(pnclipr_s_i8x4,    int8x4_t,   int16x4_t)
+__packed_pwshift(pnclipr_s_i16x2,   int16x2_t,  int32x2_t)
 #endif
 
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
