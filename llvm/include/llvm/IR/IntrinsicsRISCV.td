@@ -2310,6 +2310,20 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pm2wsuba    : RVPWAddSubAcc;
   def int_riscv_pm2wsuba_x  : RVPWAddSubAcc;
   def int_riscv_pm2waddasu  : RVPWAddSubAcc;
+
+  // Packed Widening Convert (RV32 only). Single narrow-vector input
+  // widened to an i64 (GPR-pair) result. The three operations select the
+  // low-half signed widen, low-half unsigned widen, and high-half widen
+  // forms (each maps to a single pwadd / wzip*p instruction with one
+  // operand pinned to x0).
+  class RVPWConvert
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_anyvector_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  def int_riscv_pwcvt  : RVPWConvert;
+  def int_riscv_pwcvtu : RVPWConvert;
+  def int_riscv_pwcvth : RVPWConvert;
 } // TargetPrefix = "riscv"
 
 

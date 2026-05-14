@@ -314,6 +314,16 @@ def pm2wsub_x_i64  : RISCVBuiltin<"int64_t(_Vector<2, short>, _Vector<2, short>)
 def pm2wsuba_x_i64 : RISCVBuiltin<"int64_t(int64_t, _Vector<2, short>, _Vector<2, short>)">;
 def pm2waddsu_u64  : RISCVBuiltin<"int64_t(_Vector<2, short>, _Vector<2, unsigned short>)">;
 def pm2waddasu_u64 : RISCVBuiltin<"int64_t(int64_t, _Vector<2, short>, _Vector<2, unsigned short>)">;
+
+// Packed Widening Convert (RV32 only).
+def pwcvt_i16x4   : RISCVBuiltin<"_Vector<4, short>(_Vector<4, signed char>)">;
+def pwcvt_i32x2   : RISCVBuiltin<"_Vector<2, int>(_Vector<2, short>)">;
+def pwcvtu_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned char>)">;
+def pwcvtu_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned short>)">;
+def pwcvth_i16x4  : RISCVBuiltin<"_Vector<4, short>(_Vector<4, signed char>)">;
+def pwcvth_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned char>)">;
+def pwcvth_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, short>)">;
+def pwcvth_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned short>)">;
 } // Features = "experimental-p,32bit"
 
 // Packed Exchanged Addition and Subtraction (halfword form, RV32 and RV64).

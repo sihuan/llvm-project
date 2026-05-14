@@ -16070,6 +16070,43 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
                                     Split.getValue(0), Split.getValue(1)));
       return;
     }
+    case Intrinsic::riscv_pwcvt:
+    case Intrinsic::riscv_pwcvtu:
+    case Intrinsic::riscv_pwcvth: {
+      // Packed Widening Convert on RV32: emit pwadd / wzip*p with one
+      // operand pinned to x0. pwcvt sign-extends via pwadd (rs2=x0);
+      // pwcvtu zero-extends via wzip (rs2=x0); pwcvth shifts the narrow
+      // input into the high halves via wzip (rs1=x0).
+      if (Subtarget.is64Bit() || N->getValueType(0) != MVT::i64)
+        return;
+      MVT InVT = N->getOperand(1).getSimpleValueType();
+      unsigned Opc;
+      if (InVT == MVT::v4i8) {
+        switch (IntNo) {
+        case Intrinsic::riscv_pwcvt:  Opc = RISCV::PWADD_B; break;
+        case Intrinsic::riscv_pwcvtu:
+        case Intrinsic::riscv_pwcvth: Opc = RISCV::WZIP8P;  break;
+        }
+      } else if (InVT == MVT::v2i16) {
+        switch (IntNo) {
+        case Intrinsic::riscv_pwcvt:  Opc = RISCV::PWADD_H; break;
+        case Intrinsic::riscv_pwcvtu:
+        case Intrinsic::riscv_pwcvth: Opc = RISCV::WZIP16P; break;
+        }
+      } else {
+        return;
+      }
+      SDValue Zero = DAG.getRegister(RISCV::X0, MVT::i32);
+      SDValue Rs1 = IntNo == Intrinsic::riscv_pwcvth ? Zero : N->getOperand(1);
+      SDValue Rs2 = IntNo == Intrinsic::riscv_pwcvth ? N->getOperand(1) : Zero;
+      SDValue Pair =
+          SDValue(DAG.getMachineNode(Opc, DL, MVT::Untyped, Rs1, Rs2), 0);
+      SDValue Split = DAG.getNode(RISCVISD::SplitGPRPair, DL,
+                                  DAG.getVTList(MVT::i32, MVT::i32), Pair);
+      Results.push_back(DAG.getNode(ISD::BUILD_PAIR, DL, MVT::i64,
+                                    Split.getValue(0), Split.getValue(1)));
+      return;
+    }
     case Intrinsic::riscv_pwadda:
     case Intrinsic::riscv_pwaddau:
     case Intrinsic::riscv_pwsuba:

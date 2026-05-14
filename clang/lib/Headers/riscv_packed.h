@@ -585,6 +585,21 @@ __packed_pm2w (pm2wsub_x_i64,   int64_t,  int16x2_t,  int16x2_t)
 __packed_pm2wa(pm2wsuba_x_i64,  int64_t,  int16x2_t,  int16x2_t)
 __packed_pm2w (pm2waddsu_u64,   int64_t,  int16x2_t,  uint16x2_t)
 __packed_pm2wa(pm2waddasu_u64,  int64_t,  int16x2_t,  uint16x2_t)
+
+/* Packed Widening Convert (RV32 only). */
+#define __packed_pwcvt(name, r_ty, a_ty)                                       \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(a_ty __rs1) {                                                 \
+    return __builtin_riscv_##name(__rs1);                                      \
+  }
+__packed_pwcvt(pwcvt_i16x4,  int16x4_t,  int8x4_t)
+__packed_pwcvt(pwcvt_i32x2,  int32x2_t,  int16x2_t)
+__packed_pwcvt(pwcvtu_u16x4, uint16x4_t, uint8x4_t)
+__packed_pwcvt(pwcvtu_u32x2, uint32x2_t, uint16x2_t)
+__packed_pwcvt(pwcvth_i16x4, int16x4_t,  int8x4_t)
+__packed_pwcvt(pwcvth_u16x4, uint16x4_t, uint8x4_t)
+__packed_pwcvt(pwcvth_i32x2, int32x2_t,  int16x2_t)
+__packed_pwcvt(pwcvth_u32x2, uint32x2_t, uint16x2_t)
 #endif
 
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
@@ -1025,6 +1040,7 @@ __packed_pmulh_parts_acc_rv64_scalar(mhaccsu_h1_i32,  int32_t, int32x2_t,
 #undef __packed_pwshift
 #undef __packed_pm2w
 #undef __packed_pm2wa
+#undef __packed_pwcvt
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)
