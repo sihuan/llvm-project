@@ -123,6 +123,34 @@ typedef uint32_t uint32x2_t __attribute__((__vector_size__(8), __aligned__(8)));
     return __rd + __builtin_convertvector(__p >> (SHIFT), r_ty);               \
   }
 
+/* Cross-XLEN packed multiply-parts wrapper used on RV64 to expose the
+ * "32-bit input" form of these intrinsics. The instruction processes packed
+ * elements; we synthesize a wider operand vector with the unused upper half
+ * left zero, then narrow the result back. */
+#define __packed_pmul_parts_rv64_half(name, r_narrow_ty, r_wide_ty,            \
+                                      a_narrow_ty, a_wide_ty,                  \
+                                      b_narrow_ty, b_wide_ty, wide_name)       \
+  static __inline__ r_narrow_ty __DEFAULT_FN_ATTRS                             \
+  __riscv_##name(a_narrow_ty __rs1, b_narrow_ty __rs2) {                       \
+    a_wide_ty __aw = {__rs1[0], __rs1[1], __rs1[2], __rs1[3], 0, 0, 0, 0};     \
+    b_wide_ty __bw = {__rs2[0], __rs2[1], __rs2[2], __rs2[3], 0, 0, 0, 0};     \
+    r_wide_ty __r = __builtin_riscv_##wide_name(__aw, __bw);                   \
+    return (r_narrow_ty){__r[0], __r[1]};                                      \
+  }
+
+/* Cross-XLEN packed multiply-parts wrapper for the halfword scalar form
+ * (mul.h00 etc.). On RV64 we use the pmul.w.h00 family and take lane 0. */
+#define __packed_pmul_parts_rv64_scalar(name, r_ty, vec_r_ty,                  \
+                                        a_ty, a_wide_ty,                       \
+                                        b_ty, b_wide_ty, vec_name)             \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(a_ty __rs1, b_ty __rs2) {                                     \
+    a_wide_ty __aw = {__rs1[0], __rs1[1], 0, 0};                               \
+    b_wide_ty __bw = {__rs2[0], __rs2[1], 0, 0};                               \
+    vec_r_ty __r = __builtin_riscv_##vec_name(__aw, __bw);                     \
+    return __r[0];                                                             \
+  }
+
 /* Packed rounding multiply-high accumulate. */
 #define __packed_pmhracc(name, r_ty, a_ty, b_ty, prod_ty, SHIFT)               \
   static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
@@ -337,6 +365,27 @@ __packed_exchange_add_sub(pssh1sadd_i16x2, int16x2_t)
 __packed_exchange_add_sub(pmulq_i16x2,  int16x2_t)
 __packed_exchange_add_sub(pmulqr_i16x2, int16x2_t)
 
+#if __riscv_xlen == 32
+/* Packed Multiply Parts (RV32 form, direct builtin) */
+__packed_pm_horiz_binary(pmul_b00_i16x2,    int16x2_t,  int8x4_t,  int8x4_t)
+__packed_pm_horiz_binary(pmul_b01_i16x2,    int16x2_t,  int8x4_t,  int8x4_t)
+__packed_pm_horiz_binary(pmul_b11_i16x2,    int16x2_t,  int8x4_t,  int8x4_t)
+__packed_pm_horiz_binary(pmulu_b00_u16x2,   uint16x2_t, uint8x4_t, uint8x4_t)
+__packed_pm_horiz_binary(pmulu_b01_u16x2,   uint16x2_t, uint8x4_t, uint8x4_t)
+__packed_pm_horiz_binary(pmulu_b11_u16x2,   uint16x2_t, uint8x4_t, uint8x4_t)
+__packed_pm_horiz_binary(pmulsu_b00_i16x2,  int16x2_t,  int8x4_t,  uint8x4_t)
+__packed_pm_horiz_binary(pmulsu_b11_i16x2,  int16x2_t,  int8x4_t,  uint8x4_t)
+
+__packed_pm_horiz_binary(mul_h00_i32,    int32_t,  int16x2_t,  int16x2_t)
+__packed_pm_horiz_binary(mul_h01_i32,    int32_t,  int16x2_t,  int16x2_t)
+__packed_pm_horiz_binary(mul_h11_i32,    int32_t,  int16x2_t,  int16x2_t)
+__packed_pm_horiz_binary(mulu_h00_u32,   uint32_t, uint16x2_t, uint16x2_t)
+__packed_pm_horiz_binary(mulu_h01_u32,   uint32_t, uint16x2_t, uint16x2_t)
+__packed_pm_horiz_binary(mulu_h11_u32,   uint32_t, uint16x2_t, uint16x2_t)
+__packed_pm_horiz_binary(mulsu_h00_i32,  int32_t,  int16x2_t,  uint16x2_t)
+__packed_pm_horiz_binary(mulsu_h11_i32,  int32_t,  int16x2_t,  uint16x2_t)
+#endif
+
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
  * Intermediate product is a 32-bit-element-wide vector with the same lane
  * count as the input. */
@@ -479,6 +528,87 @@ __packed_pmhacc (pmhaccu_u32x2,   uint32x2_t, uint32x2_t, uint32x2_t, __riscv_ui
 __packed_pmhracc(pmhraccu_u32x2,  uint32x2_t, uint32x2_t, uint32x2_t, __riscv_uint64x2_t, 32)
 __packed_pmhacc (pmhaccsu_i32x2,  int32x2_t,  int32x2_t,  uint32x2_t, __riscv_int64x2_t,  32)
 __packed_pmhracc(pmhraccsu_i32x2, int32x2_t,  int32x2_t,  uint32x2_t, __riscv_int64x2_t,  32)
+
+/* Packed Multiply Parts: byte-pair (RV64 64-bit form, direct builtin) */
+__packed_pm_horiz_binary(pmul_b00_i16x4,    int16x4_t,  int8x8_t,  int8x8_t)
+__packed_pm_horiz_binary(pmul_b01_i16x4,    int16x4_t,  int8x8_t,  int8x8_t)
+__packed_pm_horiz_binary(pmul_b11_i16x4,    int16x4_t,  int8x8_t,  int8x8_t)
+__packed_pm_horiz_binary(pmulu_b00_u16x4,   uint16x4_t, uint8x8_t, uint8x8_t)
+__packed_pm_horiz_binary(pmulu_b01_u16x4,   uint16x4_t, uint8x8_t, uint8x8_t)
+__packed_pm_horiz_binary(pmulu_b11_u16x4,   uint16x4_t, uint8x8_t, uint8x8_t)
+__packed_pm_horiz_binary(pmulsu_b00_i16x4,  int16x4_t,  int8x8_t,  uint8x8_t)
+__packed_pm_horiz_binary(pmulsu_b11_i16x4,  int16x4_t,  int8x8_t,  uint8x8_t)
+
+/* Packed Multiply Parts: halfword-pair vector form (RV64 only, pmul.w.h*) */
+__packed_pm_horiz_binary(pmul_h00_i32x2,    int32x2_t,  int16x4_t,  int16x4_t)
+__packed_pm_horiz_binary(pmul_h01_i32x2,    int32x2_t,  int16x4_t,  int16x4_t)
+__packed_pm_horiz_binary(pmul_h11_i32x2,    int32x2_t,  int16x4_t,  int16x4_t)
+__packed_pm_horiz_binary(pmulu_h00_u32x2,   uint32x2_t, uint16x4_t, uint16x4_t)
+__packed_pm_horiz_binary(pmulu_h01_u32x2,   uint32x2_t, uint16x4_t, uint16x4_t)
+__packed_pm_horiz_binary(pmulu_h11_u32x2,   uint32x2_t, uint16x4_t, uint16x4_t)
+__packed_pm_horiz_binary(pmulsu_h00_i32x2,  int32x2_t,  int16x4_t,  uint16x4_t)
+__packed_pm_horiz_binary(pmulsu_h11_i32x2,  int32x2_t,  int16x4_t,  uint16x4_t)
+
+/* Packed Multiply Parts: word-pair scalar form (RV64 only, mul.w*) */
+__packed_pm_horiz_binary(mul_w00_i64,    int64_t,  int32x2_t,  int32x2_t)
+__packed_pm_horiz_binary(mul_w01_i64,    int64_t,  int32x2_t,  int32x2_t)
+__packed_pm_horiz_binary(mul_w11_i64,    int64_t,  int32x2_t,  int32x2_t)
+__packed_pm_horiz_binary(mulu_w00_u64,   uint64_t, uint32x2_t, uint32x2_t)
+__packed_pm_horiz_binary(mulu_w01_u64,   uint64_t, uint32x2_t, uint32x2_t)
+__packed_pm_horiz_binary(mulu_w11_u64,   uint64_t, uint32x2_t, uint32x2_t)
+__packed_pm_horiz_binary(mulsu_w00_i64,  int64_t,  int32x2_t,  uint32x2_t)
+__packed_pm_horiz_binary(mulsu_w11_i64,  int64_t,  int32x2_t,  uint32x2_t)
+
+/* Cross-XLEN forms exposed on RV64 via widening of the i16x4 / i32x2 form. */
+__packed_pmul_parts_rv64_half(pmul_b00_i16x2,    int16x2_t, int16x4_t,
+                              int8x4_t, int8x8_t, int8x4_t, int8x8_t,
+                              pmul_b00_i16x4)
+__packed_pmul_parts_rv64_half(pmul_b01_i16x2,    int16x2_t, int16x4_t,
+                              int8x4_t, int8x8_t, int8x4_t, int8x8_t,
+                              pmul_b01_i16x4)
+__packed_pmul_parts_rv64_half(pmul_b11_i16x2,    int16x2_t, int16x4_t,
+                              int8x4_t, int8x8_t, int8x4_t, int8x8_t,
+                              pmul_b11_i16x4)
+__packed_pmul_parts_rv64_half(pmulu_b00_u16x2,   uint16x2_t, uint16x4_t,
+                              uint8x4_t, uint8x8_t, uint8x4_t, uint8x8_t,
+                              pmulu_b00_u16x4)
+__packed_pmul_parts_rv64_half(pmulu_b01_u16x2,   uint16x2_t, uint16x4_t,
+                              uint8x4_t, uint8x8_t, uint8x4_t, uint8x8_t,
+                              pmulu_b01_u16x4)
+__packed_pmul_parts_rv64_half(pmulu_b11_u16x2,   uint16x2_t, uint16x4_t,
+                              uint8x4_t, uint8x8_t, uint8x4_t, uint8x8_t,
+                              pmulu_b11_u16x4)
+__packed_pmul_parts_rv64_half(pmulsu_b00_i16x2,  int16x2_t, int16x4_t,
+                              int8x4_t, int8x8_t, uint8x4_t, uint8x8_t,
+                              pmulsu_b00_i16x4)
+__packed_pmul_parts_rv64_half(pmulsu_b11_i16x2,  int16x2_t, int16x4_t,
+                              int8x4_t, int8x8_t, uint8x4_t, uint8x8_t,
+                              pmulsu_b11_i16x4)
+
+__packed_pmul_parts_rv64_scalar(mul_h00_i32,   int32_t,  int32x2_t,
+                                int16x2_t, int16x4_t, int16x2_t, int16x4_t,
+                                pmul_h00_i32x2)
+__packed_pmul_parts_rv64_scalar(mul_h01_i32,   int32_t,  int32x2_t,
+                                int16x2_t, int16x4_t, int16x2_t, int16x4_t,
+                                pmul_h01_i32x2)
+__packed_pmul_parts_rv64_scalar(mul_h11_i32,   int32_t,  int32x2_t,
+                                int16x2_t, int16x4_t, int16x2_t, int16x4_t,
+                                pmul_h11_i32x2)
+__packed_pmul_parts_rv64_scalar(mulu_h00_u32,  uint32_t, uint32x2_t,
+                                uint16x2_t, uint16x4_t, uint16x2_t, uint16x4_t,
+                                pmulu_h00_u32x2)
+__packed_pmul_parts_rv64_scalar(mulu_h01_u32,  uint32_t, uint32x2_t,
+                                uint16x2_t, uint16x4_t, uint16x2_t, uint16x4_t,
+                                pmulu_h01_u32x2)
+__packed_pmul_parts_rv64_scalar(mulu_h11_u32,  uint32_t, uint32x2_t,
+                                uint16x2_t, uint16x4_t, uint16x2_t, uint16x4_t,
+                                pmulu_h11_u32x2)
+__packed_pmul_parts_rv64_scalar(mulsu_h00_i32, int32_t,  int32x2_t,
+                                int16x2_t, int16x4_t, uint16x2_t, uint16x4_t,
+                                pmulsu_h00_i32x2)
+__packed_pmul_parts_rv64_scalar(mulsu_h11_i32, int32_t,  int32x2_t,
+                                int16x2_t, int16x4_t, uint16x2_t, uint16x4_t,
+                                pmulsu_h11_i32x2)
 #endif
 
 #undef __packed_splat2
@@ -500,6 +630,8 @@ __packed_pmhracc(pmhraccsu_i32x2, int32x2_t,  int32x2_t,  uint32x2_t, __riscv_in
 #undef __packed_pmulhr
 #undef __packed_pmhacc
 #undef __packed_pmhracc
+#undef __packed_pmul_parts_rv64_half
+#undef __packed_pmul_parts_rv64_scalar
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)

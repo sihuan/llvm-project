@@ -2078,6 +2078,47 @@ let TargetPrefix = "riscv" in {
 } // TargetPrefix = "riscv"
 
 
+// Packed SIMD extensions: Packed Multiply Parts
+//===----------------------------------------------------------------------===//
+let TargetPrefix = "riscv" in {
+  class RVPMulParts
+      : DefaultAttrsIntrinsic<[llvm_any_ty],
+                              [llvm_anyvector_ty, LLVMMatchType<1>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  // Byte-pair multiply (.h.b00 / .h.b01 / .h.b11 family).
+  def int_riscv_pmul_b00    : RVPMulParts;
+  def int_riscv_pmul_b01    : RVPMulParts;
+  def int_riscv_pmul_b11    : RVPMulParts;
+  def int_riscv_pmulu_b00   : RVPMulParts;
+  def int_riscv_pmulu_b01   : RVPMulParts;
+  def int_riscv_pmulu_b11   : RVPMulParts;
+  def int_riscv_pmulsu_b00  : RVPMulParts;
+  def int_riscv_pmulsu_b11  : RVPMulParts;
+
+  // Halfword-pair multiply (.w.h00 / .w.h01 / .w.h11 family; also mul.h*
+  // scalar form on RV32).
+  def int_riscv_pmul_h00    : RVPMulParts;
+  def int_riscv_pmul_h01    : RVPMulParts;
+  def int_riscv_pmul_h11    : RVPMulParts;
+  def int_riscv_pmulu_h00   : RVPMulParts;
+  def int_riscv_pmulu_h01   : RVPMulParts;
+  def int_riscv_pmulu_h11   : RVPMulParts;
+  def int_riscv_pmulsu_h00  : RVPMulParts;
+  def int_riscv_pmulsu_h11  : RVPMulParts;
+
+  // Word-pair multiply (mul.w* scalar form on RV64).
+  def int_riscv_pmul_w00    : RVPMulParts;
+  def int_riscv_pmul_w01    : RVPMulParts;
+  def int_riscv_pmul_w11    : RVPMulParts;
+  def int_riscv_pmulu_w00   : RVPMulParts;
+  def int_riscv_pmulu_w01   : RVPMulParts;
+  def int_riscv_pmulu_w11   : RVPMulParts;
+  def int_riscv_pmulsu_w00  : RVPMulParts;
+  def int_riscv_pmulsu_w11  : RVPMulParts;
+} // TargetPrefix = "riscv"
+
+
 //===----------------------------------------------------------------------===//
 // Zvfofp8min - OFP8 conversion extension
 // The Zvfofp8min extension provides basic support for the two 8-bit

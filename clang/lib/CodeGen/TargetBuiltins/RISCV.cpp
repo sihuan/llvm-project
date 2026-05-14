@@ -1365,7 +1365,62 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   RVP_EAS_CASES(pmulqr_i16x2, riscv_pmulqr);
   RVP_EAS_CASES(pmulqr_i16x4, riscv_pmulqr);
   RVP_EAS_CASES(pmulqr_i32x2, riscv_pmulqr);
+
+  // Packed Multiply Parts: result and input vector types are independently
+  // overloaded, so the intrinsic-types list has two entries.
+#define RVP_MULP_CASES(BUILTIN, INTRINSIC)                                     \
+  case RISCV::BI__builtin_riscv_##BUILTIN:                                     \
+    ID = Intrinsic::INTRINSIC;                                                 \
+    IntrinsicTypes = {ResultType, Ops[0]->getType()};                          \
+    break
+
+  // Packed Multiply Parts: byte-pair (RV32 and RV64).
+  RVP_MULP_CASES(pmul_b00_i16x2,    riscv_pmul_b00);
+  RVP_MULP_CASES(pmul_b00_i16x4,    riscv_pmul_b00);
+  RVP_MULP_CASES(pmul_b01_i16x2,    riscv_pmul_b01);
+  RVP_MULP_CASES(pmul_b01_i16x4,    riscv_pmul_b01);
+  RVP_MULP_CASES(pmul_b11_i16x2,    riscv_pmul_b11);
+  RVP_MULP_CASES(pmul_b11_i16x4,    riscv_pmul_b11);
+  RVP_MULP_CASES(pmulu_b00_u16x2,   riscv_pmulu_b00);
+  RVP_MULP_CASES(pmulu_b00_u16x4,   riscv_pmulu_b00);
+  RVP_MULP_CASES(pmulu_b01_u16x2,   riscv_pmulu_b01);
+  RVP_MULP_CASES(pmulu_b01_u16x4,   riscv_pmulu_b01);
+  RVP_MULP_CASES(pmulu_b11_u16x2,   riscv_pmulu_b11);
+  RVP_MULP_CASES(pmulu_b11_u16x4,   riscv_pmulu_b11);
+  RVP_MULP_CASES(pmulsu_b00_i16x2,  riscv_pmulsu_b00);
+  RVP_MULP_CASES(pmulsu_b00_i16x4,  riscv_pmulsu_b00);
+  RVP_MULP_CASES(pmulsu_b11_i16x2,  riscv_pmulsu_b11);
+  RVP_MULP_CASES(pmulsu_b11_i16x4,  riscv_pmulsu_b11);
+
+  // Packed Multiply Parts: halfword-pair scalar (RV32) and vector (RV64).
+  RVP_MULP_CASES(mul_h00_i32,    riscv_pmul_h00);
+  RVP_MULP_CASES(mul_h01_i32,    riscv_pmul_h01);
+  RVP_MULP_CASES(mul_h11_i32,    riscv_pmul_h11);
+  RVP_MULP_CASES(mulu_h00_u32,   riscv_pmulu_h00);
+  RVP_MULP_CASES(mulu_h01_u32,   riscv_pmulu_h01);
+  RVP_MULP_CASES(mulu_h11_u32,   riscv_pmulu_h11);
+  RVP_MULP_CASES(mulsu_h00_i32,  riscv_pmulsu_h00);
+  RVP_MULP_CASES(mulsu_h11_i32,  riscv_pmulsu_h11);
+  RVP_MULP_CASES(pmul_h00_i32x2,   riscv_pmul_h00);
+  RVP_MULP_CASES(pmul_h01_i32x2,   riscv_pmul_h01);
+  RVP_MULP_CASES(pmul_h11_i32x2,   riscv_pmul_h11);
+  RVP_MULP_CASES(pmulu_h00_u32x2,  riscv_pmulu_h00);
+  RVP_MULP_CASES(pmulu_h01_u32x2,  riscv_pmulu_h01);
+  RVP_MULP_CASES(pmulu_h11_u32x2,  riscv_pmulu_h11);
+  RVP_MULP_CASES(pmulsu_h00_i32x2, riscv_pmulsu_h00);
+  RVP_MULP_CASES(pmulsu_h11_i32x2, riscv_pmulsu_h11);
+
+  // Packed Multiply Parts: word-pair scalar (RV64 only, mul.w*).
+  RVP_MULP_CASES(mul_w00_i64,   riscv_pmul_w00);
+  RVP_MULP_CASES(mul_w01_i64,   riscv_pmul_w01);
+  RVP_MULP_CASES(mul_w11_i64,   riscv_pmul_w11);
+  RVP_MULP_CASES(mulu_w00_u64,  riscv_pmulu_w00);
+  RVP_MULP_CASES(mulu_w01_u64,  riscv_pmulu_w01);
+  RVP_MULP_CASES(mulu_w11_u64,  riscv_pmulu_w11);
+  RVP_MULP_CASES(mulsu_w00_i64, riscv_pmulsu_w00);
+  RVP_MULP_CASES(mulsu_w11_i64, riscv_pmulsu_w11);
 #undef RVP_EAS_CASES
+#undef RVP_MULP_CASES
 
   case RISCV::BI__builtin_riscv_clz_32:
   case RISCV::BI__builtin_riscv_clz_64: {

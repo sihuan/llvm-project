@@ -2121,6 +2121,42 @@ let Predicates = [HasStdExtP, IsRV32] in {
             (PMULQ_H GPR:$rs1, GPR:$rs2)>;
   def : Pat<(v2i16 (int_riscv_pmulqr (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
             (PMULQR_H GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply Parts: byte-pair multiply (RV32 form, v4i8 -> v2i16).
+  def : Pat<(v2i16 (int_riscv_pmul_b00   (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMUL_H_B00   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmul_b01   (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMUL_H_B01   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmul_b11   (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMUL_H_B11   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmulu_b00  (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMULU_H_B00  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmulu_b01  (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMULU_H_B01  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmulu_b11  (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMULU_H_B11  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmulsu_b00 (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMULSU_H_B00 GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmulsu_b11 (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMULSU_H_B11 GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply Parts: halfword-pair scalar multiply (RV32 only, mul.h*).
+  def : Pat<(i32 (int_riscv_pmul_h00   (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MUL_H00   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmul_h01   (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MUL_H01   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmul_h11   (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MUL_H11   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmulu_h00  (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MULU_H00  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmulu_h01  (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MULU_H01  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmulu_h11  (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MULU_H11  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmulsu_h00 (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MULSU_H00 GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmulsu_h11 (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MULSU_H11 GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV32]
 
 let Predicates = [HasStdExtP, IsRV64] in {
@@ -2474,4 +2510,58 @@ let Predicates = [HasStdExtP, IsRV64] in {
             (PMULQ_W GPR:$rs1, GPR:$rs2)>;
   def : Pat<(v2i32 (int_riscv_pmulqr (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
             (PMULQR_W GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply Parts: byte-pair multiply (RV64 form, v8i8 -> v4i16).
+  def : Pat<(v4i16 (int_riscv_pmul_b00   (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMUL_H_B00   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmul_b01   (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMUL_H_B01   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmul_b11   (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMUL_H_B11   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmulu_b00  (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMULU_H_B00  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmulu_b01  (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMULU_H_B01  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmulu_b11  (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMULU_H_B11  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmulsu_b00 (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMULSU_H_B00 GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmulsu_b11 (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMULSU_H_B11 GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply Parts: halfword-pair vector multiply (RV64 only, pmul.w.h*).
+  def : Pat<(v2i32 (int_riscv_pmul_h00   (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMUL_W_H00   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmul_h01   (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMUL_W_H01   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmul_h11   (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMUL_W_H11   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmulu_h00  (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMULU_W_H00  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmulu_h01  (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMULU_W_H01  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmulu_h11  (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMULU_W_H11  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmulsu_h00 (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMULSU_W_H00 GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmulsu_h11 (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMULSU_W_H11 GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply Parts: word-pair scalar multiply (RV64 only, mul.w*).
+  def : Pat<(i64 (int_riscv_pmul_w00   (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MUL_W00   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmul_w01   (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MUL_W01   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmul_w11   (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MUL_W11   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmulu_w00  (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MULU_W00  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmulu_w01  (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MULU_W01  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmulu_w11  (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MULU_W11  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmulsu_w00 (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MULSU_W00 GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmulsu_w11 (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MULSU_W11 GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV64]
