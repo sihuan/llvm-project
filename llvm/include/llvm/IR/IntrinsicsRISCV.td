@@ -2248,6 +2248,13 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pwmul   : RVPWAddSub;
   def int_riscv_pwmulu  : RVPWAddSub;
   def int_riscv_pwmulsu : RVPWAddSub;
+
+  // Packed Widening Multiply Accumulate (RV32 only). i64 accumulator rd + two
+  // narrow vector inputs; same i64-pair shape as the widening add/sub
+  // accumulate family.
+  def int_riscv_pwmacc   : RVPWAddSubAcc;
+  def int_riscv_pwmaccu  : RVPWAddSubAcc;
+  def int_riscv_pwmaccsu : RVPWAddSubAcc;
 } // TargetPrefix = "riscv"
 
 

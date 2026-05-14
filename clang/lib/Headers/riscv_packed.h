@@ -525,6 +525,11 @@ __packed_pwadd_sub(pwmulu_u16x4,  uint16x4_t, uint8x4_t, uint8x4_t)
 __packed_pwadd_sub(pwmulu_u32x2,  uint32x2_t, uint16x2_t, uint16x2_t)
 __packed_pwadd_sub(pwmulsu_i16x4, int16x4_t,  int8x4_t,  uint8x4_t)
 __packed_pwadd_sub(pwmulsu_i32x2, int32x2_t,  int16x2_t, uint16x2_t)
+
+/* Packed Widening Multiply Accumulate (RV32 only). */
+__packed_pwadd_sub_acc(pwmacc_i32x2,   int32x2_t,  int16x2_t,  int16x2_t)
+__packed_pwadd_sub_acc(pwmaccu_u32x2,  uint32x2_t, uint16x2_t, uint16x2_t)
+__packed_pwadd_sub_acc(pwmaccsu_i32x2, int32x2_t,  int16x2_t,  uint16x2_t)
 #endif
 
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
