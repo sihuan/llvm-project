@@ -623,6 +623,16 @@ __packed_pwadd_sub(pnzip_u8x4,  uint8x4_t, uint16x2_t, uint16x2_t)
 __packed_pwadd_sub(pnziph_i8x4, int8x4_t,  int16x2_t,  int16x2_t)
 __packed_pwadd_sub(pnziph_u8x4, uint8x4_t, uint16x2_t, uint16x2_t)
 
+/* Packed Widening Unzip (RV32 only). */
+__packed_pwcvt(pwunzipe_i16x2,  int16x2_t,  int8x4_t)
+__packed_pwcvt(pwunzipo_i16x2,  int16x2_t,  int8x4_t)
+__packed_pwcvt(pwunzipue_u16x2, uint16x2_t, uint8x4_t)
+__packed_pwcvt(pwunzipuo_u16x2, uint16x2_t, uint8x4_t)
+__packed_pwcvt(pwunziphe_i16x2, int16x2_t,  int8x4_t)
+__packed_pwcvt(pwunzipho_i16x2, int16x2_t,  int8x4_t)
+__packed_pwcvt(pwunziphe_u16x2, uint16x2_t, uint8x4_t)
+__packed_pwcvt(pwunzipho_u16x2, uint16x2_t, uint8x4_t)
+
 /* Packed Unzip (RV32 only). */
 __packed_pwcvt(punzipe_i8x4,  int8x4_t,   int8x8_t)
 __packed_pwcvt(punzipo_i8x4,  int8x4_t,   int8x8_t)
