@@ -16020,7 +16020,8 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
     case Intrinsic::riscv_pm2waddu:
     case Intrinsic::riscv_pm2wsub:
     case Intrinsic::riscv_pm2wsub_x:
-    case Intrinsic::riscv_pm2waddsu: {
+    case Intrinsic::riscv_pm2waddsu:
+    case Intrinsic::riscv_pzip: {
       // Packed Widening add/sub/mul on RV32: the underlying instruction
       // writes a GPR pair (untyped, 64-bit). Emit the machine instruction
       // directly, then split the pair into two i32s and reassemble as i64
@@ -16038,6 +16039,7 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
         case Intrinsic::riscv_pwmul:   Opc = RISCV::PWMUL_B;   break;
         case Intrinsic::riscv_pwmulu:  Opc = RISCV::PWMULU_B;  break;
         case Intrinsic::riscv_pwmulsu: Opc = RISCV::PWMULSU_B; break;
+        case Intrinsic::riscv_pzip:    Opc = RISCV::WZIP8P;    break;
         // pm2w* have no .b variant.
         default: return;
         }
@@ -16056,6 +16058,7 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
         case Intrinsic::riscv_pm2wsub:   Opc = RISCV::PM2WSUB_H;   break;
         case Intrinsic::riscv_pm2wsub_x: Opc = RISCV::PM2WSUB_HX;  break;
         case Intrinsic::riscv_pm2waddsu: Opc = RISCV::PM2WADDSU_H; break;
+        case Intrinsic::riscv_pzip:      Opc = RISCV::WZIP16P;     break;
         }
       } else {
         return;

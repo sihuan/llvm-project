@@ -1546,7 +1546,11 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   case RISCV::BI__builtin_riscv_pwmulu_u16x4:
   case RISCV::BI__builtin_riscv_pwmulu_u32x2:
   case RISCV::BI__builtin_riscv_pwmulsu_i16x4:
-  case RISCV::BI__builtin_riscv_pwmulsu_i32x2: {
+  case RISCV::BI__builtin_riscv_pwmulsu_i32x2:
+  case RISCV::BI__builtin_riscv_pzip_i8x8:
+  case RISCV::BI__builtin_riscv_pzip_u8x8:
+  case RISCV::BI__builtin_riscv_pzip_i16x4:
+  case RISCV::BI__builtin_riscv_pzip_u16x4: {
     unsigned IntID;
     switch (BuiltinID) {
     default: llvm_unreachable("unexpected builtin");
@@ -1577,6 +1581,12 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     case RISCV::BI__builtin_riscv_pwmulsu_i16x4:
     case RISCV::BI__builtin_riscv_pwmulsu_i32x2:
       IntID = Intrinsic::riscv_pwmulsu;
+      break;
+    case RISCV::BI__builtin_riscv_pzip_i8x8:
+    case RISCV::BI__builtin_riscv_pzip_u8x8:
+    case RISCV::BI__builtin_riscv_pzip_i16x4:
+    case RISCV::BI__builtin_riscv_pzip_u16x4:
+      IntID = Intrinsic::riscv_pzip;
       break;
     }
     llvm::Function *F = CGM.getIntrinsic(IntID, Ops[0]->getType());

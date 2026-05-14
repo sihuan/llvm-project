@@ -335,6 +335,12 @@ def pncvth_i8x4   : RISCVBuiltin<"_Vector<4, signed char>(_Vector<4, short>)">;
 def pncvth_u8x4   : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned short>)">;
 def pncvth_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<2, int>)">;
 def pncvth_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned int>)">;
+
+// Packed Zip (RV32 only).
+def pzip_i8x8  : RISCVBuiltin<"_Vector<8, signed char>(_Vector<4, signed char>, _Vector<4, signed char>)">;
+def pzip_u8x8  : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<4, unsigned char>, _Vector<4, unsigned char>)">;
+def pzip_i16x4 : RISCVBuiltin<"_Vector<4, short>(_Vector<2, short>, _Vector<2, short>)">;
+def pzip_u16x4 : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
 } // Features = "experimental-p,32bit"
 
 // Packed Exchanged Addition and Subtraction (halfword form, RV32 and RV64).

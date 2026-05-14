@@ -2324,6 +2324,11 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pwcvt  : RVPWConvert;
   def int_riscv_pwcvtu : RVPWConvert;
   def int_riscv_pwcvth : RVPWConvert;
+
+  // Packed Zip (RV32 only). Interleave two narrow vectors into one wide
+  // (i64 GPR-pair) result via wzip*p. Same i64-result / pair-of-narrow-
+  // vectors shape as the widening add/sub family.
+  def int_riscv_pzip : RVPWAddSub;
 } // TargetPrefix = "riscv"
 
 
