@@ -503,6 +503,35 @@ __packed_psubv_join(pjoin2_i16x4, int16x4_t,  int16x2_t)
 __packed_psubv_join(pjoin2_u16x4, uint16x4_t, uint16x2_t)
 #undef __packed_psubv_join
 
+/* Slide 1 up/down. */
+#define __packed_pslide1(name, v_ty, e_ty)                                     \
+  static __inline__ v_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(v_ty __rd, e_ty __rs1) {                                      \
+    return __builtin_riscv_##name(__rd, __rs1);                                \
+  }
+__packed_pslide1(pslide1up_i8x4,    int8x4_t,   int8_t)
+__packed_pslide1(pslide1up_u8x4,    uint8x4_t,  uint8_t)
+__packed_pslide1(pslide1up_i16x2,   int16x2_t,  int16_t)
+__packed_pslide1(pslide1up_u16x2,   uint16x2_t, uint16_t)
+__packed_pslide1(pslide1down_i8x4,  int8x4_t,   int8_t)
+__packed_pslide1(pslide1down_u8x4,  uint8x4_t,  uint8_t)
+__packed_pslide1(pslide1down_i16x2, int16x2_t,  int16_t)
+__packed_pslide1(pslide1down_u16x2, uint16x2_t, uint16_t)
+
+__packed_pslide1(pslide1up_i8x8,    int8x8_t,   int8_t)
+__packed_pslide1(pslide1up_u8x8,    uint8x8_t,  uint8_t)
+__packed_pslide1(pslide1up_i16x4,   int16x4_t,  int16_t)
+__packed_pslide1(pslide1up_u16x4,   uint16x4_t, uint16_t)
+__packed_pslide1(pslide1up_i32x2,   int32x2_t,  int32_t)
+__packed_pslide1(pslide1up_u32x2,   uint32x2_t, uint32_t)
+__packed_pslide1(pslide1down_i8x8,  int8x8_t,   int8_t)
+__packed_pslide1(pslide1down_u8x8,  uint8x8_t,  uint8_t)
+__packed_pslide1(pslide1down_i16x4, int16x4_t,  int16_t)
+__packed_pslide1(pslide1down_u16x4, uint16x4_t, uint16_t)
+__packed_pslide1(pslide1down_i32x2, int32x2_t,  int32_t)
+__packed_pslide1(pslide1down_u32x2, uint32x2_t, uint32_t)
+#undef __packed_pslide1
+
 /* Packed Element Join. */
 #define __packed_pjoin4(name, r_ty, e_ty)                                      \
   static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \

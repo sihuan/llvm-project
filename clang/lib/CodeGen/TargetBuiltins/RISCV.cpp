@@ -2004,6 +2004,67 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   case RISCV::BI__builtin_riscv_pset_u32_u32x2:
     return Builder.CreateInsertElement(Ops[0], Ops[1], Ops[2]);
 
+  // Slide 1 up / down. rd is the packed vector, rs1 is a scalar new element.
+  //   slide1up:   result = (rd << elt_bits) | (rs1 & elt_mask)
+  //               i.e. [rs1, rd[0], rd[1], ..., rd[N-2]]
+  //   slide1down: result = (rd >> elt_bits) | (rs1 << (N-1)*elt_bits)
+  //               i.e. [rd[1], rd[2], ..., rd[N-1], rs1]
+  case RISCV::BI__builtin_riscv_pslide1up_i8x4:
+  case RISCV::BI__builtin_riscv_pslide1up_u8x4:
+  case RISCV::BI__builtin_riscv_pslide1up_i16x2:
+  case RISCV::BI__builtin_riscv_pslide1up_u16x2:
+  case RISCV::BI__builtin_riscv_pslide1up_i8x8:
+  case RISCV::BI__builtin_riscv_pslide1up_u8x8:
+  case RISCV::BI__builtin_riscv_pslide1up_i16x4:
+  case RISCV::BI__builtin_riscv_pslide1up_u16x4:
+  case RISCV::BI__builtin_riscv_pslide1up_i32x2:
+  case RISCV::BI__builtin_riscv_pslide1up_u32x2:
+  case RISCV::BI__builtin_riscv_pslide1down_i8x4:
+  case RISCV::BI__builtin_riscv_pslide1down_u8x4:
+  case RISCV::BI__builtin_riscv_pslide1down_i16x2:
+  case RISCV::BI__builtin_riscv_pslide1down_u16x2:
+  case RISCV::BI__builtin_riscv_pslide1down_i8x8:
+  case RISCV::BI__builtin_riscv_pslide1down_u8x8:
+  case RISCV::BI__builtin_riscv_pslide1down_i16x4:
+  case RISCV::BI__builtin_riscv_pslide1down_u16x4:
+  case RISCV::BI__builtin_riscv_pslide1down_i32x2:
+  case RISCV::BI__builtin_riscv_pslide1down_u32x2: {
+    auto *VecTy = cast<llvm::FixedVectorType>(Ops[0]->getType());
+    unsigned N = VecTy->getNumElements();
+    unsigned EltBits = VecTy->getScalarSizeInBits();
+    unsigned VecBits = N * EltBits;
+    llvm::Type *VecIntTy = Builder.getIntNTy(VecBits);
+    bool IsUp = false;
+    switch (BuiltinID) {
+    case RISCV::BI__builtin_riscv_pslide1up_i8x4:
+    case RISCV::BI__builtin_riscv_pslide1up_u8x4:
+    case RISCV::BI__builtin_riscv_pslide1up_i16x2:
+    case RISCV::BI__builtin_riscv_pslide1up_u16x2:
+    case RISCV::BI__builtin_riscv_pslide1up_i8x8:
+    case RISCV::BI__builtin_riscv_pslide1up_u8x8:
+    case RISCV::BI__builtin_riscv_pslide1up_i16x4:
+    case RISCV::BI__builtin_riscv_pslide1up_u16x4:
+    case RISCV::BI__builtin_riscv_pslide1up_i32x2:
+    case RISCV::BI__builtin_riscv_pslide1up_u32x2:
+      IsUp = true;
+      break;
+    default:
+      break;
+    }
+    llvm::Value *RdInt = Builder.CreateBitCast(Ops[0], VecIntTy);
+    llvm::Value *Rs1Zext = Builder.CreateZExt(Ops[1], VecIntTy);
+    llvm::Value *Shifted, *Filler;
+    if (IsUp) {
+      Shifted = Builder.CreateShl(RdInt, EltBits);
+      Filler = Rs1Zext;  // rs1 lives in the low elt
+    } else {
+      Shifted = Builder.CreateLShr(RdInt, EltBits);
+      Filler = Builder.CreateShl(Rs1Zext, (N - 1) * EltBits);
+    }
+    llvm::Value *Result = Builder.CreateOr(Shifted, Filler);
+    return Builder.CreateBitCast(Result, ConvertType(E->getType()));
+  }
+
   // Packed Subvector Join. Concatenate two 32-bit subvectors into a 64-bit
   // packed vector via shufflevector.
   case RISCV::BI__builtin_riscv_pjoin2_i8x8:
