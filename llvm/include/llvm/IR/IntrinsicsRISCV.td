@@ -2271,6 +2271,18 @@ let TargetPrefix = "riscv" in {
 
   def int_riscv_pwsll : RVPWideningShift;
   def int_riscv_pwsla : RVPWideningShift;
+
+  // Packed Narrowing Shift Right (RV32 only): wide source (i64 GPR pair)
+  // shifted by an i32 scalar amount, producing a narrow vector result.
+  // ISel picks the immediate vs register form based on the shift amount.
+  class RVPNarrowingShift
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [llvm_i64_ty, llvm_i32_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  def int_riscv_pnsrl  : RVPNarrowingShift;
+  def int_riscv_pnsra  : RVPNarrowingShift;
+  def int_riscv_pnsrar : RVPNarrowingShift;
 } // TargetPrefix = "riscv"
 
 

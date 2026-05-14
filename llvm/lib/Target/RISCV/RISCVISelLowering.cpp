@@ -11492,6 +11492,58 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
   switch (IntNo) {
   default:
     break; // Don't custom lower most intrinsics.
+  case Intrinsic::riscv_pnsrl:
+  case Intrinsic::riscv_pnsra:
+  case Intrinsic::riscv_pnsrar: {
+    // Packed Narrowing Shift Right on RV32: wide rs1 is an i64 GPR pair,
+    // shifted by an i32 scalar to a narrow vector result. Build the GPR
+    // pair from the i64 operand and emit the machine instruction directly,
+    // picking the immediate vs register form based on the shift amount.
+    if (Subtarget.is64Bit())
+      return SDValue();
+    MVT OutVT = Op.getSimpleValueType();
+    if (OutVT != MVT::v4i8 && OutVT != MVT::v2i16)
+      return SDValue();
+    SDValue Op1 = Op.getOperand(1);
+    if (Op1.getValueType() != MVT::i64)
+      return SDValue();
+    SDValue Shamt = Op.getOperand(2);
+    bool IsArith = IntNo == Intrinsic::riscv_pnsra;
+    bool IsRound = IntNo == Intrinsic::riscv_pnsrar;
+    auto *CN = dyn_cast<ConstantSDNode>(Shamt);
+    unsigned ImmMax = OutVT == MVT::v4i8 ? 16 : 32;
+    bool UseImm = CN && CN->getZExtValue() < ImmMax;
+    unsigned Opc;
+    if (OutVT == MVT::v4i8) {
+      if (UseImm)
+        Opc = IsRound  ? RISCV::PNSRARI_B
+              : IsArith ? RISCV::PNSRAI_B
+                        : RISCV::PNSRLI_B;
+      else
+        Opc = IsRound  ? RISCV::PNSRAR_BS
+              : IsArith ? RISCV::PNSRA_BS
+                        : RISCV::PNSRL_BS;
+    } else {
+      if (UseImm)
+        Opc = IsRound  ? RISCV::PNSRARI_H
+              : IsArith ? RISCV::PNSRAI_H
+                        : RISCV::PNSRLI_H;
+      else
+        Opc = IsRound  ? RISCV::PNSRAR_HS
+              : IsArith ? RISCV::PNSRA_HS
+                        : RISCV::PNSRL_HS;
+    }
+    SDValue Lo = DAG.getNode(ISD::EXTRACT_ELEMENT, DL, MVT::i32, Op1,
+                             DAG.getIntPtrConstant(0, DL));
+    SDValue Hi = DAG.getNode(ISD::EXTRACT_ELEMENT, DL, MVT::i32, Op1,
+                             DAG.getIntPtrConstant(1, DL));
+    SDValue Pair =
+        DAG.getNode(RISCVISD::BuildGPRPair, DL, MVT::Untyped, Lo, Hi);
+    SDValue ShOp = UseImm
+                       ? DAG.getTargetConstant(CN->getZExtValue(), DL, MVT::i32)
+                       : Shamt;
+    return SDValue(DAG.getMachineNode(Opc, DL, OutVT, Pair, ShOp), 0);
+  }
   case Intrinsic::riscv_tuple_insert: {
     SDValue Vec = Op.getOperand(1);
     SDValue SubVec = Op.getOperand(2);

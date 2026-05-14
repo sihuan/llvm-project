@@ -282,6 +282,14 @@ def pwsll_s_u16x4 : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned
 def pwsll_s_u32x2 : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned short>, unsigned int)">;
 def pwsla_s_i16x4 : RISCVBuiltin<"_Vector<4, short>(_Vector<4, signed char>, unsigned int)">;
 def pwsla_s_i32x2 : RISCVBuiltin<"_Vector<2, int>(_Vector<2, short>, unsigned int)">;
+
+// Packed Narrowing Shift Right (RV32 only).
+def pnsrl_s_u8x4   : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned short>, unsigned int)">;
+def pnsrl_s_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned int>, unsigned int)">;
+def pnsra_s_i8x4   : RISCVBuiltin<"_Vector<4, signed char>(_Vector<4, short>, unsigned int)">;
+def pnsra_s_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<2, int>, unsigned int)">;
+def pnsrar_s_i8x4  : RISCVBuiltin<"_Vector<4, signed char>(_Vector<4, short>, unsigned int)">;
+def pnsrar_s_i16x2 : RISCVBuiltin<"_Vector<2, short>(_Vector<2, int>, unsigned int)">;
 } // Features = "experimental-p,32bit"
 
 // Packed Exchanged Addition and Subtraction (halfword form, RV32 and RV64).
