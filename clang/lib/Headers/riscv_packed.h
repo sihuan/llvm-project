@@ -1330,6 +1330,168 @@ __riscv_srx_32(uint32_t __rd, uint32_t __rs1, unsigned __shamt) {
   return __builtin_elementwise_fshr(__rs1, __rd, __shamt);
 }
 
+/* Averaging subtract: (a - b) >> 1. */
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_asub_i32(int32_t __rs1, int32_t __rs2) {
+  return __builtin_riscv_asub_i32(__rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_asubu_u32(uint32_t __rs1, uint32_t __rs2) {
+  return __builtin_riscv_asubu_u32(__rs1, __rs2);
+}
+
+/* Saturate to N bits (constant shamt). */
+#define __riscv_sati_i32(rs1, shamt)                                           \
+  __builtin_riscv_sati_i32((int32_t)(rs1), (shamt))
+#define __riscv_usati_u32(rs1, shamt)                                          \
+  __builtin_riscv_usati_u32((int32_t)(rs1), (shamt))
+
+/* Saturating sh1add. */
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_ssh1sadd_i32(int32_t __rs1, int32_t __rs2) {
+  return __builtin_riscv_ssh1sadd_i32(__rs1, __rs2);
+}
+
+/* Rounding multiply-high. */
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_mulhr_i32(int32_t __rs1, int32_t __rs2) {
+  return __builtin_riscv_mulhr_i32(__rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_mulhru_u32(uint32_t __rs1, uint32_t __rs2) {
+  return __builtin_riscv_mulhru_u32(__rs1, __rs2);
+}
+
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_mulhrsu_i32(int32_t __rs1, uint32_t __rs2) {
+  return __builtin_riscv_mulhrsu_i32(__rs1, __rs2);
+}
+
+/* Multiply-high accumulate (rounding and non-rounding variants). */
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_mhacc_i32(int32_t __rd, int32_t __rs1, int32_t __rs2) {
+  return __builtin_riscv_mhacc_i32(__rd, __rs1, __rs2);
+}
+
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_mhracc_i32(int32_t __rd, int32_t __rs1, int32_t __rs2) {
+  return __builtin_riscv_mhracc_i32(__rd, __rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_mhaccu_u32(uint32_t __rd, uint32_t __rs1, uint32_t __rs2) {
+  return __builtin_riscv_mhaccu_u32(__rd, __rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_mhraccu_u32(uint32_t __rd, uint32_t __rs1, uint32_t __rs2) {
+  return __builtin_riscv_mhraccu_u32(__rd, __rs1, __rs2);
+}
+
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_mhaccsu_i32(int32_t __rd, int32_t __rs1, uint32_t __rs2) {
+  return __builtin_riscv_mhaccsu_i32(__rd, __rs1, __rs2);
+}
+
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_mhraccsu_i32(int32_t __rd, int32_t __rs1, uint32_t __rs2) {
+  return __builtin_riscv_mhraccsu_i32(__rd, __rs1, __rs2);
+}
+
+/* Q-format multiply. */
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_mulq_i32(int32_t __rs1, int32_t __rs2) {
+  return __builtin_riscv_mulq_i32(__rs1, __rs2);
+}
+
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_mulqr_i32(int32_t __rs1, int32_t __rs2) {
+  return __builtin_riscv_mulqr_i32(__rs1, __rs2);
+}
+
+/* Q-format multiply with widening accumulate (i64 acc + 2 x i32). */
+static __inline__ int64_t __DEFAULT_FN_ATTRS
+__riscv_mqwacc_i64(int64_t __rd, int32_t __rs1, int32_t __rs2) {
+  return __builtin_riscv_mqwacc_i64(__rd, __rs1, __rs2);
+}
+
+static __inline__ int64_t __DEFAULT_FN_ATTRS
+__riscv_mqrwacc_i64(int64_t __rd, int32_t __rs1, int32_t __rs2) {
+  return __builtin_riscv_mqrwacc_i64(__rd, __rs1, __rs2);
+}
+
+/* Compare-set-mask. Result is all-ones (-1) or zero, per element. */
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_mseq_i32(int32_t __rs1, int32_t __rs2) {
+  return __builtin_riscv_mseq_i32(__rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_mseq_u32(uint32_t __rs1, uint32_t __rs2) {
+  return __builtin_riscv_mseq_u32(__rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_mslt_u32(int32_t __rs1, int32_t __rs2) {
+  return __builtin_riscv_mslt_u32(__rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_msgt_u32(int32_t __rs1, int32_t __rs2) {
+  return __builtin_riscv_msgt_u32(__rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_msltu_u32(uint32_t __rs1, uint32_t __rs2) {
+  return __builtin_riscv_msltu_u32(__rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_msgtu_u32(uint32_t __rs1, uint32_t __rs2) {
+  return __builtin_riscv_msgtu_u32(__rs1, __rs2);
+}
+
+#if defined(__riscv_xlen) && (__riscv_xlen == 32)
+/* Widening zip: 2 x u32 -> u64 (RV32 only). */
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_wzip8p_64(uint32_t __rs1, uint32_t __rs2) {
+  return __builtin_riscv_wzip8p_64(__rs1, __rs2);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_wzip16p_64(uint32_t __rs1, uint32_t __rs2) {
+  return __builtin_riscv_wzip16p_64(__rs1, __rs2);
+}
+
+/* Narrowing clip / rounding shift: i64 input, i32 output (RV32 only). */
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_nclipu_u32(uint64_t __rs1_p, unsigned __shamt) {
+  return __builtin_riscv_nclipu_u32(__rs1_p, __shamt);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_nclipru_u32(uint64_t __rs1_p, unsigned __shamt) {
+  return __builtin_riscv_nclipru_u32(__rs1_p, __shamt);
+}
+
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_nclip_i32(int64_t __rs1_p, unsigned __shamt) {
+  return __builtin_riscv_nclip_i32(__rs1_p, __shamt);
+}
+
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_nclipr_i32(int64_t __rs1_p, unsigned __shamt) {
+  return __builtin_riscv_nclipr_i32(__rs1_p, __shamt);
+}
+
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_nsrar_i32(int64_t __rs1_p, unsigned __shamt) {
+  return __builtin_riscv_nsrar_i32(__rs1_p, __shamt);
+}
+#endif /* RV32 widening / narrowing scalar intrinsics */
+
 /*===---------------------------------------------------------------------===
  * RV64 Only Scalar Intrinsics
  *===---------------------------------------------------------------------===*/
@@ -1358,6 +1520,59 @@ __riscv_slx_64(uint64_t __rd, uint64_t __rs1, unsigned __shamt) {
 static __inline__ uint64_t __DEFAULT_FN_ATTRS
 __riscv_srx_64(uint64_t __rd, uint64_t __rs1, unsigned __shamt) {
   return __builtin_elementwise_fshr(__rs1, __rd, (uint64_t)__shamt);
+}
+
+/* Reverse 16-bit chunks within an i64. */
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_rev16_64(uint64_t __rs1) {
+  return __builtin_riscv_rev16_64(__rs1);
+}
+
+/* Saturate to N bits (constant shamt) -- RV64 forms. */
+#define __riscv_sati_i64(rs1, shamt)                                           \
+  __builtin_riscv_sati_i64((int64_t)(rs1), (shamt))
+#define __riscv_usati_u64(rs1, shamt)                                          \
+  __builtin_riscv_usati_u64((int64_t)(rs1), (shamt))
+
+/* 64-bit zip / unzip pairs (RV64 only). */
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_zip8p_64(uint64_t __rs1, uint64_t __rs2) {
+  return __builtin_riscv_zip8p_64(__rs1, __rs2);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_zip16p_64(uint64_t __rs1, uint64_t __rs2) {
+  return __builtin_riscv_zip16p_64(__rs1, __rs2);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_zip8hp_64(uint64_t __rs1, uint64_t __rs2) {
+  return __builtin_riscv_zip8hp_64(__rs1, __rs2);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_zip16hp_64(uint64_t __rs1, uint64_t __rs2) {
+  return __builtin_riscv_zip16hp_64(__rs1, __rs2);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_unzip8p_64(uint64_t __rs1, uint64_t __rs2) {
+  return __builtin_riscv_unzip8p_64(__rs1, __rs2);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_unzip16p_64(uint64_t __rs1, uint64_t __rs2) {
+  return __builtin_riscv_unzip16p_64(__rs1, __rs2);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_unzip8hp_64(uint64_t __rs1, uint64_t __rs2) {
+  return __builtin_riscv_unzip8hp_64(__rs1, __rs2);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_unzip16hp_64(uint64_t __rs1, uint64_t __rs2) {
+  return __builtin_riscv_unzip16hp_64(__rs1, __rs2);
 }
 
 #endif /* __riscv_xlen == 64 */

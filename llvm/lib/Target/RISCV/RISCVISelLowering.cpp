@@ -11507,56 +11507,73 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     if (Subtarget.is64Bit())
       return SDValue();
     MVT OutVT = Op.getSimpleValueType();
-    if (OutVT != MVT::v4i8 && OutVT != MVT::v2i16)
+    if (OutVT != MVT::v4i8 && OutVT != MVT::v2i16 && OutVT != MVT::i32)
       return SDValue();
     SDValue Op1 = Op.getOperand(1);
     if (Op1.getValueType() != MVT::i64)
       return SDValue();
     SDValue Shamt = Op.getOperand(2);
     auto *CN = dyn_cast<ConstantSDNode>(Shamt);
-    unsigned ImmMax = OutVT == MVT::v4i8 ? 16 : 32;
+    unsigned ImmMax = OutVT == MVT::v4i8 ? 16
+                    : OutVT == MVT::v2i16 ? 32
+                                          : 64;
     bool UseImm = CN && CN->getZExtValue() < ImmMax;
     bool IsByte = OutVT == MVT::v4i8;
+    bool IsScalar = OutVT == MVT::i32;
     unsigned Opc;
     switch (IntNo) {
     case Intrinsic::riscv_pnsrl:
-      if (UseImm)
+      if (IsScalar)
+        Opc = UseImm ? RISCV::NSRLI : RISCV::NSRL;
+      else if (UseImm)
         Opc = IsByte ? RISCV::PNSRLI_B : RISCV::PNSRLI_H;
       else
         Opc = IsByte ? RISCV::PNSRL_BS : RISCV::PNSRL_HS;
       break;
     case Intrinsic::riscv_pnsra:
-      if (UseImm)
+      if (IsScalar)
+        Opc = UseImm ? RISCV::NSRAI : RISCV::NSRA;
+      else if (UseImm)
         Opc = IsByte ? RISCV::PNSRAI_B : RISCV::PNSRAI_H;
       else
         Opc = IsByte ? RISCV::PNSRA_BS : RISCV::PNSRA_HS;
       break;
     case Intrinsic::riscv_pnsrar:
-      if (UseImm)
+      if (IsScalar)
+        Opc = UseImm ? RISCV::NSRARI : RISCV::NSRAR;
+      else if (UseImm)
         Opc = IsByte ? RISCV::PNSRARI_B : RISCV::PNSRARI_H;
       else
         Opc = IsByte ? RISCV::PNSRAR_BS : RISCV::PNSRAR_HS;
       break;
     case Intrinsic::riscv_pnclipu:
-      if (UseImm)
+      if (IsScalar)
+        Opc = UseImm ? RISCV::NCLIPIU : RISCV::NCLIPU;
+      else if (UseImm)
         Opc = IsByte ? RISCV::PNCLIPIU_B : RISCV::PNCLIPIU_H;
       else
         Opc = IsByte ? RISCV::PNCLIPU_BS : RISCV::PNCLIPU_HS;
       break;
     case Intrinsic::riscv_pnclipru:
-      if (UseImm)
+      if (IsScalar)
+        Opc = UseImm ? RISCV::NCLIPRIU : RISCV::NCLIPRU;
+      else if (UseImm)
         Opc = IsByte ? RISCV::PNCLIPRIU_B : RISCV::PNCLIPRIU_H;
       else
         Opc = IsByte ? RISCV::PNCLIPRU_BS : RISCV::PNCLIPRU_HS;
       break;
     case Intrinsic::riscv_pnclip:
-      if (UseImm)
+      if (IsScalar)
+        Opc = UseImm ? RISCV::NCLIPI : RISCV::NCLIP;
+      else if (UseImm)
         Opc = IsByte ? RISCV::PNCLIPI_B : RISCV::PNCLIPI_H;
       else
         Opc = IsByte ? RISCV::PNCLIP_BS : RISCV::PNCLIP_HS;
       break;
     case Intrinsic::riscv_pnclipr:
-      if (UseImm)
+      if (IsScalar)
+        Opc = UseImm ? RISCV::NCLIPRI : RISCV::NCLIPR;
+      else if (UseImm)
         Opc = IsByte ? RISCV::PNCLIPRI_B : RISCV::PNCLIPRI_H;
       else
         Opc = IsByte ? RISCV::PNCLIPR_BS : RISCV::PNCLIPR_HS;
@@ -16162,6 +16179,32 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
       } else {
         return;
       }
+      SDValue RdLo = DAG.getNode(ISD::EXTRACT_ELEMENT, DL, MVT::i32,
+                                  N->getOperand(1), DAG.getIntPtrConstant(0, DL));
+      SDValue RdHi = DAG.getNode(ISD::EXTRACT_ELEMENT, DL, MVT::i32,
+                                  N->getOperand(1), DAG.getIntPtrConstant(1, DL));
+      SDValue RdPair = DAG.getNode(RISCVISD::BuildGPRPair, DL, MVT::Untyped,
+                                    RdLo, RdHi);
+      SDValue Pair = SDValue(
+          DAG.getMachineNode(Opc, DL, MVT::Untyped, RdPair, N->getOperand(2),
+                             N->getOperand(3)),
+          0);
+      SDValue Split = DAG.getNode(RISCVISD::SplitGPRPair, DL,
+                                  DAG.getVTList(MVT::i32, MVT::i32), Pair);
+      Results.push_back(DAG.getNode(ISD::BUILD_PAIR, DL, MVT::i64,
+                                    Split.getValue(0), Split.getValue(1)));
+      return;
+    }
+    case Intrinsic::riscv_mqwacc_i64:
+    case Intrinsic::riscv_mqrwacc_i64: {
+      // Scalar Q-format multiply with widening accumulate (RV32 only): rd is
+      // an i64 accumulator held in a GPR pair, rs1/rs2 are i32 in regular
+      // GPRs. Split rd into lo/hi, BuildGPRPair, emit the machine node, split
+      // the result pair, BUILD_PAIR the i64 result.
+      if (Subtarget.is64Bit() || N->getValueType(0) != MVT::i64)
+        return;
+      unsigned Opc = IntNo == Intrinsic::riscv_mqwacc_i64 ? RISCV::MQWACC
+                                                          : RISCV::MQRWACC;
       SDValue RdLo = DAG.getNode(ISD::EXTRACT_ELEMENT, DL, MVT::i32,
                                   N->getOperand(1), DAG.getIntPtrConstant(0, DL));
       SDValue RdHi = DAG.getNode(ISD::EXTRACT_ELEMENT, DL, MVT::i32,

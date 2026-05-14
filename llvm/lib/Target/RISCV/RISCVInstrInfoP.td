@@ -2237,6 +2237,47 @@ let Predicates = [HasStdExtP, IsRV32] in {
             (MHACCSU_H0 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
   def : Pat<(i32 (int_riscv_pmhaccsu_h1 (i32 GPR:$rd), (i32 GPR:$rs1), (v2i16 GPR:$rs2))),
             (MHACCSU_H1 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Scalar P intrinsics (RV32): map directly to the .w-less scalar forms.
+  def : Pat<(i32 (int_riscv_asub_i32 (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (ASUB GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_asubu_i32 (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (ASUBU GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_sati_i32 (i32 GPR:$rs1), (i32 timm:$imm))),
+            (SATI_RV32 GPR:$rs1, timm:$imm)>;
+  def : Pat<(i32 (int_riscv_usati_i32 (i32 GPR:$rs1), (i32 timm:$imm))),
+            (USATI_RV32 GPR:$rs1, timm:$imm)>;
+  def : Pat<(i32 (int_riscv_ssh1sadd_i32 (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (SSH1SADD GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mulhr_i32   (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MULHR GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mulhru_i32  (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MULHRU GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mulhrsu_i32 (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MULHRSU GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mhacc_i32    (i32 GPR:$rd), (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MHACC GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mhracc_i32   (i32 GPR:$rd), (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MHRACC GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mhaccu_i32   (i32 GPR:$rd), (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MHACCU GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mhraccu_i32  (i32 GPR:$rd), (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MHRACCU GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mhaccsu_i32  (i32 GPR:$rd), (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MHACCSU GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mhraccsu_i32 (i32 GPR:$rd), (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MHRACCSU GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mulq_i32  (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MULQ GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mulqr_i32 (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MULQR GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mseq_i32  (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MSEQ GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_mslt_i32  (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MSLT GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_msltu_i32 (i32 GPR:$rs1), (i32 GPR:$rs2))),
+            (MSLTU GPR:$rs1, GPR:$rs2)>;
+
 } // Predicates = [HasStdExtP, IsRV32]
 
 let Predicates = [HasStdExtP, IsRV64] in {
@@ -2748,4 +2789,83 @@ let Predicates = [HasStdExtP, IsRV64] in {
             (PMHACCSU_W_H0 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
   def : Pat<(v2i32 (int_riscv_pmhaccsu_h1 (v2i32 GPR:$rd), (v2i32 GPR:$rs1), (v4i16 GPR:$rs2))),
             (PMHACCSU_W_H1 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Scalar P intrinsics (RV64): map to packed-word forms (pasub.w / pmulq.w
+  // etc.). The intrinsic is overloaded to use i64 on RV64 (Clang's CodeGen
+  // sign/zero-extends the i32 input arguments before calling the intrinsic
+  // and truncates the i64 result back to i32).
+  def : Pat<(i64 (int_riscv_asub_i32 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PASUB_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_asubu_i32 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PASUBU_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_sati_i32 (i64 GPR:$rs1), (i32 timm:$imm))),
+            (PSATI_W GPR:$rs1, timm:$imm)>;
+  def : Pat<(i64 (int_riscv_usati_i32 (i64 GPR:$rs1), (i32 timm:$imm))),
+            (PUSATI_W GPR:$rs1, timm:$imm)>;
+  def : Pat<(i64 (int_riscv_ssh1sadd_i32 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PSSH1SADD_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mulhr_i32   (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMULHR_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mulhru_i32  (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMULHRU_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mulhrsu_i32 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMULHRSU_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mhacc_i32    (i64 GPR:$rd), (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMHACC_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mhracc_i32   (i64 GPR:$rd), (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMHRACC_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mhaccu_i32   (i64 GPR:$rd), (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMHACCU_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mhraccu_i32  (i64 GPR:$rd), (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMHRACCU_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mhaccsu_i32  (i64 GPR:$rd), (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMHACCSU_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mhraccsu_i32 (i64 GPR:$rd), (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMHRACCSU_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mulq_i32  (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMULQ_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mulqr_i32 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMULQR_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mseq_i32  (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMSEQ_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mslt_i32  (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMSLT_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_msltu_i32 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (PMSLTU_W GPR:$rs1, GPR:$rs2)>;
+
+  // mqwacc / mqrwacc on RV64: i64 accumulator, two i64-shaped narrow inputs
+  // (i32 args sign-extended to i64 by Clang on RV64). The underlying machine
+  // instruction reads the low 32 bits of each input GPR regardless of sign
+  // extension.
+  def : Pat<(i64 (int_riscv_mqwacc_i64  (i64 GPR:$rd), (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (MQACC_W00 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_mqrwacc_i64 (i64 GPR:$rd), (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (MQRACC_W00 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // RV64-only: rev16 (reverse 16-bit chunks within an i64).
+  def : Pat<(i64 (int_riscv_rev16 (i64 GPR:$rs1))), (REV16 GPR:$rs1)>;
+
+  // RV64-only: sati / usati on i64 (full 64-bit saturate).
+  def : Pat<(i64 (int_riscv_sati_i64 (i64 GPR:$rs1), (i32 timm:$imm))),
+            (SATI_RV64 GPR:$rs1, timm:$imm)>;
+  def : Pat<(i64 (int_riscv_usati_i64 (i64 GPR:$rs1), (i32 timm:$imm))),
+            (USATI_RV64 GPR:$rs1, timm:$imm)>;
+
+  // RV64-only: zip / unzip pairs.
+  def : Pat<(i64 (int_riscv_zip8p_64  (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (ZIP8P  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_zip16p_64 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (ZIP16P GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_zip8hp_64  (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (ZIP8HP  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_zip16hp_64 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (ZIP16HP GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_unzip8p_64  (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (UNZIP8P  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_unzip16p_64 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (UNZIP16P GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_unzip8hp_64  (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (UNZIP8HP  GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_unzip16hp_64 (i64 GPR:$rs1), (i64 GPR:$rs2))),
+            (UNZIP16HP GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV64]

@@ -2270,6 +2270,258 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return Builder.CreateAlignedStore(Ops[1], Ops[0], llvm::Align(EltBytes));
   }
 
+  // Scalar P intrinsics (C class). The underlying IR intrinsic is overloaded
+  // on an integer type. On RV64 the i32-typed arguments must be widened to i64
+  // (XLenVT) for the intrinsic call, and the result truncated back to i32.
+  case RISCV::BI__builtin_riscv_asub_i32:
+  case RISCV::BI__builtin_riscv_asubu_u32:
+  case RISCV::BI__builtin_riscv_ssh1sadd_i32:
+  case RISCV::BI__builtin_riscv_mulhr_i32:
+  case RISCV::BI__builtin_riscv_mulhru_u32:
+  case RISCV::BI__builtin_riscv_mulhrsu_i32:
+  case RISCV::BI__builtin_riscv_mulq_i32:
+  case RISCV::BI__builtin_riscv_mulqr_i32:
+  case RISCV::BI__builtin_riscv_mseq_i32:
+  case RISCV::BI__builtin_riscv_mseq_u32:
+  case RISCV::BI__builtin_riscv_mslt_u32:
+  case RISCV::BI__builtin_riscv_msgt_u32:
+  case RISCV::BI__builtin_riscv_msltu_u32:
+  case RISCV::BI__builtin_riscv_msgtu_u32: {
+    unsigned IntID;
+    bool SwapOps = false;
+    bool Signed = true;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_asub_i32:
+      IntID = Intrinsic::riscv_asub_i32; break;
+    case RISCV::BI__builtin_riscv_asubu_u32:
+      IntID = Intrinsic::riscv_asubu_i32; Signed = false; break;
+    case RISCV::BI__builtin_riscv_ssh1sadd_i32:
+      IntID = Intrinsic::riscv_ssh1sadd_i32; break;
+    case RISCV::BI__builtin_riscv_mulhr_i32:
+      IntID = Intrinsic::riscv_mulhr_i32; break;
+    case RISCV::BI__builtin_riscv_mulhru_u32:
+      IntID = Intrinsic::riscv_mulhru_i32; Signed = false; break;
+    case RISCV::BI__builtin_riscv_mulhrsu_i32:
+      IntID = Intrinsic::riscv_mulhrsu_i32; break;
+    case RISCV::BI__builtin_riscv_mulq_i32:
+      IntID = Intrinsic::riscv_mulq_i32; break;
+    case RISCV::BI__builtin_riscv_mulqr_i32:
+      IntID = Intrinsic::riscv_mulqr_i32; break;
+    case RISCV::BI__builtin_riscv_mseq_i32:
+    case RISCV::BI__builtin_riscv_mseq_u32:
+      IntID = Intrinsic::riscv_mseq_i32; break;
+    case RISCV::BI__builtin_riscv_mslt_u32:
+      IntID = Intrinsic::riscv_mslt_i32; break;
+    case RISCV::BI__builtin_riscv_msgt_u32:
+      IntID = Intrinsic::riscv_mslt_i32; SwapOps = true; break;
+    case RISCV::BI__builtin_riscv_msltu_u32:
+      IntID = Intrinsic::riscv_msltu_i32; Signed = false; break;
+    case RISCV::BI__builtin_riscv_msgtu_u32:
+      IntID = Intrinsic::riscv_msltu_i32; SwapOps = true; Signed = false; break;
+    }
+    llvm::Value *Op0 = Ops[0];
+    llvm::Value *Op1 = Ops[1];
+    if (SwapOps)
+      std::swap(Op0, Op1);
+    // On RV64 widen i32 inputs to i64 (XLenVT), call the intrinsic, then
+    // truncate the result back to i32.
+    llvm::Type *XLenTy = getTarget().getTriple().isRISCV64() ? Int64Ty : Int32Ty;
+    if (XLenTy != Int32Ty) {
+      Op0 = Signed ? Builder.CreateSExt(Op0, XLenTy)
+                   : Builder.CreateZExt(Op0, XLenTy);
+      Op1 = Signed ? Builder.CreateSExt(Op1, XLenTy)
+                   : Builder.CreateZExt(Op1, XLenTy);
+    }
+    llvm::Function *F = CGM.getIntrinsic(IntID, {XLenTy});
+    llvm::Value *Call = Builder.CreateCall(F, {Op0, Op1});
+    if (Call->getType() != ResultType)
+      Call = Builder.CreateTrunc(Call, ResultType);
+    return Call;
+  }
+
+  // Scalar multiply-high accumulate (3 operands, all i32).
+  case RISCV::BI__builtin_riscv_mhacc_i32:
+  case RISCV::BI__builtin_riscv_mhracc_i32:
+  case RISCV::BI__builtin_riscv_mhaccu_u32:
+  case RISCV::BI__builtin_riscv_mhraccu_u32:
+  case RISCV::BI__builtin_riscv_mhaccsu_i32:
+  case RISCV::BI__builtin_riscv_mhraccsu_i32: {
+    unsigned IntID;
+    bool Op1Signed = true, Op2Signed = true;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_mhacc_i32:
+      IntID = Intrinsic::riscv_mhacc_i32; break;
+    case RISCV::BI__builtin_riscv_mhracc_i32:
+      IntID = Intrinsic::riscv_mhracc_i32; break;
+    case RISCV::BI__builtin_riscv_mhaccu_u32:
+      IntID = Intrinsic::riscv_mhaccu_i32;
+      Op1Signed = false; Op2Signed = false; break;
+    case RISCV::BI__builtin_riscv_mhraccu_u32:
+      IntID = Intrinsic::riscv_mhraccu_i32;
+      Op1Signed = false; Op2Signed = false; break;
+    case RISCV::BI__builtin_riscv_mhaccsu_i32:
+      IntID = Intrinsic::riscv_mhaccsu_i32;
+      Op2Signed = false; break;
+    case RISCV::BI__builtin_riscv_mhraccsu_i32:
+      IntID = Intrinsic::riscv_mhraccsu_i32;
+      Op2Signed = false; break;
+    }
+    llvm::Value *Rd = Ops[0], *Rs1 = Ops[1], *Rs2 = Ops[2];
+    llvm::Type *XLenTy = getTarget().getTriple().isRISCV64() ? Int64Ty : Int32Ty;
+    if (XLenTy != Int32Ty) {
+      // rd has the result's signedness; pick signed extend for signed builtins
+      // (mhacc, mhracc, mhaccsu, mhraccsu) and zero extend for the unsigned
+      // accumulating forms.
+      bool RdSigned = (BuiltinID != RISCV::BI__builtin_riscv_mhaccu_u32 &&
+                       BuiltinID != RISCV::BI__builtin_riscv_mhraccu_u32);
+      Rd = RdSigned ? Builder.CreateSExt(Rd, XLenTy)
+                    : Builder.CreateZExt(Rd, XLenTy);
+      Rs1 = Op1Signed ? Builder.CreateSExt(Rs1, XLenTy)
+                      : Builder.CreateZExt(Rs1, XLenTy);
+      Rs2 = Op2Signed ? Builder.CreateSExt(Rs2, XLenTy)
+                      : Builder.CreateZExt(Rs2, XLenTy);
+    }
+    llvm::Function *F = CGM.getIntrinsic(IntID, {XLenTy});
+    llvm::Value *Call = Builder.CreateCall(F, {Rd, Rs1, Rs2});
+    if (Call->getType() != ResultType)
+      Call = Builder.CreateTrunc(Call, ResultType);
+    return Call;
+  }
+
+  // Saturate-immediate: (rs1, shamt). shamt is a constant.
+  case RISCV::BI__builtin_riscv_sati_i32:
+  case RISCV::BI__builtin_riscv_usati_u32:
+  case RISCV::BI__builtin_riscv_sati_i64:
+  case RISCV::BI__builtin_riscv_usati_u64: {
+    unsigned IntID;
+    bool Is64;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_sati_i32:
+      IntID = Intrinsic::riscv_sati_i32; Is64 = false; break;
+    case RISCV::BI__builtin_riscv_usati_u32:
+      IntID = Intrinsic::riscv_usati_i32; Is64 = false; break;
+    case RISCV::BI__builtin_riscv_sati_i64:
+      IntID = Intrinsic::riscv_sati_i64; Is64 = true; break;
+    case RISCV::BI__builtin_riscv_usati_u64:
+      IntID = Intrinsic::riscv_usati_i64; Is64 = true; break;
+    }
+    llvm::Type *XLenTy = Is64 ? Int64Ty :
+                        (getTarget().getTriple().isRISCV64() ? Int64Ty : Int32Ty);
+    llvm::Value *Op0 = Ops[0];
+    if (Op0->getType() != XLenTy)
+      Op0 = Builder.CreateSExt(Op0, XLenTy);
+    // The shamt must remain i32 (the IR intrinsic signature is (T, i32)).
+    llvm::Value *Shamt = Builder.CreateZExtOrTrunc(Ops[1], Int32Ty);
+    llvm::Function *F = CGM.getIntrinsic(IntID, {XLenTy});
+    llvm::Value *Call = Builder.CreateCall(F, {Op0, Shamt});
+    if (Call->getType() != ResultType)
+      Call = Builder.CreateTrunc(Call, ResultType);
+    return Call;
+  }
+
+  // Q-format multiply with widening accumulate: (i64 acc, i32 a, i32 b) -> i64.
+  // The narrow inputs are XLenVT-typed in the intrinsic; sign-extend the i32
+  // args to i64 on RV64.
+  case RISCV::BI__builtin_riscv_mqwacc_i64:
+  case RISCV::BI__builtin_riscv_mqrwacc_i64: {
+    unsigned IntID = BuiltinID == RISCV::BI__builtin_riscv_mqwacc_i64
+                         ? Intrinsic::riscv_mqwacc_i64
+                         : Intrinsic::riscv_mqrwacc_i64;
+    llvm::Type *XLenTy = getTarget().getTriple().isRISCV64() ? Int64Ty : Int32Ty;
+    llvm::Value *A = Ops[1];
+    llvm::Value *B = Ops[2];
+    if (XLenTy != Int32Ty) {
+      A = Builder.CreateSExt(A, XLenTy);
+      B = Builder.CreateSExt(B, XLenTy);
+    }
+    llvm::Function *F = CGM.getIntrinsic(IntID, {XLenTy});
+    return Builder.CreateCall(F, {Ops[0], A, B});
+  }
+
+  // RV64-only: rev16. Reverse 16-bit chunks within an i64.
+  case RISCV::BI__builtin_riscv_rev16_64: {
+    llvm::Function *F = CGM.getIntrinsic(Intrinsic::riscv_rev16, {Int64Ty});
+    return Builder.CreateCall(F, Ops);
+  }
+
+  // RV64-only: 64-bit zip / unzip pairs. Direct i64 -> i64 IR intrinsics.
+  case RISCV::BI__builtin_riscv_zip8p_64:
+  case RISCV::BI__builtin_riscv_zip16p_64:
+  case RISCV::BI__builtin_riscv_zip8hp_64:
+  case RISCV::BI__builtin_riscv_zip16hp_64:
+  case RISCV::BI__builtin_riscv_unzip8p_64:
+  case RISCV::BI__builtin_riscv_unzip16p_64:
+  case RISCV::BI__builtin_riscv_unzip8hp_64:
+  case RISCV::BI__builtin_riscv_unzip16hp_64: {
+    unsigned IntID;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_zip8p_64:
+      IntID = Intrinsic::riscv_zip8p_64; break;
+    case RISCV::BI__builtin_riscv_zip16p_64:
+      IntID = Intrinsic::riscv_zip16p_64; break;
+    case RISCV::BI__builtin_riscv_zip8hp_64:
+      IntID = Intrinsic::riscv_zip8hp_64; break;
+    case RISCV::BI__builtin_riscv_zip16hp_64:
+      IntID = Intrinsic::riscv_zip16hp_64; break;
+    case RISCV::BI__builtin_riscv_unzip8p_64:
+      IntID = Intrinsic::riscv_unzip8p_64; break;
+    case RISCV::BI__builtin_riscv_unzip16p_64:
+      IntID = Intrinsic::riscv_unzip16p_64; break;
+    case RISCV::BI__builtin_riscv_unzip8hp_64:
+      IntID = Intrinsic::riscv_unzip8hp_64; break;
+    case RISCV::BI__builtin_riscv_unzip16hp_64:
+      IntID = Intrinsic::riscv_unzip16hp_64; break;
+    }
+    llvm::Function *F = CGM.getIntrinsic(IntID);
+    return Builder.CreateCall(F, Ops);
+  }
+
+  // Widening zip: 2 x u32 inputs, u64 output. Reuses int_riscv_pzip on v4i8
+  // (byte zip) / v2i16 (halfword zip).
+  case RISCV::BI__builtin_riscv_wzip8p_64:
+  case RISCV::BI__builtin_riscv_wzip16p_64: {
+    bool IsByteZip = BuiltinID == RISCV::BI__builtin_riscv_wzip8p_64;
+    auto *V4I8Ty = llvm::FixedVectorType::get(Int8Ty, 4);
+    auto *V2I16Ty = llvm::FixedVectorType::get(Int16Ty, 2);
+    llvm::Type *VecTy = IsByteZip ? (llvm::Type *)V4I8Ty : (llvm::Type *)V2I16Ty;
+    llvm::Value *Op0 = Builder.CreateBitCast(Ops[0], VecTy);
+    llvm::Value *Op1 = Builder.CreateBitCast(Ops[1], VecTy);
+    llvm::Function *F = CGM.getIntrinsic(Intrinsic::riscv_pzip, VecTy);
+    return Builder.CreateCall(F, {Op0, Op1});
+  }
+
+  // Narrowing clip / rounding shift: i64 input, i32 output (RV32 only).
+  // Reuses the existing pnclip* / pnsrar IR intrinsics; we request an i32
+  // result, and LowerINTRINSIC_WO_CHAIN selects the scalar nclip / nsrar
+  // form when the output type is i32.
+  case RISCV::BI__builtin_riscv_nclipu_u32:
+  case RISCV::BI__builtin_riscv_nclipru_u32:
+  case RISCV::BI__builtin_riscv_nclip_i32:
+  case RISCV::BI__builtin_riscv_nclipr_i32:
+  case RISCV::BI__builtin_riscv_nsrar_i32: {
+    unsigned IntID;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_nclipu_u32:
+      IntID = Intrinsic::riscv_pnclipu; break;
+    case RISCV::BI__builtin_riscv_nclipru_u32:
+      IntID = Intrinsic::riscv_pnclipru; break;
+    case RISCV::BI__builtin_riscv_nclip_i32:
+      IntID = Intrinsic::riscv_pnclip; break;
+    case RISCV::BI__builtin_riscv_nclipr_i32:
+      IntID = Intrinsic::riscv_pnclipr; break;
+    case RISCV::BI__builtin_riscv_nsrar_i32:
+      IntID = Intrinsic::riscv_pnsrar; break;
+    }
+    llvm::Value *Op1 = Builder.CreateZExtOrTrunc(Ops[1], Int32Ty);
+    llvm::Function *F = CGM.getIntrinsic(IntID, Int32Ty);
+    return Builder.CreateCall(F, {Ops[0], Op1});
+  }
+
   case RISCV::BI__builtin_riscv_clz_32:
   case RISCV::BI__builtin_riscv_clz_64: {
     Function *F = CGM.getIntrinsic(Intrinsic::ctlz, Ops[0]->getType());

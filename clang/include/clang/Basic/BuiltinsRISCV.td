@@ -370,6 +370,19 @@ def punzipe_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<4, short>)">;
 def punzipo_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<4, short>)">;
 def punzipe_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<4, unsigned short>)">;
 def punzipo_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<4, unsigned short>)">;
+
+// Widening zip: 2 x i32 -> i64 (wzip8p / wzip16p). RV32 only; the result is
+// held in a GPR pair. Reuses int_riscv_pzip via bitcasts.
+def wzip8p_64  : RISCVBuiltin<"uint64_t(uint32_t, uint32_t)">;
+def wzip16p_64 : RISCVBuiltin<"uint64_t(uint32_t, uint32_t)">;
+
+// Narrowing clip / rounding shift: i64 input, i32 output (RV32 only --
+// reuses the RV32-only pnclip* / pnsrar IR intrinsics).
+def nclipu_u32  : RISCVBuiltin<"uint32_t(uint64_t, unsigned int)">;
+def nclipru_u32 : RISCVBuiltin<"uint32_t(uint64_t, unsigned int)">;
+def nclip_i32   : RISCVBuiltin<"int32_t(int64_t, unsigned int)">;
+def nclipr_i32  : RISCVBuiltin<"int32_t(int64_t, unsigned int)">;
+def nsrar_i32   : RISCVBuiltin<"int32_t(int64_t, unsigned int)">;
 } // Features = "experimental-p,32bit"
 
 // Packed Exchanged Addition and Subtraction (halfword form, RV32 and RV64).
@@ -519,6 +532,51 @@ def pslidedownx_i16x4  : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vec
 def pslidedownx_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, _Vector<4, unsigned short>, unsigned int)">;
 def pslidedownx_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>, unsigned int)">;
 def pslidedownx_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<2, unsigned int>, unsigned int)">;
+
+// Scalar Intrinsics (C class): mapped through new IR intrinsics with custom
+// CodeGen. Available on both XLENs (the IR intrinsic is overloaded and Clang
+// extends/truncates around it on RV64).
+
+// Averaging subtract.
+def asub_i32  : RISCVBuiltin<"int32_t(int32_t, int32_t)">;
+def asubu_u32 : RISCVBuiltin<"uint32_t(uint32_t, uint32_t)">;
+
+// Saturate to N bits (constant shift amount).
+def sati_i32  : RISCVBuiltin<"int32_t(int32_t, _Constant unsigned int)">;
+def usati_u32 : RISCVBuiltin<"uint32_t(int32_t, _Constant unsigned int)">;
+
+// Saturating sh1add.
+def ssh1sadd_i32 : RISCVBuiltin<"int32_t(int32_t, int32_t)">;
+
+// Rounding multiply-high.
+def mulhr_i32   : RISCVBuiltin<"int32_t(int32_t, int32_t)">;
+def mulhru_u32  : RISCVBuiltin<"uint32_t(uint32_t, uint32_t)">;
+def mulhrsu_i32 : RISCVBuiltin<"int32_t(int32_t, uint32_t)">;
+
+// Multiply-high accumulate.
+def mhacc_i32    : RISCVBuiltin<"int32_t(int32_t, int32_t, int32_t)">;
+def mhracc_i32   : RISCVBuiltin<"int32_t(int32_t, int32_t, int32_t)">;
+def mhaccu_u32   : RISCVBuiltin<"uint32_t(uint32_t, uint32_t, uint32_t)">;
+def mhraccu_u32  : RISCVBuiltin<"uint32_t(uint32_t, uint32_t, uint32_t)">;
+def mhaccsu_i32  : RISCVBuiltin<"int32_t(int32_t, int32_t, uint32_t)">;
+def mhraccsu_i32 : RISCVBuiltin<"int32_t(int32_t, int32_t, uint32_t)">;
+
+// Q-format multiply.
+def mulq_i32  : RISCVBuiltin<"int32_t(int32_t, int32_t)">;
+def mulqr_i32 : RISCVBuiltin<"int32_t(int32_t, int32_t)">;
+
+// Q-format multiply with widening accumulate (i64 accumulator + 2 x i32).
+def mqwacc_i64  : RISCVBuiltin<"int64_t(int64_t, int32_t, int32_t)">;
+def mqrwacc_i64 : RISCVBuiltin<"int64_t(int64_t, int32_t, int32_t)">;
+
+// Compare: produce all-ones (-1) or zero. Naming mirrors riscv_p_asm.h.
+def mseq_i32  : RISCVBuiltin<"int32_t(int32_t, int32_t)">;
+def mseq_u32  : RISCVBuiltin<"uint32_t(uint32_t, uint32_t)">;
+def mslt_u32  : RISCVBuiltin<"uint32_t(int32_t, int32_t)">;
+def msgt_u32  : RISCVBuiltin<"uint32_t(int32_t, int32_t)">;
+def msltu_u32 : RISCVBuiltin<"uint32_t(uint32_t, uint32_t)">;
+def msgtu_u32 : RISCVBuiltin<"uint32_t(uint32_t, uint32_t)">;
+
 } // Features = "experimental-p"
 
 let Features = "experimental-p,64bit" in {
@@ -710,6 +768,19 @@ def pmhacc_h0_i32x2    : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<
 def pmhacc_h1_i32x2    : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>, _Vector<4, short>)">;
 def pmhaccsu_h0_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>, _Vector<4, unsigned short>)">;
 def pmhaccsu_h1_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>, _Vector<4, unsigned short>)">;
+
+// RV64-only scalar intrinsics (C class).
+def rev16_64    : RISCVBuiltin<"uint64_t(uint64_t)">;
+def sati_i64    : RISCVBuiltin<"int64_t(int64_t, _Constant unsigned int)">;
+def usati_u64   : RISCVBuiltin<"uint64_t(int64_t, _Constant unsigned int)">;
+def zip8p_64    : RISCVBuiltin<"uint64_t(uint64_t, uint64_t)">;
+def zip16p_64   : RISCVBuiltin<"uint64_t(uint64_t, uint64_t)">;
+def zip8hp_64   : RISCVBuiltin<"uint64_t(uint64_t, uint64_t)">;
+def zip16hp_64  : RISCVBuiltin<"uint64_t(uint64_t, uint64_t)">;
+def unzip8p_64  : RISCVBuiltin<"uint64_t(uint64_t, uint64_t)">;
+def unzip16p_64 : RISCVBuiltin<"uint64_t(uint64_t, uint64_t)">;
+def unzip8hp_64 : RISCVBuiltin<"uint64_t(uint64_t, uint64_t)">;
+def unzip16hp_64 : RISCVBuiltin<"uint64_t(uint64_t, uint64_t)">;
 } // Features = "experimental-p,64bit"
 
 } // Attributes = [Const, NoThrow]

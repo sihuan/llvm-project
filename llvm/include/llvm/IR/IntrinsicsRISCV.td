@@ -2273,10 +2273,12 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pwsla : RVPWideningShift;
 
   // Packed Narrowing Shift Right (RV32 only): wide source (i64 GPR pair)
-  // shifted by an i32 scalar amount, producing a narrow vector result.
-  // ISel picks the immediate vs register form based on the shift amount.
+  // shifted by an i32 scalar amount, producing a narrow vector (or i32 scalar
+  // for the scalar nclip / nsrar forms) result. ISel picks the immediate vs
+  // register form based on the shift amount, and the narrowing-shift family
+  // selects the scalar form when the result type is i32.
   class RVPNarrowingShift
-      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+      : DefaultAttrsIntrinsic<[llvm_any_ty],
                               [llvm_i64_ty, llvm_i32_ty],
                               [IntrNoMem, IntrSpeculatable]>;
 
@@ -2347,6 +2349,113 @@ let TargetPrefix = "riscv" in {
       : DefaultAttrsIntrinsic<[llvm_v2i16_ty],
                               [llvm_v4i8_ty],
                               [IntrNoMem, IntrSpeculatable]>;
+} // TargetPrefix = "riscv"
+
+
+// Packed SIMD extensions: Scalar P Intrinsics (C class).
+//===----------------------------------------------------------------------===//
+//
+// These intrinsics correspond to the "Scalar Intrinsics Common to RV32 and
+// RV64" and "RV64 Only Scalar Intrinsics" tables in the P-extension intrinsic
+// spec. The IR intrinsic itself is overloaded on an integer type; Clang's
+// CodeGen extends the i32 arguments to the XLen type on RV64 (and truncates
+// the result back), so the underlying intrinsic always uses XLenVT. This
+// keeps the tablegen patterns simple (one pattern per XLEN).
+let TargetPrefix = "riscv" in {
+  // Binary scalar: (rs1, rs2) -> rd. All operands the same integer type.
+  class RVPScalarBinary
+      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  // Ternary scalar accumulating: (rd, rs1, rs2) -> rd. All operands the same
+  // integer type.
+  class RVPScalarTernary
+      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>,
+                               LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  // Unary scalar: (rs1) -> rd. Used by rev16.
+  class RVPScalarUnary
+      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                              [LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  // Saturate-immediate: (rs1, imm) -> rd. The shift amount is a constant
+  // 32-bit unsigned integer regardless of XLen.
+  class RVPScalarSatImm
+      : DefaultAttrsIntrinsic<[llvm_anyint_ty],
+                              [LLVMMatchType<0>, llvm_i32_ty],
+                              [IntrNoMem, IntrSpeculatable, ImmArg<ArgIndex<1>>]>;
+
+  // Averaging subtract.
+  def int_riscv_asub_i32  : RVPScalarBinary;
+  def int_riscv_asubu_i32 : RVPScalarBinary;
+
+  // Saturate-immediate. Distinct intrinsics for the i32 (saturating within
+  // the lower 32 bits, lowers to {sati/psati.w} on RV32/RV64) and i64
+  // (saturating within 64 bits, RV64-only, lowers to the SATI / USATI .d
+  // instruction) variants.
+  def int_riscv_sati_i32  : RVPScalarSatImm;
+  def int_riscv_usati_i32 : RVPScalarSatImm;
+  def int_riscv_sati_i64  : RVPScalarSatImm;
+  def int_riscv_usati_i64 : RVPScalarSatImm;
+
+  // Saturating sh1add.
+  def int_riscv_ssh1sadd_i32 : RVPScalarBinary;
+
+  // Rounding multiply-high.
+  def int_riscv_mulhr_i32   : RVPScalarBinary;
+  def int_riscv_mulhru_i32  : RVPScalarBinary;
+  def int_riscv_mulhrsu_i32 : RVPScalarBinary;
+
+  // Multiply-high accumulate (rounding / non-rounding, signed/unsigned/mixed).
+  def int_riscv_mhacc_i32    : RVPScalarTernary;
+  def int_riscv_mhracc_i32   : RVPScalarTernary;
+  def int_riscv_mhaccu_i32   : RVPScalarTernary;
+  def int_riscv_mhraccu_i32  : RVPScalarTernary;
+  def int_riscv_mhaccsu_i32  : RVPScalarTernary;
+  def int_riscv_mhraccsu_i32 : RVPScalarTernary;
+
+  // Q-format multiply.
+  def int_riscv_mulq_i32  : RVPScalarBinary;
+  def int_riscv_mulqr_i32 : RVPScalarBinary;
+
+  // Compare: produce all-ones (-1) or zero. Operands are i32; result is i32.
+  def int_riscv_mseq_i32  : RVPScalarBinary;
+  def int_riscv_mslt_i32  : RVPScalarBinary;
+  def int_riscv_msltu_i32 : RVPScalarBinary;
+
+  // RV64-only: reverse 16-bit chunks.
+  def int_riscv_rev16 : RVPScalarUnary;
+
+  // Q-format multiply with widening accumulate (i64 accumulator + 2 x narrow
+  // XLEN-shaped inputs). On RV32 the i64 accumulator is held in a GPR pair
+  // (see ReplaceNodeResults in RISCVISelLowering.cpp); on RV64 it's a single
+  // GPR. The narrow inputs are overloaded to XLenVT (i32 on RV32, i64 on
+  // RV64) so that both XLENs lower cleanly without manual operand promotion.
+  class RVPMQWAcc
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_i64_ty, llvm_anyint_ty,
+                               LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+  def int_riscv_mqwacc_i64  : RVPMQWAcc;
+  def int_riscv_mqrwacc_i64 : RVPMQWAcc;
+
+  // RV64-only 64-bit zip / unzip pairs. Both operands and result are i64.
+  class RVPZipPair
+      : DefaultAttrsIntrinsic<[llvm_i64_ty],
+                              [llvm_i64_ty, llvm_i64_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+  def int_riscv_zip8p_64    : RVPZipPair;
+  def int_riscv_zip16p_64   : RVPZipPair;
+  def int_riscv_zip8hp_64   : RVPZipPair;
+  def int_riscv_zip16hp_64  : RVPZipPair;
+  def int_riscv_unzip8p_64    : RVPZipPair;
+  def int_riscv_unzip16p_64   : RVPZipPair;
+  def int_riscv_unzip8hp_64   : RVPZipPair;
+  def int_riscv_unzip16hp_64  : RVPZipPair;
 } // TargetPrefix = "riscv"
 
 
