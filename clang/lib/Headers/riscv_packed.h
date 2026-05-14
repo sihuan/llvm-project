@@ -113,6 +113,26 @@ typedef uint32_t uint32x2_t __attribute__((__vector_size__(8), __aligned__(8)));
                                    r_ty);                                      \
   }
 
+/* Packed multiply-high accumulate: rd + mulh(rs1, rs2). Pattern-matched in
+ * RISCVInstrInfoP.td to PMHACC*_H/W when the mul-high is single-use. */
+#define __packed_pmhacc(name, r_ty, a_ty, b_ty, prod_ty, SHIFT)                \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(r_ty __rd, a_ty __rs1, b_ty __rs2) {                          \
+    prod_ty __p = __builtin_convertvector(__rs1, prod_ty) *                    \
+                  __builtin_convertvector(__rs2, prod_ty);                     \
+    return __rd + __builtin_convertvector(__p >> (SHIFT), r_ty);               \
+  }
+
+/* Packed rounding multiply-high accumulate. */
+#define __packed_pmhracc(name, r_ty, a_ty, b_ty, prod_ty, SHIFT)               \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(r_ty __rd, a_ty __rs1, b_ty __rs2) {                          \
+    prod_ty __p = __builtin_convertvector(__rs1, prod_ty) *                    \
+                  __builtin_convertvector(__rs2, prod_ty);                     \
+    return __rd + __builtin_convertvector(                                     \
+                      (__p + (1LL << ((SHIFT) - 1))) >> (SHIFT), r_ty);        \
+  }
+
 /* Packed Splat (32-bit) */
 __packed_splat(pmv_s_u8x4, uint8x4_t, uint8_t, __packed_splat4)
 __packed_splat(pmv_s_i8x4, int8x4_t, int8_t, __packed_splat4)
@@ -323,6 +343,14 @@ __packed_pmulhr(pmulhru_u16x2,  uint16x2_t, uint16x2_t, uint16x2_t, uint32x2_t, 
 __packed_pmulh (pmulhsu_i16x2,  int16x2_t,  int16x2_t,  uint16x2_t, int32x2_t,  16)
 __packed_pmulhr(pmulhrsu_i16x2, int16x2_t,  int16x2_t,  uint16x2_t, int32x2_t,  16)
 
+/* Packed Multiply High Accumulate (halfword, 32-bit, RV32 and RV64) */
+__packed_pmhacc (pmhacc_i16x2,    int16x2_t,  int16x2_t,  int16x2_t,  int32x2_t,  16)
+__packed_pmhracc(pmhracc_i16x2,   int16x2_t,  int16x2_t,  int16x2_t,  int32x2_t,  16)
+__packed_pmhacc (pmhaccu_u16x2,   uint16x2_t, uint16x2_t, uint16x2_t, uint32x2_t, 16)
+__packed_pmhracc(pmhraccu_u16x2,  uint16x2_t, uint16x2_t, uint16x2_t, uint32x2_t, 16)
+__packed_pmhacc (pmhaccsu_i16x2,  int16x2_t,  int16x2_t,  uint16x2_t, int32x2_t,  16)
+__packed_pmhracc(pmhraccsu_i16x2, int16x2_t,  int16x2_t,  uint16x2_t, int32x2_t,  16)
+
 #if __riscv_xlen == 64
 /* Packed Multiplication with Horizontal Addition (64-bit, RV64 only) */
 __packed_pm_horiz_binary(pm4add_i8x8,     int32x2_t,  int8x8_t,  int8x8_t)
@@ -425,6 +453,22 @@ __packed_pmulh (pmulhu_u32x2,   uint32x2_t, uint32x2_t, uint32x2_t, __riscv_uint
 __packed_pmulhr(pmulhru_u32x2,  uint32x2_t, uint32x2_t, uint32x2_t, __riscv_uint64x2_t, 32)
 __packed_pmulh (pmulhsu_i32x2,  int32x2_t,  int32x2_t,  uint32x2_t, __riscv_int64x2_t,  32)
 __packed_pmulhr(pmulhrsu_i32x2, int32x2_t,  int32x2_t,  uint32x2_t, __riscv_int64x2_t,  32)
+
+/* Packed Multiply High Accumulate (halfword, 64-bit, RV64 only) */
+__packed_pmhacc (pmhacc_i16x4,    int16x4_t,  int16x4_t,  int16x4_t,  __riscv_int32x4_t,  16)
+__packed_pmhracc(pmhracc_i16x4,   int16x4_t,  int16x4_t,  int16x4_t,  __riscv_int32x4_t,  16)
+__packed_pmhacc (pmhaccu_u16x4,   uint16x4_t, uint16x4_t, uint16x4_t, __riscv_uint32x4_t, 16)
+__packed_pmhracc(pmhraccu_u16x4,  uint16x4_t, uint16x4_t, uint16x4_t, __riscv_uint32x4_t, 16)
+__packed_pmhacc (pmhaccsu_i16x4,  int16x4_t,  int16x4_t,  uint16x4_t, __riscv_int32x4_t,  16)
+__packed_pmhracc(pmhraccsu_i16x4, int16x4_t,  int16x4_t,  uint16x4_t, __riscv_int32x4_t,  16)
+
+/* Packed Multiply High Accumulate (word, 64-bit, RV64 only) */
+__packed_pmhacc (pmhacc_i32x2,    int32x2_t,  int32x2_t,  int32x2_t,  __riscv_int64x2_t,  32)
+__packed_pmhracc(pmhracc_i32x2,   int32x2_t,  int32x2_t,  int32x2_t,  __riscv_int64x2_t,  32)
+__packed_pmhacc (pmhaccu_u32x2,   uint32x2_t, uint32x2_t, uint32x2_t, __riscv_uint64x2_t, 32)
+__packed_pmhracc(pmhraccu_u32x2,  uint32x2_t, uint32x2_t, uint32x2_t, __riscv_uint64x2_t, 32)
+__packed_pmhacc (pmhaccsu_i32x2,  int32x2_t,  int32x2_t,  uint32x2_t, __riscv_int64x2_t,  32)
+__packed_pmhracc(pmhraccsu_i32x2, int32x2_t,  int32x2_t,  uint32x2_t, __riscv_int64x2_t,  32)
 #endif
 
 #undef __packed_splat2
@@ -444,6 +488,8 @@ __packed_pmulhr(pmulhrsu_i32x2, int32x2_t,  int32x2_t,  uint32x2_t, __riscv_int6
 #undef __packed_exchange_add_sub
 #undef __packed_pmulh
 #undef __packed_pmulhr
+#undef __packed_pmhacc
+#undef __packed_pmhracc
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)

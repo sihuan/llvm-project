@@ -1869,6 +1869,28 @@ let Predicates = [HasStdExtP] in {
   def : PatGprGpr<riscv_mulhru, PMULHRU_H, XLenVecI16VT>;
   def : PatGprGpr<riscv_mulhrsu, PMULHRSU_H, XLenVecI16VT>;
 
+  // 16-bit multiply high accumulate: fuse single-use mul-high with add.
+  def : Pat<(XLenVecI16VT (add GPR:$rd,
+                               (binop_oneuse<mulhs> GPR:$rs1, GPR:$rs2))),
+            (PMHACC_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(XLenVecI16VT (add GPR:$rd,
+                               (binop_oneuse<mulhu> GPR:$rs1, GPR:$rs2))),
+            (PMHACCU_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(XLenVecI16VT (add GPR:$rd,
+                               (binop_oneuse<riscv_mulhsu> GPR:$rs1, GPR:$rs2))),
+            (PMHACCSU_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // 16-bit multiply high rounding accumulate.
+  def : Pat<(XLenVecI16VT (add GPR:$rd,
+                               (binop_oneuse<riscv_mulhr> GPR:$rs1, GPR:$rs2))),
+            (PMHRACC_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(XLenVecI16VT (add GPR:$rd,
+                               (binop_oneuse<riscv_mulhru> GPR:$rs1, GPR:$rs2))),
+            (PMHRACCU_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(XLenVecI16VT (add GPR:$rd,
+                               (binop_oneuse<riscv_mulhrsu> GPR:$rs1, GPR:$rs2))),
+            (PMHRACCSU_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
   // 8-bit logical shift left/right patterns
   def : PatGprImm<riscv_pshl, PSLLI_B, uimm3, XLenVecI8VT>;
   def : PatGprImm<riscv_psrl, PSRLI_B, uimm3, XLenVecI8VT>;
@@ -2163,6 +2185,26 @@ let Predicates = [HasStdExtP, IsRV64] in {
   def : PatGprGpr<riscv_mulhr, PMULHR_W, v2i32>;
   def : PatGprGpr<riscv_mulhru, PMULHRU_W, v2i32>;
   def : PatGprGpr<riscv_mulhrsu, PMULHRSU_W, v2i32>;
+
+  // 32-bit multiply high accumulate: fuse single-use mul-high with add.
+  def : Pat<(v2i32 (add GPR:$rd, (binop_oneuse<mulhs> GPR:$rs1, GPR:$rs2))),
+            (PMHACC_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (add GPR:$rd, (binop_oneuse<mulhu> GPR:$rs1, GPR:$rs2))),
+            (PMHACCU_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (add GPR:$rd,
+                        (binop_oneuse<riscv_mulhsu> GPR:$rs1, GPR:$rs2))),
+            (PMHACCSU_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // 32-bit multiply high rounding accumulate.
+  def : Pat<(v2i32 (add GPR:$rd,
+                        (binop_oneuse<riscv_mulhr> GPR:$rs1, GPR:$rs2))),
+            (PMHRACC_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (add GPR:$rd,
+                        (binop_oneuse<riscv_mulhru> GPR:$rs1, GPR:$rs2))),
+            (PMHRACCU_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (add GPR:$rd,
+                        (binop_oneuse<riscv_mulhrsu> GPR:$rs1, GPR:$rs2))),
+            (PMHRACCSU_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
 
   // 8/16/32-bit multiply low patterns
   def : Pat<(v8i8 (mul GPR:$rs1, GPR:$rs2)),
