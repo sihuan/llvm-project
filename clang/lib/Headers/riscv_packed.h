@@ -85,6 +85,12 @@ typedef uint32_t uint32x2_t __attribute__((__vector_size__(8), __aligned__(8)));
     return __builtin_riscv_##name(__rd, __rs1, __rs2);                         \
   }
 
+#define __packed_exchange_add_sub(name, ty)                                    \
+  static __inline__ ty __DEFAULT_FN_ATTRS                                      \
+  __riscv_##name(ty __rs1, ty __rs2) {                                         \
+    return __builtin_riscv_##name(__rs1, __rs2);                               \
+  }
+
 /* Packed Splat (32-bit) */
 __packed_splat(pmv_s_u8x4, uint8x4_t, uint8_t, __packed_splat4)
 __packed_splat(pmv_s_i8x4, int8x4_t, int8_t, __packed_splat4)
@@ -272,6 +278,14 @@ __packed_pm_horiz_binary(pm2sub_x_i16x2,   int32_t, int16x2_t, int16x2_t)
 __packed_pm_horiz_ternary(pm2suba_x_i16x2, int32_t, int16x2_t, int16x2_t)
 #endif
 
+/* Packed Exchanged Addition and Subtraction (halfword, 32-bit, RV32 and RV64) */
+__packed_exchange_add_sub(pas_x_i16x2,  int16x2_t)
+__packed_exchange_add_sub(psa_x_i16x2,  int16x2_t)
+__packed_exchange_add_sub(psas_x_i16x2, int16x2_t)
+__packed_exchange_add_sub(pssa_x_i16x2, int16x2_t)
+__packed_exchange_add_sub(paas_x_i16x2, int16x2_t)
+__packed_exchange_add_sub(pasa_x_i16x2, int16x2_t)
+
 #if __riscv_xlen == 64
 /* Packed Multiplication with Horizontal Addition (64-bit, RV64 only) */
 __packed_pm_horiz_binary(pm4add_i8x8,     int32x2_t,  int8x8_t,  int8x8_t)
@@ -328,6 +342,21 @@ __packed_pm_horiz_binary(pm2sub_i32x2,     int64_t, int32x2_t, int32x2_t)
 __packed_pm_horiz_ternary(pm2suba_i32x2,   int64_t, int32x2_t, int32x2_t)
 __packed_pm_horiz_binary(pm2sub_x_i32x2,   int64_t, int32x2_t, int32x2_t)
 __packed_pm_horiz_ternary(pm2suba_x_i32x2, int64_t, int32x2_t, int32x2_t)
+
+/* Packed Exchanged Addition and Subtraction (64-bit, RV64 only) */
+__packed_exchange_add_sub(pas_x_i16x4,  int16x4_t)
+__packed_exchange_add_sub(psa_x_i16x4,  int16x4_t)
+__packed_exchange_add_sub(psas_x_i16x4, int16x4_t)
+__packed_exchange_add_sub(pssa_x_i16x4, int16x4_t)
+__packed_exchange_add_sub(paas_x_i16x4, int16x4_t)
+__packed_exchange_add_sub(pasa_x_i16x4, int16x4_t)
+
+__packed_exchange_add_sub(pas_x_i32x2,  int32x2_t)
+__packed_exchange_add_sub(psa_x_i32x2,  int32x2_t)
+__packed_exchange_add_sub(psas_x_i32x2, int32x2_t)
+__packed_exchange_add_sub(pssa_x_i32x2, int32x2_t)
+__packed_exchange_add_sub(paas_x_i32x2, int32x2_t)
+__packed_exchange_add_sub(pasa_x_i32x2, int32x2_t)
 #endif
 
 #undef __packed_splat2
@@ -344,6 +373,7 @@ __packed_pm_horiz_ternary(pm2suba_x_i32x2, int64_t, int32x2_t, int32x2_t)
 #undef __packed_minmax
 #undef __packed_pm_horiz_binary
 #undef __packed_pm_horiz_ternary
+#undef __packed_exchange_add_sub
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)

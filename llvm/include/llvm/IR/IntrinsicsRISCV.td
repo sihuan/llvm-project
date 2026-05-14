@@ -2035,6 +2035,23 @@ let TargetPrefix = "riscv" in {
 } // TargetPrefix = "riscv"
 
 
+// Packed SIMD extensions: Packed Exchanged Addition and Subtraction
+//===----------------------------------------------------------------------===//
+let TargetPrefix = "riscv" in {
+  class RVPExchangeAddSub
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  def int_riscv_pas_x  : RVPExchangeAddSub;
+  def int_riscv_psa_x  : RVPExchangeAddSub;
+  def int_riscv_psas_x : RVPExchangeAddSub;
+  def int_riscv_pssa_x : RVPExchangeAddSub;
+  def int_riscv_paas_x : RVPExchangeAddSub;
+  def int_riscv_pasa_x : RVPExchangeAddSub;
+} // TargetPrefix = "riscv"
+
+
 //===----------------------------------------------------------------------===//
 // Zvfofp8min - OFP8 conversion extension
 // The Zvfofp8min extension provides basic support for the two 8-bit

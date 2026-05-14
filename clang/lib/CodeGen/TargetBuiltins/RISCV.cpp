@@ -1322,6 +1322,34 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   RVP_MHA_TERNARY_CASES(pm2suba_x_i32x2, riscv_pm2suba_x);
 #undef RVP_MHA_TERNARY_CASES
 
+  // Packed Exchanged Addition and Subtraction: vector-in / vector-out, same type.
+  // Intrinsic type list is just {ResultType}.
+#define RVP_EAS_CASES(BUILTIN, INTRINSIC)                                      \
+  case RISCV::BI__builtin_riscv_##BUILTIN:                                     \
+    ID = Intrinsic::INTRINSIC;                                                 \
+    IntrinsicTypes = {ResultType};                                             \
+    break
+
+  RVP_EAS_CASES(pas_x_i16x2, riscv_pas_x);
+  RVP_EAS_CASES(pas_x_i16x4, riscv_pas_x);
+  RVP_EAS_CASES(pas_x_i32x2, riscv_pas_x);
+  RVP_EAS_CASES(psa_x_i16x2, riscv_psa_x);
+  RVP_EAS_CASES(psa_x_i16x4, riscv_psa_x);
+  RVP_EAS_CASES(psa_x_i32x2, riscv_psa_x);
+  RVP_EAS_CASES(psas_x_i16x2, riscv_psas_x);
+  RVP_EAS_CASES(psas_x_i16x4, riscv_psas_x);
+  RVP_EAS_CASES(psas_x_i32x2, riscv_psas_x);
+  RVP_EAS_CASES(pssa_x_i16x2, riscv_pssa_x);
+  RVP_EAS_CASES(pssa_x_i16x4, riscv_pssa_x);
+  RVP_EAS_CASES(pssa_x_i32x2, riscv_pssa_x);
+  RVP_EAS_CASES(paas_x_i16x2, riscv_paas_x);
+  RVP_EAS_CASES(paas_x_i16x4, riscv_paas_x);
+  RVP_EAS_CASES(paas_x_i32x2, riscv_paas_x);
+  RVP_EAS_CASES(pasa_x_i16x2, riscv_pasa_x);
+  RVP_EAS_CASES(pasa_x_i16x4, riscv_pasa_x);
+  RVP_EAS_CASES(pasa_x_i32x2, riscv_pasa_x);
+#undef RVP_EAS_CASES
+
   case RISCV::BI__builtin_riscv_clz_32:
   case RISCV::BI__builtin_riscv_clz_64: {
     Function *F = CGM.getIntrinsic(Intrinsic::ctlz, Ops[0]->getType());

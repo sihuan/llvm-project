@@ -2073,6 +2073,20 @@ let Predicates = [HasStdExtP, IsRV32] in {
   def : Pat<(i32 (int_riscv_pm2suba_x (i32 GPR:$rd), (v2i16 GPR:$rs1),
                                       (v2i16 GPR:$rs2))),
             (PM2SUBA_HX GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Exchanged Addition and Subtraction (32-bit, RV32 only).
+  def : Pat<(v2i16 (int_riscv_pas_x (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PAS_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_psa_x (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PSA_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_psas_x (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PSAS_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pssa_x (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PSSA_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_paas_x (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PAAS_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pasa_x (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PASA_HX GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV32]
 
 let Predicates = [HasStdExtP, IsRV64] in {
@@ -2354,4 +2368,32 @@ let Predicates = [HasStdExtP, IsRV64] in {
   def : Pat<(i64 (int_riscv_pm2suba_x (i64 GPR:$rd), (v2i32 GPR:$rs1),
                                       (v2i32 GPR:$rs2))),
             (PM2SUBA_WX GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Exchanged Addition and Subtraction (halfword, RV64).
+  def : Pat<(v4i16 (int_riscv_pas_x (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PAS_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_psa_x (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PSA_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_psas_x (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PSAS_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pssa_x (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PSSA_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_paas_x (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PAAS_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pasa_x (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PASA_HX GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Exchanged Addition and Subtraction (word, RV64 only).
+  def : Pat<(v2i32 (int_riscv_pas_x (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PAS_WX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_psa_x (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PSA_WX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_psas_x (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PSAS_WX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pssa_x (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PSSA_WX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_paas_x (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PAAS_WX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pasa_x (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PASA_WX GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV64]

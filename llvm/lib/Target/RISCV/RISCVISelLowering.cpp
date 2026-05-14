@@ -552,6 +552,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       // widen for those operations that will be unrolled.
       setOperationAction({ISD::SHL, ISD::SRL, ISD::SRA},
                          {MVT::v2i16, MVT::v4i8}, Custom);
+      // Some P-extension intrinsics, like pas.hx, operate on the lower 32 bits
+      // of a 64-bit register. On RV64 we widen their v2i16 result to v4i16 so
+      // the same instruction can be used.
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2i16, Custom);
     } else {
       VTs = RV32VTs;
     }
@@ -15852,6 +15856,30 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
       Res = DAG.getNode(ISD::SRL, DL, MVT::i64, Res,
                         DAG.getConstant(32, DL, MVT::i64));
       Results.push_back(DAG.getNode(ISD::TRUNCATE, DL, MVT::i32, Res));
+      return;
+    }
+    case Intrinsic::riscv_pas_x:
+    case Intrinsic::riscv_psa_x:
+    case Intrinsic::riscv_psas_x:
+    case Intrinsic::riscv_pssa_x:
+    case Intrinsic::riscv_paas_x:
+    case Intrinsic::riscv_pasa_x: {
+      // On RV64 with the P extension, pas.hx / psa.hx / ... operate on the
+      // lower 32 bits of a 64-bit GPR. Lower a v2i16 intrinsic call to a
+      // v4i16 intrinsic call with the operands placed in the lower half;
+      // the upper half is undef and ignored by the instruction.
+      if (!Subtarget.is64Bit() || N->getValueType(0) != MVT::v2i16)
+        return;
+      SDValue WideUndef = DAG.getUNDEF(MVT::v4i16);
+      SDValue ZeroIdx = DAG.getVectorIdxConstant(0, DL);
+      SDValue Op1 = DAG.getNode(ISD::INSERT_SUBVECTOR, DL, MVT::v4i16,
+                                WideUndef, N->getOperand(1), ZeroIdx);
+      SDValue Op2 = DAG.getNode(ISD::INSERT_SUBVECTOR, DL, MVT::v4i16,
+                                WideUndef, N->getOperand(2), ZeroIdx);
+      SDValue Res =
+          DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, MVT::v4i16,
+                      {N->getOperand(0), Op1, Op2});
+      Results.push_back(Res);
       return;
     }
     case Intrinsic::riscv_vmv_x_s: {

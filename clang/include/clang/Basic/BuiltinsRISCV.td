@@ -176,6 +176,18 @@ def pm2sub_x_i16x2   : RISCVBuiltin<"int(_Vector<2, short>, _Vector<2, short>)">
 def pm2suba_x_i16x2  : RISCVBuiltin<"int(int, _Vector<2, short>, _Vector<2, short>)">;
 } // Features = "experimental-p,32bit"
 
+// Packed Exchanged Addition and Subtraction (halfword form, RV32 and RV64).
+// Uses the same pas.hx instruction on both XLEN; on RV64 it operates on the
+// lower 32 bits of the GPR.
+let Features = "experimental-p" in {
+def pas_x_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<2, short>)">;
+def psa_x_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<2, short>)">;
+def psas_x_i16x2 : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<2, short>)">;
+def pssa_x_i16x2 : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<2, short>)">;
+def paas_x_i16x2 : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<2, short>)">;
+def pasa_x_i16x2 : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<2, short>)">;
+} // Features = "experimental-p"
+
 let Features = "experimental-p,64bit" in {
 // pm4add 8-byte (RV64 only, 64-bit input -> 2 lanes of i32)
 def pm4add_i8x8    : RISCVBuiltin<"_Vector<2, int>(_Vector<8, signed char>, _Vector<8, signed char>)">;
@@ -240,6 +252,22 @@ def pm2sub_i32x2     : RISCVBuiltin<"int64_t(_Vector<2, int>, _Vector<2, int>)">
 def pm2suba_i32x2    : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, int>)">;
 def pm2sub_x_i32x2   : RISCVBuiltin<"int64_t(_Vector<2, int>, _Vector<2, int>)">;
 def pm2suba_x_i32x2  : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, int>)">;
+
+// Packed Exchanged Addition and Subtraction (halfword, 64-bit input, RV64 only)
+def pas_x_i16x4  : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<4, short>)">;
+def psa_x_i16x4  : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<4, short>)">;
+def psas_x_i16x4 : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<4, short>)">;
+def pssa_x_i16x4 : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<4, short>)">;
+def paas_x_i16x4 : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<4, short>)">;
+def pasa_x_i16x4 : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<4, short>)">;
+
+// Packed Exchanged Addition and Subtraction (word, RV64 only)
+def pas_x_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>)">;
+def psa_x_i32x2  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>)">;
+def psas_x_i32x2 : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>)">;
+def pssa_x_i32x2 : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>)">;
+def paas_x_i32x2 : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>)">;
+def pasa_x_i32x2 : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<2, int>)">;
 } // Features = "experimental-p,64bit"
 
 } // Attributes = [Const, NoThrow]
