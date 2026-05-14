@@ -1246,6 +1246,90 @@ __packed_pmulh_parts_acc_rv64_scalar(mhaccsu_h1_i32,  int32_t, int32x2_t,
 #undef __packed_pwcvt
 #undef __packed_pld
 #undef __packed_pst
+
+/*===---------------------------------------------------------------------===
+ * Scalar Intrinsics Common to RV32 and RV64
+ *===---------------------------------------------------------------------===*/
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_abs_u32(int32_t __rs1) {
+  return (uint32_t)__builtin_abs(__rs1);
+}
+
+static __inline__ unsigned __DEFAULT_FN_ATTRS
+__riscv_cls_32(int32_t __rs1) {
+  return (unsigned)__builtin_clrsb(__rs1);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_rev_32(uint32_t __rs1) {
+  return __builtin_bitreverse32(__rs1);
+}
+
+/* Saturating add/sub. */
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_sadd_i32(int32_t __rs1, int32_t __rs2) {
+  return __builtin_elementwise_add_sat(__rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_saddu_u32(uint32_t __rs1, uint32_t __rs2) {
+  return __builtin_elementwise_add_sat(__rs1, __rs2);
+}
+
+static __inline__ int32_t __DEFAULT_FN_ATTRS
+__riscv_ssub_i32(int32_t __rs1, int32_t __rs2) {
+  return __builtin_elementwise_sub_sat(__rs1, __rs2);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_ssubu_u32(uint32_t __rs1, uint32_t __rs2) {
+  return __builtin_elementwise_sub_sat(__rs1, __rs2);
+}
+
+/* Funnel shift. */
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_slx_32(uint32_t __rd, uint32_t __rs1, unsigned __shamt) {
+  return __builtin_elementwise_fshl(__rd, __rs1, __shamt);
+}
+
+static __inline__ uint32_t __DEFAULT_FN_ATTRS
+__riscv_srx_32(uint32_t __rd, uint32_t __rs1, unsigned __shamt) {
+  return __builtin_elementwise_fshr(__rs1, __rd, __shamt);
+}
+
+/*===---------------------------------------------------------------------===
+ * RV64 Only Scalar Intrinsics
+ *===---------------------------------------------------------------------===*/
+#if defined(__riscv_xlen) && (__riscv_xlen == 64)
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_abs_u64(int64_t __rs1) {
+  return (uint64_t)__builtin_llabs(__rs1);
+}
+
+static __inline__ unsigned __DEFAULT_FN_ATTRS
+__riscv_cls_64(int64_t __rs1) {
+  return (unsigned)__builtin_clrsbll(__rs1);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_rev_64(uint64_t __rs1) {
+  return __builtin_bitreverse64(__rs1);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_slx_64(uint64_t __rd, uint64_t __rs1, unsigned __shamt) {
+  return __builtin_elementwise_fshl(__rd, __rs1, (uint64_t)__shamt);
+}
+
+static __inline__ uint64_t __DEFAULT_FN_ATTRS
+__riscv_srx_64(uint64_t __rd, uint64_t __rs1, unsigned __shamt) {
+  return __builtin_elementwise_fshr(__rs1, __rd, (uint64_t)__shamt);
+}
+
+#endif /* __riscv_xlen == 64 */
+
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)
