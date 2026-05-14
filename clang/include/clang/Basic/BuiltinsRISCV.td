@@ -137,6 +137,111 @@ def sm3p0 : RISCVBuiltin<"unsigned int(unsigned int)">;
 def sm3p1 : RISCVBuiltin<"unsigned int(unsigned int)">;
 } // Features = "zksh"
 
+//===----------------------------------------------------------------------===//
+// Packed SIMD extension: Packed Multiplication with Horizontal Addition
+//===----------------------------------------------------------------------===//
+let Features = "experimental-p,32bit" in {
+// pm4add family (4-way byte multiply-add, 32-bit input -> i32 result)
+def pm4add_i8x4    : RISCVBuiltin<"int(_Vector<4, signed char>, _Vector<4, signed char>)">;
+def pm4adda_i8x4   : RISCVBuiltin<"int(int, _Vector<4, signed char>, _Vector<4, signed char>)">;
+def pm4addu_u8x4   : RISCVBuiltin<"unsigned int(_Vector<4, unsigned char>, _Vector<4, unsigned char>)">;
+def pm4addau_u8x4  : RISCVBuiltin<"unsigned int(unsigned int, _Vector<4, unsigned char>, _Vector<4, unsigned char>)">;
+def pm4addsu_i8x4  : RISCVBuiltin<"int(_Vector<4, signed char>, _Vector<4, unsigned char>)">;
+def pm4addasu_i8x4 : RISCVBuiltin<"int(int, _Vector<4, signed char>, _Vector<4, unsigned char>)">;
+
+// pm2add family (2-way halfword multiply-add, 32-bit input -> i32 result)
+def pm2add_i16x2     : RISCVBuiltin<"int(_Vector<2, short>, _Vector<2, short>)">;
+def pm2adda_i16x2    : RISCVBuiltin<"int(int, _Vector<2, short>, _Vector<2, short>)">;
+def pm2add_x_i16x2   : RISCVBuiltin<"int(_Vector<2, short>, _Vector<2, short>)">;
+def pm2adda_x_i16x2  : RISCVBuiltin<"int(int, _Vector<2, short>, _Vector<2, short>)">;
+def pm2addu_u16x2    : RISCVBuiltin<"unsigned int(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+def pm2addau_u16x2   : RISCVBuiltin<"unsigned int(unsigned int, _Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+def pm2addsu_i16x2   : RISCVBuiltin<"int(_Vector<2, short>, _Vector<2, unsigned short>)">;
+def pm2addasu_i16x2  : RISCVBuiltin<"int(int, _Vector<2, short>, _Vector<2, unsigned short>)">;
+
+// Q-format multiply-high add
+def pmq2add_i16x2    : RISCVBuiltin<"int(_Vector<2, short>, _Vector<2, short>)">;
+def pmqr2add_i16x2   : RISCVBuiltin<"int(_Vector<2, short>, _Vector<2, short>)">;
+def pmq2adda_i16x2   : RISCVBuiltin<"int(int, _Vector<2, short>, _Vector<2, short>)">;
+def pmqr2adda_i16x2  : RISCVBuiltin<"int(int, _Vector<2, short>, _Vector<2, short>)">;
+
+// Saturating multiply-add (no accumulating form)
+def pm2sadd_i16x2    : RISCVBuiltin<"int(_Vector<2, short>, _Vector<2, short>)">;
+def pm2sadd_x_i16x2  : RISCVBuiltin<"int(_Vector<2, short>, _Vector<2, short>)">;
+
+// Multiply-subtract (subtract upper product from lower product)
+def pm2sub_i16x2     : RISCVBuiltin<"int(_Vector<2, short>, _Vector<2, short>)">;
+def pm2suba_i16x2    : RISCVBuiltin<"int(int, _Vector<2, short>, _Vector<2, short>)">;
+def pm2sub_x_i16x2   : RISCVBuiltin<"int(_Vector<2, short>, _Vector<2, short>)">;
+def pm2suba_x_i16x2  : RISCVBuiltin<"int(int, _Vector<2, short>, _Vector<2, short>)">;
+} // Features = "experimental-p,32bit"
+
+let Features = "experimental-p,64bit" in {
+// pm4add 8-byte (RV64 only, 64-bit input -> 2 lanes of i32)
+def pm4add_i8x8    : RISCVBuiltin<"_Vector<2, int>(_Vector<8, signed char>, _Vector<8, signed char>)">;
+def pm4adda_i8x8   : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<8, signed char>, _Vector<8, signed char>)">;
+def pm4addu_u8x8   : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<8, unsigned char>, _Vector<8, unsigned char>)">;
+def pm4addau_u8x8  : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<8, unsigned char>, _Vector<8, unsigned char>)">;
+def pm4addsu_i8x8  : RISCVBuiltin<"_Vector<2, int>(_Vector<8, signed char>, _Vector<8, unsigned char>)">;
+def pm4addasu_i8x8 : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<8, signed char>, _Vector<8, unsigned char>)">;
+
+// pm4add 4-halfword (RV64 only, 64-bit input -> i64 scalar)
+def pm4add_i16x4    : RISCVBuiltin<"int64_t(_Vector<4, short>, _Vector<4, short>)">;
+def pm4adda_i16x4   : RISCVBuiltin<"int64_t(int64_t, _Vector<4, short>, _Vector<4, short>)">;
+def pm4addu_u16x4   : RISCVBuiltin<"uint64_t(_Vector<4, unsigned short>, _Vector<4, unsigned short>)">;
+def pm4addau_u16x4  : RISCVBuiltin<"uint64_t(uint64_t, _Vector<4, unsigned short>, _Vector<4, unsigned short>)">;
+def pm4addsu_i16x4  : RISCVBuiltin<"int64_t(_Vector<4, short>, _Vector<4, unsigned short>)">;
+def pm4addasu_i16x4 : RISCVBuiltin<"int64_t(int64_t, _Vector<4, short>, _Vector<4, unsigned short>)">;
+
+// pm2add halfword 4-element (RV64 only, 64-bit input -> 2 lanes of i32)
+def pm2add_i16x4     : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>, _Vector<4, short>)">;
+def pm2adda_i16x4    : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<4, short>, _Vector<4, short>)">;
+def pm2add_x_i16x4   : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>, _Vector<4, short>)">;
+def pm2adda_x_i16x4  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<4, short>, _Vector<4, short>)">;
+def pm2addu_u16x4    : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<4, unsigned short>, _Vector<4, unsigned short>)">;
+def pm2addau_u16x4   : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, _Vector<4, unsigned short>, _Vector<4, unsigned short>)">;
+def pm2addsu_i16x4   : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>, _Vector<4, unsigned short>)">;
+def pm2addasu_i16x4  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<4, short>, _Vector<4, unsigned short>)">;
+
+// pm2add word 2-element (RV64 only, 64-bit input -> i64 scalar)
+def pm2add_i32x2     : RISCVBuiltin<"int64_t(_Vector<2, int>, _Vector<2, int>)">;
+def pm2adda_i32x2    : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, int>)">;
+def pm2add_x_i32x2   : RISCVBuiltin<"int64_t(_Vector<2, int>, _Vector<2, int>)">;
+def pm2adda_x_i32x2  : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, int>)">;
+def pm2addu_u32x2    : RISCVBuiltin<"uint64_t(_Vector<2, unsigned int>, _Vector<2, unsigned int>)">;
+def pm2addau_u32x2   : RISCVBuiltin<"uint64_t(uint64_t, _Vector<2, unsigned int>, _Vector<2, unsigned int>)">;
+def pm2addsu_i32x2   : RISCVBuiltin<"int64_t(_Vector<2, int>, _Vector<2, unsigned int>)">;
+def pm2addasu_i32x2  : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, unsigned int>)">;
+
+// Q-format halfword 4-element (RV64 only, 64-bit input -> 2 lanes of i32)
+def pmq2add_i16x4    : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>, _Vector<4, short>)">;
+def pmqr2add_i16x4   : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>, _Vector<4, short>)">;
+def pmq2adda_i16x4   : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<4, short>, _Vector<4, short>)">;
+def pmqr2adda_i16x4  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<4, short>, _Vector<4, short>)">;
+
+// Q-format word 2-element (RV64 only, 64-bit input -> i64 scalar)
+def pmq2add_i32x2    : RISCVBuiltin<"int64_t(_Vector<2, int>, _Vector<2, int>)">;
+def pmqr2add_i32x2   : RISCVBuiltin<"int64_t(_Vector<2, int>, _Vector<2, int>)">;
+def pmq2adda_i32x2   : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, int>)">;
+def pmqr2adda_i32x2  : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, int>)">;
+
+// Saturating halfword 4-element (RV64 only, no accumulator)
+def pm2sadd_i16x4    : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>, _Vector<4, short>)">;
+def pm2sadd_x_i16x4  : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>, _Vector<4, short>)">;
+
+// Multiply-subtract halfword 4-element (RV64 only)
+def pm2sub_i16x4     : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>, _Vector<4, short>)">;
+def pm2suba_i16x4    : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<4, short>, _Vector<4, short>)">;
+def pm2sub_x_i16x4   : RISCVBuiltin<"_Vector<2, int>(_Vector<4, short>, _Vector<4, short>)">;
+def pm2suba_x_i16x4  : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<4, short>, _Vector<4, short>)">;
+
+// Multiply-subtract word 2-element (RV64 only)
+def pm2sub_i32x2     : RISCVBuiltin<"int64_t(_Vector<2, int>, _Vector<2, int>)">;
+def pm2suba_i32x2    : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, int>)">;
+def pm2sub_x_i32x2   : RISCVBuiltin<"int64_t(_Vector<2, int>, _Vector<2, int>)">;
+def pm2suba_x_i32x2  : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, int>)">;
+} // Features = "experimental-p,64bit"
+
 } // Attributes = [Const, NoThrow]
 
 //===----------------------------------------------------------------------===//

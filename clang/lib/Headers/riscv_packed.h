@@ -73,6 +73,18 @@ typedef uint32_t uint32x2_t __attribute__((__vector_size__(8), __aligned__(8)));
     return builtin(__rs1, __rs2);                                              \
   }
 
+#define __packed_pm_horiz_binary(name, ret_ty, ty1, ty2)                       \
+  static __inline__ ret_ty __DEFAULT_FN_ATTRS                                  \
+  __riscv_##name(ty1 __rs1, ty2 __rs2) {                                       \
+    return __builtin_riscv_##name(__rs1, __rs2);                               \
+  }
+
+#define __packed_pm_horiz_ternary(name, ret_ty, ty1, ty2)                      \
+  static __inline__ ret_ty __DEFAULT_FN_ATTRS                                  \
+  __riscv_##name(ret_ty __rd, ty1 __rs1, ty2 __rs2) {                          \
+    return __builtin_riscv_##name(__rd, __rs1, __rs2);                         \
+  }
+
 /* Packed Splat (32-bit) */
 __packed_splat(pmv_s_u8x4, uint8x4_t, uint8_t, __packed_splat4)
 __packed_splat(pmv_s_i8x4, int8x4_t, int8_t, __packed_splat4)
@@ -228,6 +240,96 @@ __packed_unary_op(pnot_u16x4, uint16x4_t, ~)
 __packed_unary_op(pnot_i32x2, int32x2_t, ~)
 __packed_unary_op(pnot_u32x2, uint32x2_t, ~)
 
+#if __riscv_xlen == 32
+/* Packed Multiplication with Horizontal Addition (32-bit) */
+__packed_pm_horiz_binary(pm4add_i8x4,    int32_t,  int8x4_t,  int8x4_t)
+__packed_pm_horiz_ternary(pm4adda_i8x4,  int32_t,  int8x4_t,  int8x4_t)
+__packed_pm_horiz_binary(pm4addu_u8x4,   uint32_t, uint8x4_t, uint8x4_t)
+__packed_pm_horiz_ternary(pm4addau_u8x4, uint32_t, uint8x4_t, uint8x4_t)
+__packed_pm_horiz_binary(pm4addsu_i8x4,   int32_t, int8x4_t,  uint8x4_t)
+__packed_pm_horiz_ternary(pm4addasu_i8x4, int32_t, int8x4_t,  uint8x4_t)
+
+__packed_pm_horiz_binary(pm2add_i16x2,    int32_t, int16x2_t,  int16x2_t)
+__packed_pm_horiz_ternary(pm2adda_i16x2,  int32_t, int16x2_t,  int16x2_t)
+__packed_pm_horiz_binary(pm2add_x_i16x2,    int32_t, int16x2_t, int16x2_t)
+__packed_pm_horiz_ternary(pm2adda_x_i16x2,  int32_t, int16x2_t, int16x2_t)
+__packed_pm_horiz_binary(pm2addu_u16x2,   uint32_t, uint16x2_t, uint16x2_t)
+__packed_pm_horiz_ternary(pm2addau_u16x2, uint32_t, uint16x2_t, uint16x2_t)
+__packed_pm_horiz_binary(pm2addsu_i16x2,    int32_t, int16x2_t, uint16x2_t)
+__packed_pm_horiz_ternary(pm2addasu_i16x2,  int32_t, int16x2_t, uint16x2_t)
+
+__packed_pm_horiz_binary(pmq2add_i16x2,    int32_t, int16x2_t, int16x2_t)
+__packed_pm_horiz_binary(pmqr2add_i16x2,   int32_t, int16x2_t, int16x2_t)
+__packed_pm_horiz_ternary(pmq2adda_i16x2,  int32_t, int16x2_t, int16x2_t)
+__packed_pm_horiz_ternary(pmqr2adda_i16x2, int32_t, int16x2_t, int16x2_t)
+
+__packed_pm_horiz_binary(pm2sadd_i16x2,    int32_t, int16x2_t, int16x2_t)
+__packed_pm_horiz_binary(pm2sadd_x_i16x2,  int32_t, int16x2_t, int16x2_t)
+
+__packed_pm_horiz_binary(pm2sub_i16x2,     int32_t, int16x2_t, int16x2_t)
+__packed_pm_horiz_ternary(pm2suba_i16x2,   int32_t, int16x2_t, int16x2_t)
+__packed_pm_horiz_binary(pm2sub_x_i16x2,   int32_t, int16x2_t, int16x2_t)
+__packed_pm_horiz_ternary(pm2suba_x_i16x2, int32_t, int16x2_t, int16x2_t)
+#endif
+
+#if __riscv_xlen == 64
+/* Packed Multiplication with Horizontal Addition (64-bit, RV64 only) */
+__packed_pm_horiz_binary(pm4add_i8x8,     int32x2_t,  int8x8_t,  int8x8_t)
+__packed_pm_horiz_ternary(pm4adda_i8x8,   int32x2_t,  int8x8_t,  int8x8_t)
+__packed_pm_horiz_binary(pm4addu_u8x8,    uint32x2_t, uint8x8_t, uint8x8_t)
+__packed_pm_horiz_ternary(pm4addau_u8x8,  uint32x2_t, uint8x8_t, uint8x8_t)
+__packed_pm_horiz_binary(pm4addsu_i8x8,    int32x2_t, int8x8_t,  uint8x8_t)
+__packed_pm_horiz_ternary(pm4addasu_i8x8,  int32x2_t, int8x8_t,  uint8x8_t)
+
+__packed_pm_horiz_binary(pm4add_i16x4,    int64_t,  int16x4_t,  int16x4_t)
+__packed_pm_horiz_ternary(pm4adda_i16x4,  int64_t,  int16x4_t,  int16x4_t)
+__packed_pm_horiz_binary(pm4addu_u16x4,   uint64_t, uint16x4_t, uint16x4_t)
+__packed_pm_horiz_ternary(pm4addau_u16x4, uint64_t, uint16x4_t, uint16x4_t)
+__packed_pm_horiz_binary(pm4addsu_i16x4,   int64_t, int16x4_t,  uint16x4_t)
+__packed_pm_horiz_ternary(pm4addasu_i16x4, int64_t, int16x4_t,  uint16x4_t)
+
+__packed_pm_horiz_binary(pm2add_i16x4,     int32x2_t,  int16x4_t,  int16x4_t)
+__packed_pm_horiz_ternary(pm2adda_i16x4,   int32x2_t,  int16x4_t,  int16x4_t)
+__packed_pm_horiz_binary(pm2add_x_i16x4,   int32x2_t,  int16x4_t,  int16x4_t)
+__packed_pm_horiz_ternary(pm2adda_x_i16x4, int32x2_t,  int16x4_t,  int16x4_t)
+__packed_pm_horiz_binary(pm2addu_u16x4,    uint32x2_t, uint16x4_t, uint16x4_t)
+__packed_pm_horiz_ternary(pm2addau_u16x4,  uint32x2_t, uint16x4_t, uint16x4_t)
+__packed_pm_horiz_binary(pm2addsu_i16x4,    int32x2_t, int16x4_t,  uint16x4_t)
+__packed_pm_horiz_ternary(pm2addasu_i16x4,  int32x2_t, int16x4_t,  uint16x4_t)
+
+__packed_pm_horiz_binary(pm2add_i32x2,     int64_t,  int32x2_t,  int32x2_t)
+__packed_pm_horiz_ternary(pm2adda_i32x2,   int64_t,  int32x2_t,  int32x2_t)
+__packed_pm_horiz_binary(pm2add_x_i32x2,   int64_t,  int32x2_t,  int32x2_t)
+__packed_pm_horiz_ternary(pm2adda_x_i32x2, int64_t,  int32x2_t,  int32x2_t)
+__packed_pm_horiz_binary(pm2addu_u32x2,    uint64_t, uint32x2_t, uint32x2_t)
+__packed_pm_horiz_ternary(pm2addau_u32x2,  uint64_t, uint32x2_t, uint32x2_t)
+__packed_pm_horiz_binary(pm2addsu_i32x2,    int64_t, int32x2_t,  uint32x2_t)
+__packed_pm_horiz_ternary(pm2addasu_i32x2,  int64_t, int32x2_t,  uint32x2_t)
+
+__packed_pm_horiz_binary(pmq2add_i16x4,    int32x2_t, int16x4_t, int16x4_t)
+__packed_pm_horiz_binary(pmqr2add_i16x4,   int32x2_t, int16x4_t, int16x4_t)
+__packed_pm_horiz_ternary(pmq2adda_i16x4,  int32x2_t, int16x4_t, int16x4_t)
+__packed_pm_horiz_ternary(pmqr2adda_i16x4, int32x2_t, int16x4_t, int16x4_t)
+
+__packed_pm_horiz_binary(pmq2add_i32x2,    int64_t, int32x2_t, int32x2_t)
+__packed_pm_horiz_binary(pmqr2add_i32x2,   int64_t, int32x2_t, int32x2_t)
+__packed_pm_horiz_ternary(pmq2adda_i32x2,  int64_t, int32x2_t, int32x2_t)
+__packed_pm_horiz_ternary(pmqr2adda_i32x2, int64_t, int32x2_t, int32x2_t)
+
+__packed_pm_horiz_binary(pm2sadd_i16x4,    int32x2_t, int16x4_t, int16x4_t)
+__packed_pm_horiz_binary(pm2sadd_x_i16x4,  int32x2_t, int16x4_t, int16x4_t)
+
+__packed_pm_horiz_binary(pm2sub_i16x4,     int32x2_t, int16x4_t, int16x4_t)
+__packed_pm_horiz_ternary(pm2suba_i16x4,   int32x2_t, int16x4_t, int16x4_t)
+__packed_pm_horiz_binary(pm2sub_x_i16x4,   int32x2_t, int16x4_t, int16x4_t)
+__packed_pm_horiz_ternary(pm2suba_x_i16x4, int32x2_t, int16x4_t, int16x4_t)
+
+__packed_pm_horiz_binary(pm2sub_i32x2,     int64_t, int32x2_t, int32x2_t)
+__packed_pm_horiz_ternary(pm2suba_i32x2,   int64_t, int32x2_t, int32x2_t)
+__packed_pm_horiz_binary(pm2sub_x_i32x2,   int64_t, int32x2_t, int32x2_t)
+__packed_pm_horiz_ternary(pm2suba_x_i32x2, int64_t, int32x2_t, int32x2_t)
+#endif
+
 #undef __packed_splat2
 #undef __packed_splat4
 #undef __packed_splat8
@@ -240,6 +342,8 @@ __packed_unary_op(pnot_u32x2, uint32x2_t, ~)
 #undef __packed_binary_op
 #undef __packed_unary_op
 #undef __packed_minmax
+#undef __packed_pm_horiz_binary
+#undef __packed_pm_horiz_ternary
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)

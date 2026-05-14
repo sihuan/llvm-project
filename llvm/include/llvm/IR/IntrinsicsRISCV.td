@@ -1991,6 +1991,50 @@ let TargetPrefix = "riscv" in
 def int_riscv_pause : DefaultAttrsIntrinsic<[], [], [IntrNoMem, IntrHasSideEffects]>;
 
 
+// Packed SIMD extensions: Packed Multiplication with Horizontal Addition
+//===----------------------------------------------------------------------===//
+let TargetPrefix = "riscv" in {
+  class RVPMHorizAddBinary
+      : DefaultAttrsIntrinsic<[llvm_any_ty],
+                              [llvm_anyvector_ty, LLVMMatchType<1>],
+                              [IntrNoMem, IntrSpeculatable]>;
+  class RVPMHorizAddTernary
+      : DefaultAttrsIntrinsic<[llvm_any_ty],
+                              [LLVMMatchType<0>, llvm_anyvector_ty,
+                               LLVMMatchType<1>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  def int_riscv_pm4add    : RVPMHorizAddBinary;
+  def int_riscv_pm4adda   : RVPMHorizAddTernary;
+  def int_riscv_pm4addu   : RVPMHorizAddBinary;
+  def int_riscv_pm4addau  : RVPMHorizAddTernary;
+  def int_riscv_pm4addsu  : RVPMHorizAddBinary;
+  def int_riscv_pm4addasu : RVPMHorizAddTernary;
+
+  def int_riscv_pm2add    : RVPMHorizAddBinary;
+  def int_riscv_pm2adda   : RVPMHorizAddTernary;
+  def int_riscv_pm2add_x  : RVPMHorizAddBinary;
+  def int_riscv_pm2adda_x : RVPMHorizAddTernary;
+  def int_riscv_pm2addu   : RVPMHorizAddBinary;
+  def int_riscv_pm2addau  : RVPMHorizAddTernary;
+  def int_riscv_pm2addsu  : RVPMHorizAddBinary;
+  def int_riscv_pm2addasu : RVPMHorizAddTernary;
+
+  def int_riscv_pmq2add   : RVPMHorizAddBinary;
+  def int_riscv_pmq2adda  : RVPMHorizAddTernary;
+  def int_riscv_pmqr2add  : RVPMHorizAddBinary;
+  def int_riscv_pmqr2adda : RVPMHorizAddTernary;
+
+  def int_riscv_pm2sadd   : RVPMHorizAddBinary;
+  def int_riscv_pm2sadd_x : RVPMHorizAddBinary;
+
+  def int_riscv_pm2sub    : RVPMHorizAddBinary;
+  def int_riscv_pm2suba   : RVPMHorizAddTernary;
+  def int_riscv_pm2sub_x  : RVPMHorizAddBinary;
+  def int_riscv_pm2suba_x : RVPMHorizAddTernary;
+} // TargetPrefix = "riscv"
+
+
 //===----------------------------------------------------------------------===//
 // Zvfofp8min - OFP8 conversion extension
 // The Zvfofp8min extension provides basic support for the two 8-bit

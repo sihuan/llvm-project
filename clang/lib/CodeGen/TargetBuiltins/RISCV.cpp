@@ -1225,6 +1225,103 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     ID = Intrinsic::riscv_sm3p1;
     break;
 
+  // Packed multiply-horizontal-add: 2-operand non-accumulating forms.
+  // Intrinsic types are {ResultType, InputVectorType}.
+#define RVP_MHA_BINARY_CASES(BUILTIN, INTRINSIC)                               \
+  case RISCV::BI__builtin_riscv_##BUILTIN:                                     \
+    ID = Intrinsic::INTRINSIC;                                                 \
+    IntrinsicTypes = {ResultType, Ops[0]->getType()};                          \
+    break
+
+  RVP_MHA_BINARY_CASES(pm4add_i8x4, riscv_pm4add);
+  RVP_MHA_BINARY_CASES(pm4add_i8x8, riscv_pm4add);
+  RVP_MHA_BINARY_CASES(pm4add_i16x4, riscv_pm4add);
+  RVP_MHA_BINARY_CASES(pm4addu_u8x4, riscv_pm4addu);
+  RVP_MHA_BINARY_CASES(pm4addu_u8x8, riscv_pm4addu);
+  RVP_MHA_BINARY_CASES(pm4addu_u16x4, riscv_pm4addu);
+  RVP_MHA_BINARY_CASES(pm4addsu_i8x4, riscv_pm4addsu);
+  RVP_MHA_BINARY_CASES(pm4addsu_i8x8, riscv_pm4addsu);
+  RVP_MHA_BINARY_CASES(pm4addsu_i16x4, riscv_pm4addsu);
+
+  RVP_MHA_BINARY_CASES(pm2add_i16x2, riscv_pm2add);
+  RVP_MHA_BINARY_CASES(pm2add_i16x4, riscv_pm2add);
+  RVP_MHA_BINARY_CASES(pm2add_i32x2, riscv_pm2add);
+  RVP_MHA_BINARY_CASES(pm2add_x_i16x2, riscv_pm2add_x);
+  RVP_MHA_BINARY_CASES(pm2add_x_i16x4, riscv_pm2add_x);
+  RVP_MHA_BINARY_CASES(pm2add_x_i32x2, riscv_pm2add_x);
+  RVP_MHA_BINARY_CASES(pm2addu_u16x2, riscv_pm2addu);
+  RVP_MHA_BINARY_CASES(pm2addu_u16x4, riscv_pm2addu);
+  RVP_MHA_BINARY_CASES(pm2addu_u32x2, riscv_pm2addu);
+  RVP_MHA_BINARY_CASES(pm2addsu_i16x2, riscv_pm2addsu);
+  RVP_MHA_BINARY_CASES(pm2addsu_i16x4, riscv_pm2addsu);
+  RVP_MHA_BINARY_CASES(pm2addsu_i32x2, riscv_pm2addsu);
+
+  RVP_MHA_BINARY_CASES(pmq2add_i16x2, riscv_pmq2add);
+  RVP_MHA_BINARY_CASES(pmq2add_i16x4, riscv_pmq2add);
+  RVP_MHA_BINARY_CASES(pmq2add_i32x2, riscv_pmq2add);
+  RVP_MHA_BINARY_CASES(pmqr2add_i16x2, riscv_pmqr2add);
+  RVP_MHA_BINARY_CASES(pmqr2add_i16x4, riscv_pmqr2add);
+  RVP_MHA_BINARY_CASES(pmqr2add_i32x2, riscv_pmqr2add);
+
+  RVP_MHA_BINARY_CASES(pm2sadd_i16x2, riscv_pm2sadd);
+  RVP_MHA_BINARY_CASES(pm2sadd_i16x4, riscv_pm2sadd);
+  RVP_MHA_BINARY_CASES(pm2sadd_x_i16x2, riscv_pm2sadd_x);
+  RVP_MHA_BINARY_CASES(pm2sadd_x_i16x4, riscv_pm2sadd_x);
+
+  RVP_MHA_BINARY_CASES(pm2sub_i16x2, riscv_pm2sub);
+  RVP_MHA_BINARY_CASES(pm2sub_i16x4, riscv_pm2sub);
+  RVP_MHA_BINARY_CASES(pm2sub_i32x2, riscv_pm2sub);
+  RVP_MHA_BINARY_CASES(pm2sub_x_i16x2, riscv_pm2sub_x);
+  RVP_MHA_BINARY_CASES(pm2sub_x_i16x4, riscv_pm2sub_x);
+  RVP_MHA_BINARY_CASES(pm2sub_x_i32x2, riscv_pm2sub_x);
+#undef RVP_MHA_BINARY_CASES
+
+  // Packed multiply-horizontal-add: 3-operand accumulating forms (rd, rs1, rs2).
+  // Intrinsic types are {ResultType, InputVectorType (Ops[1])}.
+#define RVP_MHA_TERNARY_CASES(BUILTIN, INTRINSIC)                              \
+  case RISCV::BI__builtin_riscv_##BUILTIN:                                     \
+    ID = Intrinsic::INTRINSIC;                                                 \
+    IntrinsicTypes = {ResultType, Ops[1]->getType()};                          \
+    break
+
+  RVP_MHA_TERNARY_CASES(pm4adda_i8x4, riscv_pm4adda);
+  RVP_MHA_TERNARY_CASES(pm4adda_i8x8, riscv_pm4adda);
+  RVP_MHA_TERNARY_CASES(pm4adda_i16x4, riscv_pm4adda);
+  RVP_MHA_TERNARY_CASES(pm4addau_u8x4, riscv_pm4addau);
+  RVP_MHA_TERNARY_CASES(pm4addau_u8x8, riscv_pm4addau);
+  RVP_MHA_TERNARY_CASES(pm4addau_u16x4, riscv_pm4addau);
+  RVP_MHA_TERNARY_CASES(pm4addasu_i8x4, riscv_pm4addasu);
+  RVP_MHA_TERNARY_CASES(pm4addasu_i8x8, riscv_pm4addasu);
+  RVP_MHA_TERNARY_CASES(pm4addasu_i16x4, riscv_pm4addasu);
+
+  RVP_MHA_TERNARY_CASES(pm2adda_i16x2, riscv_pm2adda);
+  RVP_MHA_TERNARY_CASES(pm2adda_i16x4, riscv_pm2adda);
+  RVP_MHA_TERNARY_CASES(pm2adda_i32x2, riscv_pm2adda);
+  RVP_MHA_TERNARY_CASES(pm2adda_x_i16x2, riscv_pm2adda_x);
+  RVP_MHA_TERNARY_CASES(pm2adda_x_i16x4, riscv_pm2adda_x);
+  RVP_MHA_TERNARY_CASES(pm2adda_x_i32x2, riscv_pm2adda_x);
+  RVP_MHA_TERNARY_CASES(pm2addau_u16x2, riscv_pm2addau);
+  RVP_MHA_TERNARY_CASES(pm2addau_u16x4, riscv_pm2addau);
+  RVP_MHA_TERNARY_CASES(pm2addau_u32x2, riscv_pm2addau);
+  RVP_MHA_TERNARY_CASES(pm2addasu_i16x2, riscv_pm2addasu);
+  RVP_MHA_TERNARY_CASES(pm2addasu_i16x4, riscv_pm2addasu);
+  RVP_MHA_TERNARY_CASES(pm2addasu_i32x2, riscv_pm2addasu);
+
+  RVP_MHA_TERNARY_CASES(pmq2adda_i16x2, riscv_pmq2adda);
+  RVP_MHA_TERNARY_CASES(pmq2adda_i16x4, riscv_pmq2adda);
+  RVP_MHA_TERNARY_CASES(pmq2adda_i32x2, riscv_pmq2adda);
+  RVP_MHA_TERNARY_CASES(pmqr2adda_i16x2, riscv_pmqr2adda);
+  RVP_MHA_TERNARY_CASES(pmqr2adda_i16x4, riscv_pmqr2adda);
+  RVP_MHA_TERNARY_CASES(pmqr2adda_i32x2, riscv_pmqr2adda);
+
+  RVP_MHA_TERNARY_CASES(pm2suba_i16x2, riscv_pm2suba);
+  RVP_MHA_TERNARY_CASES(pm2suba_i16x4, riscv_pm2suba);
+  RVP_MHA_TERNARY_CASES(pm2suba_i32x2, riscv_pm2suba);
+  RVP_MHA_TERNARY_CASES(pm2suba_x_i16x2, riscv_pm2suba_x);
+  RVP_MHA_TERNARY_CASES(pm2suba_x_i16x4, riscv_pm2suba_x);
+  RVP_MHA_TERNARY_CASES(pm2suba_x_i32x2, riscv_pm2suba_x);
+#undef RVP_MHA_TERNARY_CASES
+
   case RISCV::BI__builtin_riscv_clz_32:
   case RISCV::BI__builtin_riscv_clz_64: {
     Function *F = CGM.getIntrinsic(Intrinsic::ctlz, Ops[0]->getType());

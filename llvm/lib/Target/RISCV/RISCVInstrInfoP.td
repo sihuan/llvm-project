@@ -2003,6 +2003,76 @@ let Predicates = [HasStdExtP, IsRV32] in {
   // Build vector patterns
   def : Pat<(v2i16 (build_vector (XLenVT GPR:$a), (XLenVT GPR:$b))),
             (PACK GPR:$a, GPR:$b)>;
+
+  // Packed Multiplication with Horizontal Addition (32-bit, RV32 only)
+  // 4-way byte multiply-add: pm4add.b family.
+  def : Pat<(i32 (int_riscv_pm4add (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PM4ADD_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm4adda (i32 GPR:$rd), (v4i8 GPR:$rs1),
+                                    (v4i8 GPR:$rs2))),
+            (PM4ADDA_B GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm4addu (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PM4ADDU_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm4addau (i32 GPR:$rd), (v4i8 GPR:$rs1),
+                                     (v4i8 GPR:$rs2))),
+            (PM4ADDAU_B GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm4addsu (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PM4ADDSU_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm4addasu (i32 GPR:$rd), (v4i8 GPR:$rs1),
+                                      (v4i8 GPR:$rs2))),
+            (PM4ADDASU_B GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // 2-way halfword multiply-add: pm2add.h family.
+  def : Pat<(i32 (int_riscv_pm2add (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PM2ADD_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm2adda (i32 GPR:$rd), (v2i16 GPR:$rs1),
+                                    (v2i16 GPR:$rs2))),
+            (PM2ADDA_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm2add_x (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PM2ADD_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm2adda_x (i32 GPR:$rd), (v2i16 GPR:$rs1),
+                                      (v2i16 GPR:$rs2))),
+            (PM2ADDA_HX GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm2addu (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PM2ADDU_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm2addau (i32 GPR:$rd), (v2i16 GPR:$rs1),
+                                     (v2i16 GPR:$rs2))),
+            (PM2ADDAU_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm2addsu (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PM2ADDSU_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm2addasu (i32 GPR:$rd), (v2i16 GPR:$rs1),
+                                      (v2i16 GPR:$rs2))),
+            (PM2ADDASU_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Q-format multiply-high add.
+  def : Pat<(i32 (int_riscv_pmq2add (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PMQ2ADD_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmqr2add (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PMQR2ADD_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmq2adda (i32 GPR:$rd), (v2i16 GPR:$rs1),
+                                     (v2i16 GPR:$rs2))),
+            (PMQ2ADDA_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmqr2adda (i32 GPR:$rd), (v2i16 GPR:$rs1),
+                                      (v2i16 GPR:$rs2))),
+            (PMQR2ADDA_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Saturating multiply-add.
+  def : Pat<(i32 (int_riscv_pm2sadd (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PM2SADD_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm2sadd_x (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PM2SADD_HX GPR:$rs1, GPR:$rs2)>;
+
+  // Multiply-subtract.
+  def : Pat<(i32 (int_riscv_pm2sub (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PM2SUB_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm2suba (i32 GPR:$rd), (v2i16 GPR:$rs1),
+                                    (v2i16 GPR:$rs2))),
+            (PM2SUBA_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm2sub_x (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (PM2SUB_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pm2suba_x (i32 GPR:$rd), (v2i16 GPR:$rs1),
+                                      (v2i16 GPR:$rs2))),
+            (PM2SUBA_HX GPR:$rd, GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV32]
 
 let Predicates = [HasStdExtP, IsRV64] in {
@@ -2151,4 +2221,137 @@ let Predicates = [HasStdExtP, IsRV64] in {
 
   def : Pat<(v2i32 (build_vector (XLenVT GPR:$a), (XLenVT GPR:$b))),
             (PACK GPR:$a, GPR:$b)>;
+
+  // Packed Multiplication with Horizontal Addition (64-bit, RV64 only)
+  // 4-way byte multiply-add with 64-bit input -> 2 lanes of i32.
+  def : Pat<(v2i32 (int_riscv_pm4add (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PM4ADD_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm4adda (v2i32 GPR:$rd), (v8i8 GPR:$rs1),
+                                      (v8i8 GPR:$rs2))),
+            (PM4ADDA_B GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm4addu (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PM4ADDU_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm4addau (v2i32 GPR:$rd), (v8i8 GPR:$rs1),
+                                       (v8i8 GPR:$rs2))),
+            (PM4ADDAU_B GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm4addsu (v8i8 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PM4ADDSU_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm4addasu (v2i32 GPR:$rd), (v8i8 GPR:$rs1),
+                                        (v8i8 GPR:$rs2))),
+            (PM4ADDASU_B GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // 4-way halfword multiply-add: pm4add.h family (RV64 only). 64-bit scalar.
+  def : Pat<(i64 (int_riscv_pm4add (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PM4ADD_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm4adda (i64 GPR:$rd), (v4i16 GPR:$rs1),
+                                    (v4i16 GPR:$rs2))),
+            (PM4ADDA_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm4addu (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PM4ADDU_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm4addau (i64 GPR:$rd), (v4i16 GPR:$rs1),
+                                     (v4i16 GPR:$rs2))),
+            (PM4ADDAU_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm4addsu (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PM4ADDSU_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm4addasu (i64 GPR:$rd), (v4i16 GPR:$rs1),
+                                      (v4i16 GPR:$rs2))),
+            (PM4ADDASU_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // 2-way halfword multiply-add with 64-bit input -> 2 lanes of i32 (RV64).
+  def : Pat<(v2i32 (int_riscv_pm2add (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PM2ADD_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm2adda (v2i32 GPR:$rd), (v4i16 GPR:$rs1),
+                                      (v4i16 GPR:$rs2))),
+            (PM2ADDA_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm2add_x (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PM2ADD_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm2adda_x (v2i32 GPR:$rd), (v4i16 GPR:$rs1),
+                                        (v4i16 GPR:$rs2))),
+            (PM2ADDA_HX GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm2addu (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PM2ADDU_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm2addau (v2i32 GPR:$rd), (v4i16 GPR:$rs1),
+                                       (v4i16 GPR:$rs2))),
+            (PM2ADDAU_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm2addsu (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PM2ADDSU_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm2addasu (v2i32 GPR:$rd), (v4i16 GPR:$rs1),
+                                        (v4i16 GPR:$rs2))),
+            (PM2ADDASU_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // 2-way word multiply-add with 64-bit input -> i64 scalar (RV64 only).
+  def : Pat<(i64 (int_riscv_pm2add (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PM2ADD_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm2adda (i64 GPR:$rd), (v2i32 GPR:$rs1),
+                                    (v2i32 GPR:$rs2))),
+            (PM2ADDA_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm2add_x (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PM2ADD_WX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm2adda_x (i64 GPR:$rd), (v2i32 GPR:$rs1),
+                                      (v2i32 GPR:$rs2))),
+            (PM2ADDA_WX GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm2addu (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PM2ADDU_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm2addau (i64 GPR:$rd), (v2i32 GPR:$rs1),
+                                     (v2i32 GPR:$rs2))),
+            (PM2ADDAU_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm2addsu (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PM2ADDSU_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm2addasu (i64 GPR:$rd), (v2i32 GPR:$rs1),
+                                      (v2i32 GPR:$rs2))),
+            (PM2ADDASU_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Q-format halfword multiply-high add (RV64 only).
+  def : Pat<(v2i32 (int_riscv_pmq2add (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMQ2ADD_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmqr2add (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMQR2ADD_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmq2adda (v2i32 GPR:$rd), (v4i16 GPR:$rs1),
+                                       (v4i16 GPR:$rs2))),
+            (PMQ2ADDA_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmqr2adda (v2i32 GPR:$rd), (v4i16 GPR:$rs1),
+                                        (v4i16 GPR:$rs2))),
+            (PMQR2ADDA_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Q-format word multiply-high add (RV64 only).
+  def : Pat<(i64 (int_riscv_pmq2add (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PMQ2ADD_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmqr2add (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PMQR2ADD_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmq2adda (i64 GPR:$rd), (v2i32 GPR:$rs1),
+                                     (v2i32 GPR:$rs2))),
+            (PMQ2ADDA_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmqr2adda (i64 GPR:$rd), (v2i32 GPR:$rs1),
+                                      (v2i32 GPR:$rs2))),
+            (PMQR2ADDA_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Saturating halfword multiply-add (RV64 only, no accumulator).
+  def : Pat<(v2i32 (int_riscv_pm2sadd (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PM2SADD_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm2sadd_x (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PM2SADD_HX GPR:$rs1, GPR:$rs2)>;
+
+  // Halfword multiply-subtract (RV64 only).
+  def : Pat<(v2i32 (int_riscv_pm2sub (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PM2SUB_H GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm2suba (v2i32 GPR:$rd), (v4i16 GPR:$rs1),
+                                      (v4i16 GPR:$rs2))),
+            (PM2SUBA_H GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm2sub_x (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PM2SUB_HX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pm2suba_x (v2i32 GPR:$rd), (v4i16 GPR:$rs1),
+                                        (v4i16 GPR:$rs2))),
+            (PM2SUBA_HX GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Word multiply-subtract (RV64 only).
+  def : Pat<(i64 (int_riscv_pm2sub (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PM2SUB_W GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm2suba (i64 GPR:$rd), (v2i32 GPR:$rs1),
+                                    (v2i32 GPR:$rs2))),
+            (PM2SUBA_W GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm2sub_x (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (PM2SUB_WX GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pm2suba_x (i64 GPR:$rd), (v2i32 GPR:$rs1),
+                                      (v2i32 GPR:$rs2))),
+            (PM2SUBA_WX GPR:$rd, GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV64]
