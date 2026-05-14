@@ -1621,6 +1621,77 @@ __riscv_shlr_u64(uint64_t __rs1, int __rs2) {
 
 #endif /* __riscv_xlen == 64 */
 
+/*===---------------------------------------------------------------------===
+ * Reinterpret casts
+ *
+ * Bit-pattern-preserving conversions between packed types and same-size
+ * scalars, or between two same-size packed types. Each lowers to an IR-level
+ * bitcast that the optimizer elides — zero instructions on both XLENs.
+ *===---------------------------------------------------------------------===*/
+
+/* Generates both __riscv_preinterpret_<a>_<b> and __riscv_preinterpret_<b>_<a>
+ * given the (short-name, C-type) pair for each side. */
+#define __packed_preinterpret_pair(name_a, ty_a, name_b, ty_b)                 \
+  static __inline__ ty_b __DEFAULT_FN_ATTRS                                    \
+  __riscv_preinterpret_##name_a##_##name_b(ty_a __x) {                         \
+    return __builtin_bit_cast(ty_b, __x);                                      \
+  }                                                                            \
+  static __inline__ ty_a __DEFAULT_FN_ATTRS                                    \
+  __riscv_preinterpret_##name_b##_##name_a(ty_b __x) {                         \
+    return __builtin_bit_cast(ty_a, __x);                                      \
+  }
+
+/* Packed <-> Scalar (32-bit) — 16 intrinsics. */
+__packed_preinterpret_pair(u8x4,  uint8x4_t,  u32, uint32_t)
+__packed_preinterpret_pair(u16x2, uint16x2_t, u32, uint32_t)
+__packed_preinterpret_pair(i8x4,  int8x4_t,   u32, uint32_t)
+__packed_preinterpret_pair(i16x2, int16x2_t,  u32, uint32_t)
+__packed_preinterpret_pair(u8x4,  uint8x4_t,  i32, int32_t)
+__packed_preinterpret_pair(u16x2, uint16x2_t, i32, int32_t)
+__packed_preinterpret_pair(i8x4,  int8x4_t,   i32, int32_t)
+__packed_preinterpret_pair(i16x2, int16x2_t,  i32, int32_t)
+
+/* Packed <-> Scalar (64-bit) — 24 intrinsics. */
+__packed_preinterpret_pair(u8x8,  uint8x8_t,   u64, uint64_t)
+__packed_preinterpret_pair(u16x4, uint16x4_t,  u64, uint64_t)
+__packed_preinterpret_pair(u32x2, uint32x2_t,  u64, uint64_t)
+__packed_preinterpret_pair(i8x8,  int8x8_t,    u64, uint64_t)
+__packed_preinterpret_pair(i16x4, int16x4_t,   u64, uint64_t)
+__packed_preinterpret_pair(i32x2, int32x2_t,   u64, uint64_t)
+__packed_preinterpret_pair(u8x8,  uint8x8_t,   i64, int64_t)
+__packed_preinterpret_pair(u16x4, uint16x4_t,  i64, int64_t)
+__packed_preinterpret_pair(u32x2, uint32x2_t,  i64, int64_t)
+__packed_preinterpret_pair(i8x8,  int8x8_t,    i64, int64_t)
+__packed_preinterpret_pair(i16x4, int16x4_t,   i64, int64_t)
+__packed_preinterpret_pair(i32x2, int32x2_t,   i64, int64_t)
+
+/* Packed <-> Packed (32-bit) — 12 intrinsics, six distinct type pairs. */
+__packed_preinterpret_pair(i8x4,  int8x4_t,    u8x4,  uint8x4_t)
+__packed_preinterpret_pair(u16x2, uint16x2_t,  u8x4,  uint8x4_t)
+__packed_preinterpret_pair(i16x2, int16x2_t,   u8x4,  uint8x4_t)
+__packed_preinterpret_pair(u16x2, uint16x2_t,  i8x4,  int8x4_t)
+__packed_preinterpret_pair(i16x2, int16x2_t,   i8x4,  int8x4_t)
+__packed_preinterpret_pair(i16x2, int16x2_t,   u16x2, uint16x2_t)
+
+/* Packed <-> Packed (64-bit) — 30 intrinsics, fifteen distinct type pairs. */
+__packed_preinterpret_pair(i8x8,  int8x8_t,    u8x8,  uint8x8_t)
+__packed_preinterpret_pair(u16x4, uint16x4_t,  u8x8,  uint8x8_t)
+__packed_preinterpret_pair(i16x4, int16x4_t,   u8x8,  uint8x8_t)
+__packed_preinterpret_pair(u32x2, uint32x2_t,  u8x8,  uint8x8_t)
+__packed_preinterpret_pair(i32x2, int32x2_t,   u8x8,  uint8x8_t)
+__packed_preinterpret_pair(u16x4, uint16x4_t,  i8x8,  int8x8_t)
+__packed_preinterpret_pair(i16x4, int16x4_t,   i8x8,  int8x8_t)
+__packed_preinterpret_pair(u32x2, uint32x2_t,  i8x8,  int8x8_t)
+__packed_preinterpret_pair(i32x2, int32x2_t,   i8x8,  int8x8_t)
+__packed_preinterpret_pair(i16x4, int16x4_t,   u16x4, uint16x4_t)
+__packed_preinterpret_pair(u32x2, uint32x2_t,  u16x4, uint16x4_t)
+__packed_preinterpret_pair(i32x2, int32x2_t,   u16x4, uint16x4_t)
+__packed_preinterpret_pair(u32x2, uint32x2_t,  i16x4, int16x4_t)
+__packed_preinterpret_pair(i32x2, int32x2_t,   i16x4, int16x4_t)
+__packed_preinterpret_pair(i32x2, int32x2_t,   u32x2, uint32x2_t)
+
+#undef __packed_preinterpret_pair
+
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)
