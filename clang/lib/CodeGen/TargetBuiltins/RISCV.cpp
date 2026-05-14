@@ -1497,9 +1497,38 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   RVP_MULPA_CASES(pmulh_h1_i32x2,    riscv_pmulh_h1);
   RVP_MULPA_CASES(pmulhsu_h0_i32x2,  riscv_pmulhsu_h0);
   RVP_MULPA_CASES(pmulhsu_h1_i32x2,  riscv_pmulhsu_h1);
+
+  // Packed Multiply High Parts Accumulate: 3 operands (rd, rs1, rs2) where
+  // result, rd, rs1 all share a type and rs2 is the overloaded narrow vector.
+  // Intrinsic types are {ResultType, Ops[2]->getType()}.
+#define RVP_MULHPA_CASES(BUILTIN, INTRINSIC)                                   \
+  case RISCV::BI__builtin_riscv_##BUILTIN:                                     \
+    ID = Intrinsic::INTRINSIC;                                                 \
+    IntrinsicTypes = {ResultType, Ops[2]->getType()};                          \
+    break
+
+  RVP_MULHPA_CASES(pmhacc_b0_i16x2,    riscv_pmhacc_b0);
+  RVP_MULHPA_CASES(pmhacc_b1_i16x2,    riscv_pmhacc_b1);
+  RVP_MULHPA_CASES(pmhaccsu_b0_i16x2,  riscv_pmhaccsu_b0);
+  RVP_MULHPA_CASES(pmhaccsu_b1_i16x2,  riscv_pmhaccsu_b1);
+  RVP_MULHPA_CASES(pmhacc_b0_i16x4,    riscv_pmhacc_b0);
+  RVP_MULHPA_CASES(pmhacc_b1_i16x4,    riscv_pmhacc_b1);
+  RVP_MULHPA_CASES(pmhaccsu_b0_i16x4,  riscv_pmhaccsu_b0);
+  RVP_MULHPA_CASES(pmhaccsu_b1_i16x4,  riscv_pmhaccsu_b1);
+
+  RVP_MULHPA_CASES(mhacc_h0_i32,       riscv_pmhacc_h0);
+  RVP_MULHPA_CASES(mhacc_h1_i32,       riscv_pmhacc_h1);
+  RVP_MULHPA_CASES(mhaccsu_h0_i32,     riscv_pmhaccsu_h0);
+  RVP_MULHPA_CASES(mhaccsu_h1_i32,     riscv_pmhaccsu_h1);
+
+  RVP_MULHPA_CASES(pmhacc_h0_i32x2,    riscv_pmhacc_h0);
+  RVP_MULHPA_CASES(pmhacc_h1_i32x2,    riscv_pmhacc_h1);
+  RVP_MULHPA_CASES(pmhaccsu_h0_i32x2,  riscv_pmhaccsu_h0);
+  RVP_MULHPA_CASES(pmhaccsu_h1_i32x2,  riscv_pmhaccsu_h1);
 #undef RVP_EAS_CASES
 #undef RVP_MULP_CASES
 #undef RVP_MULPA_CASES
+#undef RVP_MULHPA_CASES
 
   case RISCV::BI__builtin_riscv_clz_32:
   case RISCV::BI__builtin_riscv_clz_64: {

@@ -2209,6 +2209,26 @@ let Predicates = [HasStdExtP, IsRV32] in {
             (MULHSU_H0 GPR:$rs1, GPR:$rs2)>;
   def : Pat<(i32 (int_riscv_pmulhsu_h1 (i32 GPR:$rs1), (v2i16 GPR:$rs2))),
             (MULHSU_H1 GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply High Parts Accumulate: byte-lane subset (RV32 form).
+  def : Pat<(v2i16 (int_riscv_pmhacc_b0   (v2i16 GPR:$rd), (v2i16 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMHACC_H_B0   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmhacc_b1   (v2i16 GPR:$rd), (v2i16 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMHACC_H_B1   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmhaccsu_b0 (v2i16 GPR:$rd), (v2i16 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMHACCSU_H_B0 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmhaccsu_b1 (v2i16 GPR:$rd), (v2i16 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMHACCSU_H_B1 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply High Parts Accumulate: halfword-lane scalar (RV32 only).
+  def : Pat<(i32 (int_riscv_pmhacc_h0   (i32 GPR:$rd), (i32 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MHACC_H0   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmhacc_h1   (i32 GPR:$rd), (i32 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MHACC_H1   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmhaccsu_h0 (i32 GPR:$rd), (i32 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MHACCSU_H0 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmhaccsu_h1 (i32 GPR:$rd), (i32 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MHACCSU_H1 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV32]
 
 let Predicates = [HasStdExtP, IsRV64] in {
@@ -2700,4 +2720,24 @@ let Predicates = [HasStdExtP, IsRV64] in {
             (PMULHSU_W_H0 GPR:$rs1, GPR:$rs2)>;
   def : Pat<(v2i32 (int_riscv_pmulhsu_h1 (v2i32 GPR:$rs1), (v4i16 GPR:$rs2))),
             (PMULHSU_W_H1 GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply High Parts Accumulate: byte-lane subset (RV64 form).
+  def : Pat<(v4i16 (int_riscv_pmhacc_b0   (v4i16 GPR:$rd), (v4i16 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMHACC_H_B0   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmhacc_b1   (v4i16 GPR:$rd), (v4i16 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMHACC_H_B1   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmhaccsu_b0 (v4i16 GPR:$rd), (v4i16 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMHACCSU_H_B0 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmhaccsu_b1 (v4i16 GPR:$rd), (v4i16 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMHACCSU_H_B1 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply High Parts Accumulate: halfword-lane vector (RV64 only).
+  def : Pat<(v2i32 (int_riscv_pmhacc_h0   (v2i32 GPR:$rd), (v2i32 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMHACC_W_H0   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmhacc_h1   (v2i32 GPR:$rd), (v2i32 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMHACC_W_H1   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmhaccsu_h0 (v2i32 GPR:$rd), (v2i32 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMHACCSU_W_H0 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmhaccsu_h1 (v2i32 GPR:$rd), (v2i32 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMHACCSU_W_H1 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV64]

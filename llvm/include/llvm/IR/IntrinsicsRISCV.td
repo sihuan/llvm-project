@@ -2191,6 +2191,29 @@ let TargetPrefix = "riscv" in {
 } // TargetPrefix = "riscv"
 
 
+// Packed SIMD extensions: Packed Multiply High Parts Accumulate
+//===----------------------------------------------------------------------===//
+let TargetPrefix = "riscv" in {
+  class RVPMulHighPartsAcc
+      : DefaultAttrsIntrinsic<[llvm_any_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>,
+                               llvm_anyvector_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  // Byte-lane subset (.h.b0 / .h.b1 accumulate family).
+  def int_riscv_pmhacc_b0    : RVPMulHighPartsAcc;
+  def int_riscv_pmhacc_b1    : RVPMulHighPartsAcc;
+  def int_riscv_pmhaccsu_b0  : RVPMulHighPartsAcc;
+  def int_riscv_pmhaccsu_b1  : RVPMulHighPartsAcc;
+
+  // Halfword-lane subset (.w.h0 / .w.h1 accumulate; mhacc.h* scalar on RV32).
+  def int_riscv_pmhacc_h0    : RVPMulHighPartsAcc;
+  def int_riscv_pmhacc_h1    : RVPMulHighPartsAcc;
+  def int_riscv_pmhaccsu_h0  : RVPMulHighPartsAcc;
+  def int_riscv_pmhaccsu_h1  : RVPMulHighPartsAcc;
+} // TargetPrefix = "riscv"
+
+
 //===----------------------------------------------------------------------===//
 // Zvfofp8min - OFP8 conversion extension
 // The Zvfofp8min extension provides basic support for the two 8-bit

@@ -187,6 +187,28 @@ typedef uint32_t uint32x2_t __attribute__((__vector_size__(8), __aligned__(8)));
     return __r[0];                                                             \
   }
 
+/* Cross-XLEN packed multiply-high-parts-accumulate scalar wrapper for RV64.
+ * Maps mhacc.h0_i32 to pmhacc.w.h0: place rd in lane 0, place rs1 in lane 0,
+ * widen rs2, call vector intrinsic, extract lane 0. */
+#define __packed_pmulh_parts_acc_rv64_scalar(name, r_ty, vec_r_ty,             \
+                                             a_ty, vec_a_ty,                   \
+                                             b_ty, b_wide_ty, vec_name)        \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(r_ty __rd, a_ty __rs1, b_ty __rs2) {                          \
+    vec_r_ty __rdw = {__rd, 0};                                                \
+    vec_a_ty __aw = {__rs1, 0};                                                \
+    b_wide_ty __bw = {__rs2[0], __rs2[1], 0, 0};                               \
+    vec_r_ty __r = __builtin_riscv_##vec_name(__rdw, __aw, __bw);              \
+    return __r[0];                                                             \
+  }
+
+/* Direct-builtin packed multiply-high-parts-accumulate wrapper (3 ops). */
+#define __packed_pmulh_parts_acc(name, r_ty, a_ty, b_ty)                       \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(r_ty __rd, a_ty __rs1, b_ty __rs2) {                          \
+    return __builtin_riscv_##name(__rd, __rs1, __rs2);                         \
+  }
+
 /* Packed rounding multiply-high accumulate. */
 #define __packed_pmhracc(name, r_ty, a_ty, b_ty, prod_ty, SHIFT)               \
   static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
@@ -450,6 +472,19 @@ __packed_pm_horiz_binary(mulh_h0_i32,    int32_t, int32_t,  int16x2_t)
 __packed_pm_horiz_binary(mulh_h1_i32,    int32_t, int32_t,  int16x2_t)
 __packed_pm_horiz_binary(mulhsu_h0_i32,  int32_t, int32_t,  uint16x2_t)
 __packed_pm_horiz_binary(mulhsu_h1_i32,  int32_t, int32_t,  uint16x2_t)
+
+/* Packed Multiply High Parts Accumulate: byte-lane subset (RV32 form). */
+__packed_pmulh_parts_acc(pmhacc_b0_i16x2,    int16x2_t, int16x2_t, int8x4_t)
+__packed_pmulh_parts_acc(pmhacc_b1_i16x2,    int16x2_t, int16x2_t, int8x4_t)
+__packed_pmulh_parts_acc(pmhaccsu_b0_i16x2,  int16x2_t, int16x2_t, uint8x4_t)
+__packed_pmulh_parts_acc(pmhaccsu_b1_i16x2,  int16x2_t, int16x2_t, uint8x4_t)
+
+/* Packed Multiply High Parts Accumulate: halfword-lane scalar form
+ * (RV32 only). */
+__packed_pmulh_parts_acc(mhacc_h0_i32,    int32_t, int32_t, int16x2_t)
+__packed_pmulh_parts_acc(mhacc_h1_i32,    int32_t, int32_t, int16x2_t)
+__packed_pmulh_parts_acc(mhaccsu_h0_i32,  int32_t, int32_t, uint16x2_t)
+__packed_pmulh_parts_acc(mhaccsu_h1_i32,  int32_t, int32_t, uint16x2_t)
 #endif
 
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
@@ -806,6 +841,55 @@ __packed_pmulh_parts_rv64_scalar(mulhsu_h0_i32,  int32_t, int32x2_t,
 __packed_pmulh_parts_rv64_scalar(mulhsu_h1_i32,  int32_t, int32x2_t,
                                  int32_t, int32x2_t,
                                  uint16x2_t, uint16x4_t, pmulhsu_h1_i32x2)
+
+/* Packed Multiply High Parts Accumulate: byte-lane subset (RV64 form). */
+__packed_pmulh_parts_acc(pmhacc_b0_i16x4,    int16x4_t, int16x4_t, int8x8_t)
+__packed_pmulh_parts_acc(pmhacc_b1_i16x4,    int16x4_t, int16x4_t, int8x8_t)
+__packed_pmulh_parts_acc(pmhaccsu_b0_i16x4,  int16x4_t, int16x4_t, uint8x8_t)
+__packed_pmulh_parts_acc(pmhaccsu_b1_i16x4,  int16x4_t, int16x4_t, uint8x8_t)
+
+/* Packed Multiply High Parts Accumulate: halfword-lane vector form
+ * (RV64 only, pmhacc.w.h* / pmhaccsu.w.h*). */
+__packed_pmulh_parts_acc(pmhacc_h0_i32x2,    int32x2_t, int32x2_t, int16x4_t)
+__packed_pmulh_parts_acc(pmhacc_h1_i32x2,    int32x2_t, int32x2_t, int16x4_t)
+__packed_pmulh_parts_acc(pmhaccsu_h0_i32x2,  int32x2_t, int32x2_t, uint16x4_t)
+__packed_pmulh_parts_acc(pmhaccsu_h1_i32x2,  int32x2_t, int32x2_t, uint16x4_t)
+
+/* Cross-XLEN byte-lane forms on RV64: widen rs1 from i16x2 to i16x4 and rs2
+ * from i8x4 to i8x8, call the i16x4 builtin, narrow result. */
+#define __packed_pmhacc_b_rv64_half(name, narrow_v_ty, wide_v_ty,              \
+                                    b_narrow_ty, b_wide_ty, wide_name)         \
+  static __inline__ narrow_v_ty __DEFAULT_FN_ATTRS                             \
+  __riscv_##name(narrow_v_ty __rd, narrow_v_ty __rs1, b_narrow_ty __rs2) {     \
+    wide_v_ty __rdw = {__rd[0], __rd[1], 0, 0};                                \
+    wide_v_ty __aw = {__rs1[0], __rs1[1], 0, 0};                               \
+    b_wide_ty __bw = {__rs2[0], __rs2[1], __rs2[2], __rs2[3], 0, 0, 0, 0};     \
+    wide_v_ty __r = __builtin_riscv_##wide_name(__rdw, __aw, __bw);            \
+    return (narrow_v_ty){__r[0], __r[1]};                                      \
+  }
+
+__packed_pmhacc_b_rv64_half(pmhacc_b0_i16x2,   int16x2_t, int16x4_t,
+                            int8x4_t,  int8x8_t,  pmhacc_b0_i16x4)
+__packed_pmhacc_b_rv64_half(pmhacc_b1_i16x2,   int16x2_t, int16x4_t,
+                            int8x4_t,  int8x8_t,  pmhacc_b1_i16x4)
+__packed_pmhacc_b_rv64_half(pmhaccsu_b0_i16x2, int16x2_t, int16x4_t,
+                            uint8x4_t, uint8x8_t, pmhaccsu_b0_i16x4)
+__packed_pmhacc_b_rv64_half(pmhaccsu_b1_i16x2, int16x2_t, int16x4_t,
+                            uint8x4_t, uint8x8_t, pmhaccsu_b1_i16x4)
+
+/* Cross-XLEN mhacc.h_i32 / mhaccsu.h_i32 forms on RV64. */
+__packed_pmulh_parts_acc_rv64_scalar(mhacc_h0_i32,    int32_t, int32x2_t,
+                                     int32_t, int32x2_t,
+                                     int16x2_t, int16x4_t, pmhacc_h0_i32x2)
+__packed_pmulh_parts_acc_rv64_scalar(mhacc_h1_i32,    int32_t, int32x2_t,
+                                     int32_t, int32x2_t,
+                                     int16x2_t, int16x4_t, pmhacc_h1_i32x2)
+__packed_pmulh_parts_acc_rv64_scalar(mhaccsu_h0_i32,  int32_t, int32x2_t,
+                                     int32_t, int32x2_t,
+                                     uint16x2_t, uint16x4_t, pmhaccsu_h0_i32x2)
+__packed_pmulh_parts_acc_rv64_scalar(mhaccsu_h1_i32,  int32_t, int32x2_t,
+                                     int32_t, int32x2_t,
+                                     uint16x2_t, uint16x4_t, pmhaccsu_h1_i32x2)
 #endif
 
 #undef __packed_splat2
@@ -833,6 +917,9 @@ __packed_pmulh_parts_rv64_scalar(mulhsu_h1_i32,  int32_t, int32x2_t,
 #undef __packed_pmul_parts_acc_rv64_scalar
 #undef __packed_pmulh_parts_rv64_scalar
 #undef __packed_pmulh_b_rv64_half
+#undef __packed_pmulh_parts_acc
+#undef __packed_pmulh_parts_acc_rv64_scalar
+#undef __packed_pmhacc_b_rv64_half
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)
