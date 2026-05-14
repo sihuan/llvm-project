@@ -341,6 +341,19 @@ def pzip_i8x8  : RISCVBuiltin<"_Vector<8, signed char>(_Vector<4, signed char>, 
 def pzip_u8x8  : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<4, unsigned char>, _Vector<4, unsigned char>)">;
 def pzip_i16x4 : RISCVBuiltin<"_Vector<4, short>(_Vector<2, short>, _Vector<2, short>)">;
 def pzip_u16x4 : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+
+// Packed Unzip (RV32 only). punzipe extracts the even-indexed elements
+// (low half of each wide lane after bitcast); punzipo extracts the
+// odd-indexed elements (high half). Implemented via pnsrli with the
+// corresponding shift amount.
+def punzipe_i8x4   : RISCVBuiltin<"_Vector<4, signed char>(_Vector<8, signed char>)">;
+def punzipo_i8x4   : RISCVBuiltin<"_Vector<4, signed char>(_Vector<8, signed char>)">;
+def punzipe_u8x4   : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<8, unsigned char>)">;
+def punzipo_u8x4   : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<8, unsigned char>)">;
+def punzipe_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<4, short>)">;
+def punzipo_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<4, short>)">;
+def punzipe_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<4, unsigned short>)">;
+def punzipo_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<4, unsigned short>)">;
 } // Features = "experimental-p,32bit"
 
 // Packed Exchanged Addition and Subtraction (halfword form, RV32 and RV64).

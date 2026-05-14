@@ -1687,9 +1687,10 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return Builder.CreateCall(F, Ops);
   }
 
-  // Packed Narrowing Convert (RV32 only). Maps directly to pnsrli with
-  // imm=0 (low half) or imm=element-width (high half); we delegate to the
-  // existing pnsrl IR intrinsic with the matching shift amount.
+  // Packed Narrowing Convert / Packed Unzip (RV32 only). Both map directly
+  // to pnsrli with imm=0 (low half / even lanes) or imm=element-width
+  // (high half / odd lanes); we delegate to the existing pnsrl IR intrinsic
+  // with the matching shift amount.
   case RISCV::BI__builtin_riscv_pncvt_i8x4:
   case RISCV::BI__builtin_riscv_pncvt_u8x4:
   case RISCV::BI__builtin_riscv_pncvt_i16x2:
@@ -1697,7 +1698,15 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   case RISCV::BI__builtin_riscv_pncvth_i8x4:
   case RISCV::BI__builtin_riscv_pncvth_u8x4:
   case RISCV::BI__builtin_riscv_pncvth_i16x2:
-  case RISCV::BI__builtin_riscv_pncvth_u16x2: {
+  case RISCV::BI__builtin_riscv_pncvth_u16x2:
+  case RISCV::BI__builtin_riscv_punzipe_i8x4:
+  case RISCV::BI__builtin_riscv_punzipe_u8x4:
+  case RISCV::BI__builtin_riscv_punzipe_i16x2:
+  case RISCV::BI__builtin_riscv_punzipe_u16x2:
+  case RISCV::BI__builtin_riscv_punzipo_i8x4:
+  case RISCV::BI__builtin_riscv_punzipo_u8x4:
+  case RISCV::BI__builtin_riscv_punzipo_i16x2:
+  case RISCV::BI__builtin_riscv_punzipo_u16x2: {
     unsigned Shamt;
     switch (BuiltinID) {
     default: llvm_unreachable("unexpected builtin");
@@ -1705,14 +1714,22 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     case RISCV::BI__builtin_riscv_pncvt_u8x4:
     case RISCV::BI__builtin_riscv_pncvt_i16x2:
     case RISCV::BI__builtin_riscv_pncvt_u16x2:
+    case RISCV::BI__builtin_riscv_punzipe_i8x4:
+    case RISCV::BI__builtin_riscv_punzipe_u8x4:
+    case RISCV::BI__builtin_riscv_punzipe_i16x2:
+    case RISCV::BI__builtin_riscv_punzipe_u16x2:
       Shamt = 0;
       break;
     case RISCV::BI__builtin_riscv_pncvth_i8x4:
     case RISCV::BI__builtin_riscv_pncvth_u8x4:
+    case RISCV::BI__builtin_riscv_punzipo_i8x4:
+    case RISCV::BI__builtin_riscv_punzipo_u8x4:
       Shamt = 8;
       break;
     case RISCV::BI__builtin_riscv_pncvth_i16x2:
     case RISCV::BI__builtin_riscv_pncvth_u16x2:
+    case RISCV::BI__builtin_riscv_punzipo_i16x2:
+    case RISCV::BI__builtin_riscv_punzipo_u16x2:
       Shamt = 16;
       break;
     }

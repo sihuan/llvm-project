@@ -616,6 +616,16 @@ __packed_pwadd_sub(pzip_i8x8,  int8x8_t,   int8x4_t,   int8x4_t)
 __packed_pwadd_sub(pzip_u8x8,  uint8x8_t,  uint8x4_t,  uint8x4_t)
 __packed_pwadd_sub(pzip_i16x4, int16x4_t,  int16x2_t,  int16x2_t)
 __packed_pwadd_sub(pzip_u16x4, uint16x4_t, uint16x2_t, uint16x2_t)
+
+/* Packed Unzip (RV32 only). */
+__packed_pwcvt(punzipe_i8x4,  int8x4_t,   int8x8_t)
+__packed_pwcvt(punzipo_i8x4,  int8x4_t,   int8x8_t)
+__packed_pwcvt(punzipe_u8x4,  uint8x4_t,  uint8x8_t)
+__packed_pwcvt(punzipo_u8x4,  uint8x4_t,  uint8x8_t)
+__packed_pwcvt(punzipe_i16x2, int16x2_t,  int16x4_t)
+__packed_pwcvt(punzipo_i16x2, int16x2_t,  int16x4_t)
+__packed_pwcvt(punzipe_u16x2, uint16x2_t, uint16x4_t)
+__packed_pwcvt(punzipo_u16x2, uint16x2_t, uint16x4_t)
 #endif
 
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
