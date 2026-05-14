@@ -481,6 +481,29 @@ __packed_pst(pst_u32x2, uint32x2_t, uint32_t)
 #define __riscv_pset_i32_i32x2(v, e, idx) __builtin_riscv_pset_i32_i32x2((v), (e), (idx))
 #define __riscv_pset_u32_u32x2(v, e, idx) __builtin_riscv_pset_u32_u32x2((v), (e), (idx))
 
+/* Packed Element Join. */
+#define __packed_pjoin4(name, r_ty, e_ty)                                      \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(e_ty __e0, e_ty __e1, e_ty __e2, e_ty __e3) {                 \
+    return __builtin_riscv_##name(__e0, __e1, __e2, __e3);                     \
+  }
+#define __packed_pjoin2(name, r_ty, e_ty)                                      \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(e_ty __e0, e_ty __e1) {                                       \
+    return __builtin_riscv_##name(__e0, __e1);                                 \
+  }
+__packed_pjoin4(pjoin4_i8x4,  int8x4_t,   int8_t)
+__packed_pjoin4(pjoin4_u8x4,  uint8x4_t,  uint8_t)
+__packed_pjoin2(pjoin2_i16x2, int16x2_t,  int16_t)
+__packed_pjoin2(pjoin2_u16x2, uint16x2_t, uint16_t)
+
+__packed_pjoin4(pjoin4_i16x4, int16x4_t,  int16_t)
+__packed_pjoin4(pjoin4_u16x4, uint16x4_t, uint16_t)
+__packed_pjoin2(pjoin2_i32x2, int32x2_t,  int32_t)
+__packed_pjoin2(pjoin2_u32x2, uint32x2_t, uint32_t)
+#undef __packed_pjoin4
+#undef __packed_pjoin2
+
 #if __riscv_xlen == 32
 /* Packed Multiply Parts (RV32 form, direct builtin) */
 __packed_pm_horiz_binary(pmul_b00_i16x2,    int16x2_t,  int8x4_t,  int8x4_t)

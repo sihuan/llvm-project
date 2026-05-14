@@ -441,6 +441,17 @@ def pset_i16_i16x4   : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, short,
 def pset_u16_u16x4   : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, unsigned short, _Constant unsigned int)">;
 def pset_i32_i32x2   : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, int, _Constant unsigned int)">;
 def pset_u32_u32x2   : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, unsigned int, _Constant unsigned int)">;
+
+// Packed Element Join (32-bit and 64-bit packed types, both XLENs).
+def pjoin4_i8x4   : RISCVBuiltin<"_Vector<4, signed char>(signed char, signed char, signed char, signed char)">;
+def pjoin4_u8x4   : RISCVBuiltin<"_Vector<4, unsigned char>(unsigned char, unsigned char, unsigned char, unsigned char)">;
+def pjoin2_i16x2  : RISCVBuiltin<"_Vector<2, short>(short, short)">;
+def pjoin2_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(unsigned short, unsigned short)">;
+
+def pjoin4_i16x4  : RISCVBuiltin<"_Vector<4, short>(short, short, short, short)">;
+def pjoin4_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(unsigned short, unsigned short, unsigned short, unsigned short)">;
+def pjoin2_i32x2  : RISCVBuiltin<"_Vector<2, int>(int, int)">;
+def pjoin2_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(unsigned int, unsigned int)">;
 } // Features = "experimental-p"
 
 let Features = "experimental-p,64bit" in {

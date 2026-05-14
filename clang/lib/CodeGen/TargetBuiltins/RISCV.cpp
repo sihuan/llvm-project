@@ -2004,6 +2004,23 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   case RISCV::BI__builtin_riscv_pset_u32_u32x2:
     return Builder.CreateInsertElement(Ops[0], Ops[1], Ops[2]);
 
+  // Packed Element Join. Build the result vector via an insertelement chain
+  // over poison; SLP / DAG combining will reduce to pack / ppaire / mv as
+  // appropriate.
+  case RISCV::BI__builtin_riscv_pjoin4_i8x4:
+  case RISCV::BI__builtin_riscv_pjoin4_u8x4:
+  case RISCV::BI__builtin_riscv_pjoin2_i16x2:
+  case RISCV::BI__builtin_riscv_pjoin2_u16x2:
+  case RISCV::BI__builtin_riscv_pjoin4_i16x4:
+  case RISCV::BI__builtin_riscv_pjoin4_u16x4:
+  case RISCV::BI__builtin_riscv_pjoin2_i32x2:
+  case RISCV::BI__builtin_riscv_pjoin2_u32x2: {
+    llvm::Value *V = llvm::PoisonValue::get(ConvertType(E->getType()));
+    for (unsigned I = 0, N = Ops.size(); I < N; ++I)
+      V = Builder.CreateInsertElement(V, Ops[I], I);
+    return V;
+  }
+
   // Packed Load and Store. The spec guarantees the pointer is aligned to
   // the element size; emit a vector load/store with that alignment so the
   // backend can pick an unaligned wider load (lw/sw or ld/sd) or fall back
