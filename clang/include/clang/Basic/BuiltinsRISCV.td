@@ -214,6 +214,18 @@ def mqacc_h11_i32  : RISCVBuiltin<"int(int, _Vector<2, short>, _Vector<2, short>
 def mqracc_h00_i32 : RISCVBuiltin<"int(int, _Vector<2, short>, _Vector<2, short>)">;
 def mqracc_h01_i32 : RISCVBuiltin<"int(int, _Vector<2, short>, _Vector<2, short>)">;
 def mqracc_h11_i32 : RISCVBuiltin<"int(int, _Vector<2, short>, _Vector<2, short>)">;
+
+// Packed Multiply High Parts: byte-lane subset (RV32 form).
+def pmulh_b0_i16x2     : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<4, signed char>)">;
+def pmulh_b1_i16x2     : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<4, signed char>)">;
+def pmulhsu_b0_i16x2   : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<4, unsigned char>)">;
+def pmulhsu_b1_i16x2   : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<4, unsigned char>)">;
+
+// Packed Multiply High Parts: halfword-lane scalar form (RV32 only, mulh.h*).
+def mulh_h0_i32     : RISCVBuiltin<"int(int, _Vector<2, short>)">;
+def mulh_h1_i32     : RISCVBuiltin<"int(int, _Vector<2, short>)">;
+def mulhsu_h0_i32   : RISCVBuiltin<"int(int, _Vector<2, unsigned short>)">;
+def mulhsu_h1_i32   : RISCVBuiltin<"int(int, _Vector<2, unsigned short>)">;
 } // Features = "experimental-p,32bit"
 
 // Packed Exchanged Addition and Subtraction (halfword form, RV32 and RV64).
@@ -401,6 +413,18 @@ def mqacc_w11_i64  : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, 
 def mqracc_w00_i64 : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, int>)">;
 def mqracc_w01_i64 : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, int>)">;
 def mqracc_w11_i64 : RISCVBuiltin<"int64_t(int64_t, _Vector<2, int>, _Vector<2, int>)">;
+
+// Packed Multiply High Parts: byte-lane subset (RV64 64-bit form).
+def pmulh_b0_i16x4     : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<8, signed char>)">;
+def pmulh_b1_i16x4     : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<8, signed char>)">;
+def pmulhsu_b0_i16x4   : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<8, unsigned char>)">;
+def pmulhsu_b1_i16x4   : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<8, unsigned char>)">;
+
+// Packed Multiply High Parts: halfword-lane vector form (RV64 only, pmulh.w.h*).
+def pmulh_h0_i32x2     : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<4, short>)">;
+def pmulh_h1_i32x2     : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<4, short>)">;
+def pmulhsu_h0_i32x2   : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<4, unsigned short>)">;
+def pmulhsu_h1_i32x2   : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, _Vector<4, unsigned short>)">;
 } // Features = "experimental-p,64bit"
 
 } // Attributes = [Const, NoThrow]

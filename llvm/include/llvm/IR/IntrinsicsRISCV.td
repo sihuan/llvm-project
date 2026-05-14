@@ -2165,6 +2165,32 @@ let TargetPrefix = "riscv" in {
 } // TargetPrefix = "riscv"
 
 
+// Packed SIMD extensions: Packed Multiply High Parts
+//===----------------------------------------------------------------------===//
+//
+// Wider rs1 times the b0/b1/h0/h1 lane subset of narrower rs2, producing
+// a result of the same width as rs1 (the "high parts" of an asymmetric
+// widening multiply).
+let TargetPrefix = "riscv" in {
+  class RVPMulHighParts
+      : DefaultAttrsIntrinsic<[llvm_any_ty],
+                              [LLVMMatchType<0>, llvm_anyvector_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  // Byte-lane subset (.h.b0 / .h.b1 family).
+  def int_riscv_pmulh_b0    : RVPMulHighParts;
+  def int_riscv_pmulh_b1    : RVPMulHighParts;
+  def int_riscv_pmulhsu_b0  : RVPMulHighParts;
+  def int_riscv_pmulhsu_b1  : RVPMulHighParts;
+
+  // Halfword-lane subset (.w.h0 / .w.h1 family; mulh.h* scalar on RV32).
+  def int_riscv_pmulh_h0    : RVPMulHighParts;
+  def int_riscv_pmulh_h1    : RVPMulHighParts;
+  def int_riscv_pmulhsu_h0  : RVPMulHighParts;
+  def int_riscv_pmulhsu_h1  : RVPMulHighParts;
+} // TargetPrefix = "riscv"
+
+
 //===----------------------------------------------------------------------===//
 // Zvfofp8min - OFP8 conversion extension
 // The Zvfofp8min extension provides basic support for the two 8-bit

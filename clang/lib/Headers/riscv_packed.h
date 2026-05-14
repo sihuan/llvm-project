@@ -173,6 +173,20 @@ typedef uint32_t uint32x2_t __attribute__((__vector_size__(8), __aligned__(8)));
     return __builtin_riscv_##name(__rd, __rs1, __rs2);                         \
   }
 
+/* Cross-XLEN packed multiply-high-parts scalar wrapper for RV64. The scalar
+ * form mulh.h0_i32 maps to pmulh.w.h0: place rs1 in lane 0 of a v2i32, widen
+ * rs2 from i16x2 to i16x4, call vector intrinsic, extract lane 0. */
+#define __packed_pmulh_parts_rv64_scalar(name, r_ty, vec_r_ty,                 \
+                                         a_ty, vec_a_ty,                       \
+                                         b_ty, b_wide_ty, vec_name)            \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(a_ty __rs1, b_ty __rs2) {                                     \
+    vec_a_ty __aw = {__rs1, 0};                                                \
+    b_wide_ty __bw = {__rs2[0], __rs2[1], 0, 0};                               \
+    vec_r_ty __r = __builtin_riscv_##vec_name(__aw, __bw);                     \
+    return __r[0];                                                             \
+  }
+
 /* Packed rounding multiply-high accumulate. */
 #define __packed_pmhracc(name, r_ty, a_ty, b_ty, prod_ty, SHIFT)               \
   static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
@@ -424,6 +438,18 @@ __packed_pmul_parts_acc(mqacc_h11_i32,  int32_t, int16x2_t, int16x2_t)
 __packed_pmul_parts_acc(mqracc_h00_i32, int32_t, int16x2_t, int16x2_t)
 __packed_pmul_parts_acc(mqracc_h01_i32, int32_t, int16x2_t, int16x2_t)
 __packed_pmul_parts_acc(mqracc_h11_i32, int32_t, int16x2_t, int16x2_t)
+
+/* Packed Multiply High Parts: byte-lane subset (RV32 form, direct builtin) */
+__packed_pm_horiz_binary(pmulh_b0_i16x2,    int16x2_t, int16x2_t, int8x4_t)
+__packed_pm_horiz_binary(pmulh_b1_i16x2,    int16x2_t, int16x2_t, int8x4_t)
+__packed_pm_horiz_binary(pmulhsu_b0_i16x2,  int16x2_t, int16x2_t, uint8x4_t)
+__packed_pm_horiz_binary(pmulhsu_b1_i16x2,  int16x2_t, int16x2_t, uint8x4_t)
+
+/* Packed Multiply High Parts: halfword-lane scalar form (RV32 only). */
+__packed_pm_horiz_binary(mulh_h0_i32,    int32_t, int32_t,  int16x2_t)
+__packed_pm_horiz_binary(mulh_h1_i32,    int32_t, int32_t,  int16x2_t)
+__packed_pm_horiz_binary(mulhsu_h0_i32,  int32_t, int32_t,  uint16x2_t)
+__packed_pm_horiz_binary(mulhsu_h1_i32,  int32_t, int32_t,  uint16x2_t)
 #endif
 
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
@@ -733,6 +759,53 @@ __packed_pmul_parts_acc_rv64_scalar(mqracc_h01_i32, int32_t, int32x2_t,
 __packed_pmul_parts_acc_rv64_scalar(mqracc_h11_i32, int32_t, int32x2_t,
                                     int16x2_t, int16x4_t, int16x2_t, int16x4_t,
                                     pmqracc_h11_i32x2)
+
+/* Packed Multiply High Parts: byte-lane subset (RV64 64-bit form). */
+__packed_pm_horiz_binary(pmulh_b0_i16x4,    int16x4_t, int16x4_t, int8x8_t)
+__packed_pm_horiz_binary(pmulh_b1_i16x4,    int16x4_t, int16x4_t, int8x8_t)
+__packed_pm_horiz_binary(pmulhsu_b0_i16x4,  int16x4_t, int16x4_t, uint8x8_t)
+__packed_pm_horiz_binary(pmulhsu_b1_i16x4,  int16x4_t, int16x4_t, uint8x8_t)
+
+/* Packed Multiply High Parts: halfword-lane vector form (RV64 only). */
+__packed_pm_horiz_binary(pmulh_h0_i32x2,    int32x2_t, int32x2_t, int16x4_t)
+__packed_pm_horiz_binary(pmulh_h1_i32x2,    int32x2_t, int32x2_t, int16x4_t)
+__packed_pm_horiz_binary(pmulhsu_h0_i32x2,  int32x2_t, int32x2_t, uint16x4_t)
+__packed_pm_horiz_binary(pmulhsu_h1_i32x2,  int32x2_t, int32x2_t, uint16x4_t)
+
+/* Cross-XLEN byte-lane forms on RV64: widen the int16x2_t rs1 to int16x4_t,
+ * widen the int8x4_t rs2 to int8x8_t, call the i16x4 builtin, and narrow. */
+#define __packed_pmulh_b_rv64_half(name, narrow_v_ty, wide_v_ty,               \
+                                   b_narrow_ty, b_wide_ty, wide_name)          \
+  static __inline__ narrow_v_ty __DEFAULT_FN_ATTRS                             \
+  __riscv_##name(narrow_v_ty __rs1, b_narrow_ty __rs2) {                       \
+    wide_v_ty __aw = {__rs1[0], __rs1[1], 0, 0};                               \
+    b_wide_ty __bw = {__rs2[0], __rs2[1], __rs2[2], __rs2[3], 0, 0, 0, 0};     \
+    wide_v_ty __r = __builtin_riscv_##wide_name(__aw, __bw);                   \
+    return (narrow_v_ty){__r[0], __r[1]};                                      \
+  }
+
+__packed_pmulh_b_rv64_half(pmulh_b0_i16x2,    int16x2_t, int16x4_t,
+                           int8x4_t,  int8x8_t,  pmulh_b0_i16x4)
+__packed_pmulh_b_rv64_half(pmulh_b1_i16x2,    int16x2_t, int16x4_t,
+                           int8x4_t,  int8x8_t,  pmulh_b1_i16x4)
+__packed_pmulh_b_rv64_half(pmulhsu_b0_i16x2,  int16x2_t, int16x4_t,
+                           uint8x4_t, uint8x8_t, pmulhsu_b0_i16x4)
+__packed_pmulh_b_rv64_half(pmulhsu_b1_i16x2,  int16x2_t, int16x4_t,
+                           uint8x4_t, uint8x8_t, pmulhsu_b1_i16x4)
+
+/* Cross-XLEN mulh.h_i32 forms on RV64 (wrap pmulh.w.h vector form). */
+__packed_pmulh_parts_rv64_scalar(mulh_h0_i32,    int32_t, int32x2_t,
+                                 int32_t, int32x2_t,
+                                 int16x2_t, int16x4_t, pmulh_h0_i32x2)
+__packed_pmulh_parts_rv64_scalar(mulh_h1_i32,    int32_t, int32x2_t,
+                                 int32_t, int32x2_t,
+                                 int16x2_t, int16x4_t, pmulh_h1_i32x2)
+__packed_pmulh_parts_rv64_scalar(mulhsu_h0_i32,  int32_t, int32x2_t,
+                                 int32_t, int32x2_t,
+                                 uint16x2_t, uint16x4_t, pmulhsu_h0_i32x2)
+__packed_pmulh_parts_rv64_scalar(mulhsu_h1_i32,  int32_t, int32x2_t,
+                                 int32_t, int32x2_t,
+                                 uint16x2_t, uint16x4_t, pmulhsu_h1_i32x2)
 #endif
 
 #undef __packed_splat2
@@ -758,6 +831,8 @@ __packed_pmul_parts_acc_rv64_scalar(mqracc_h11_i32, int32_t, int32x2_t,
 #undef __packed_pmul_parts_rv64_scalar
 #undef __packed_pmul_parts_acc
 #undef __packed_pmul_parts_acc_rv64_scalar
+#undef __packed_pmulh_parts_rv64_scalar
+#undef __packed_pmulh_b_rv64_half
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)

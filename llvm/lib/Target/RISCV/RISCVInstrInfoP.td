@@ -2189,6 +2189,26 @@ let Predicates = [HasStdExtP, IsRV32] in {
             (MQRACC_H01 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
   def : Pat<(i32 (int_riscv_pmqracc_h11 (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
             (MQRACC_H11 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply High Parts: byte-lane subset (RV32 form, v2i16 x v4i8 -> v2i16).
+  def : Pat<(v2i16 (int_riscv_pmulh_b0   (v2i16 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMULH_H_B0   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmulh_b1   (v2i16 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMULH_H_B1   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmulhsu_b0 (v2i16 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMULHSU_H_B0 GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_pmulhsu_b1 (v2i16 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PMULHSU_H_B1 GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply High Parts: halfword-lane scalar (RV32 only, mulh.h*).
+  def : Pat<(i32 (int_riscv_pmulh_h0   (i32 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MULH_H0   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmulh_h1   (i32 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MULH_H1   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmulhsu_h0 (i32 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MULHSU_H0 GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmulhsu_h1 (i32 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MULHSU_H1 GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV32]
 
 let Predicates = [HasStdExtP, IsRV64] in {
@@ -2660,4 +2680,24 @@ let Predicates = [HasStdExtP, IsRV64] in {
             (MQRACC_W01 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
   def : Pat<(i64 (int_riscv_pmqracc_w11 (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
             (MQRACC_W11 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply High Parts: byte-lane subset (RV64 form, v4i16 x v8i8 -> v4i16).
+  def : Pat<(v4i16 (int_riscv_pmulh_b0   (v4i16 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMULH_H_B0   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmulh_b1   (v4i16 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMULH_H_B1   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmulhsu_b0 (v4i16 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMULHSU_H_B0 GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i16 (int_riscv_pmulhsu_b1 (v4i16 GPR:$rs1), (v8i8 GPR:$rs2))),
+            (PMULHSU_H_B1 GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply High Parts: halfword-lane vector (RV64 only, pmulh.w.h*).
+  def : Pat<(v2i32 (int_riscv_pmulh_h0   (v2i32 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMULH_W_H0   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmulh_h1   (v2i32 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMULH_W_H1   GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmulhsu_h0 (v2i32 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMULHSU_W_H0 GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmulhsu_h1 (v2i32 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMULHSU_W_H1 GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV64]

@@ -1476,6 +1476,27 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   RVP_MULPA_CASES(mqracc_w00_i64,   riscv_pmqracc_w00);
   RVP_MULPA_CASES(mqracc_w01_i64,   riscv_pmqracc_w01);
   RVP_MULPA_CASES(mqracc_w11_i64,   riscv_pmqracc_w11);
+
+  // Packed Multiply High Parts: 2 operands (rs1, rs2), rs1 matches result.
+  // Intrinsic types are {ResultType, RS2VectorType (Ops[1])}.
+  RVP_MULPA_CASES(pmulh_b0_i16x2,    riscv_pmulh_b0);
+  RVP_MULPA_CASES(pmulh_b1_i16x2,    riscv_pmulh_b1);
+  RVP_MULPA_CASES(pmulhsu_b0_i16x2,  riscv_pmulhsu_b0);
+  RVP_MULPA_CASES(pmulhsu_b1_i16x2,  riscv_pmulhsu_b1);
+  RVP_MULPA_CASES(pmulh_b0_i16x4,    riscv_pmulh_b0);
+  RVP_MULPA_CASES(pmulh_b1_i16x4,    riscv_pmulh_b1);
+  RVP_MULPA_CASES(pmulhsu_b0_i16x4,  riscv_pmulhsu_b0);
+  RVP_MULPA_CASES(pmulhsu_b1_i16x4,  riscv_pmulhsu_b1);
+
+  RVP_MULPA_CASES(mulh_h0_i32,       riscv_pmulh_h0);
+  RVP_MULPA_CASES(mulh_h1_i32,       riscv_pmulh_h1);
+  RVP_MULPA_CASES(mulhsu_h0_i32,     riscv_pmulhsu_h0);
+  RVP_MULPA_CASES(mulhsu_h1_i32,     riscv_pmulhsu_h1);
+
+  RVP_MULPA_CASES(pmulh_h0_i32x2,    riscv_pmulh_h0);
+  RVP_MULPA_CASES(pmulh_h1_i32x2,    riscv_pmulh_h1);
+  RVP_MULPA_CASES(pmulhsu_h0_i32x2,  riscv_pmulhsu_h0);
+  RVP_MULPA_CASES(pmulhsu_h1_i32x2,  riscv_pmulhsu_h1);
 #undef RVP_EAS_CASES
 #undef RVP_MULP_CASES
 #undef RVP_MULPA_CASES
