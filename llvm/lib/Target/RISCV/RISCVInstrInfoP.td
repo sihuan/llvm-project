@@ -1954,6 +1954,14 @@ let Predicates = [HasStdExtP] in {
 } // Predicates = [HasStdExtP]
 
 let Predicates = [HasStdExtP, IsRV32] in {
+  // Packed Narrowing Zip / psext.h.b (used by Packed Widening Unzip).
+  def : Pat<(v4i8 (int_riscv_pnzip  (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PPAIRE_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v4i8 (int_riscv_pnziph (v4i8 GPR:$rs1), (v4i8 GPR:$rs2))),
+            (PPAIRO_B GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i16 (int_riscv_psext_h_b (v4i8 GPR:$rs1))),
+            (PSEXT_H_B GPR:$rs1)>;
+
   def : PatGpr<bitreverse, REV_RV32>;
 
   def : Pat<(XLenVT (riscv_sati GPR:$rs1, timm:$imm)),

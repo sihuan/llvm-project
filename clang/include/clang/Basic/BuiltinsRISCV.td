@@ -342,6 +342,12 @@ def pzip_u8x8  : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<4, unsigned cha
 def pzip_i16x4 : RISCVBuiltin<"_Vector<4, short>(_Vector<2, short>, _Vector<2, short>)">;
 def pzip_u16x4 : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
 
+// Packed Narrowing Zip (RV32 only).
+def pnzip_i8x4   : RISCVBuiltin<"_Vector<4, signed char>(_Vector<2, short>, _Vector<2, short>)">;
+def pnzip_u8x4   : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+def pnziph_i8x4  : RISCVBuiltin<"_Vector<4, signed char>(_Vector<2, short>, _Vector<2, short>)">;
+def pnziph_u8x4  : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+
 // Packed Unzip (RV32 only). punzipe extracts the even-indexed elements
 // (low half of each wide lane after bitcast); punzipo extracts the
 // odd-indexed elements (high half). Implemented via pnsrli with the

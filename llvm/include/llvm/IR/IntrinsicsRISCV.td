@@ -2329,6 +2329,24 @@ let TargetPrefix = "riscv" in {
   // (i64 GPR-pair) result via wzip*p. Same i64-result / pair-of-narrow-
   // vectors shape as the widening add/sub family.
   def int_riscv_pzip : RVPWAddSub;
+
+  // Packed Narrowing Zip (RV32 only). Both inputs and result are 32-bit
+  // packed vectors held in a single GPR. The byte-level interpretation
+  // is fixed by the underlying ppair*.b instruction, so the IR shape uses
+  // v4i8 for all three operands; callers bitcast around it.
+  class RVPNarrowingZip
+      : DefaultAttrsIntrinsic<[llvm_v4i8_ty],
+                              [llvm_v4i8_ty, llvm_v4i8_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
+  def int_riscv_pnzip  : RVPNarrowingZip;
+  def int_riscv_pnziph : RVPNarrowingZip;
+
+  // psext.h.b: sign-extend the even bytes of a 32-bit packed input into a
+  // halfword vector. Used by the widening unzip "even / signed" variant.
+  def int_riscv_psext_h_b
+      : DefaultAttrsIntrinsic<[llvm_v2i16_ty],
+                              [llvm_v4i8_ty],
+                              [IntrNoMem, IntrSpeculatable]>;
 } // TargetPrefix = "riscv"
 
 

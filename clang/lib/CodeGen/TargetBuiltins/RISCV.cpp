@@ -1687,6 +1687,33 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return Builder.CreateCall(F, Ops);
   }
 
+  // Packed Narrowing Zip (RV32 only). The underlying ppaire.b / ppairo.b
+  // instructions operate at byte granularity; bitcast both inputs to v4i8
+  // before calling the IR intrinsic, then bitcast the result back.
+  case RISCV::BI__builtin_riscv_pnzip_i8x4:
+  case RISCV::BI__builtin_riscv_pnzip_u8x4:
+  case RISCV::BI__builtin_riscv_pnziph_i8x4:
+  case RISCV::BI__builtin_riscv_pnziph_u8x4: {
+    unsigned IntID;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_pnzip_i8x4:
+    case RISCV::BI__builtin_riscv_pnzip_u8x4:
+      IntID = Intrinsic::riscv_pnzip;
+      break;
+    case RISCV::BI__builtin_riscv_pnziph_i8x4:
+    case RISCV::BI__builtin_riscv_pnziph_u8x4:
+      IntID = Intrinsic::riscv_pnziph;
+      break;
+    }
+    auto *V4I8Ty = llvm::FixedVectorType::get(Int8Ty, 4);
+    Ops[0] = Builder.CreateBitCast(Ops[0], V4I8Ty);
+    Ops[1] = Builder.CreateBitCast(Ops[1], V4I8Ty);
+    llvm::Function *F = CGM.getIntrinsic(IntID);
+    llvm::Value *Call = Builder.CreateCall(F, Ops);
+    return Builder.CreateBitCast(Call, ResultType);
+  }
+
   // Packed Narrowing Convert / Packed Unzip (RV32 only). Both map directly
   // to pnsrli with imm=0 (low half / even lanes) or imm=element-width
   // (high half / odd lanes); we delegate to the existing pnsrl IR intrinsic
