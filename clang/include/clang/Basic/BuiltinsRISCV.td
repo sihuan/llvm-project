@@ -452,6 +452,16 @@ def pjoin4_i16x4  : RISCVBuiltin<"_Vector<4, short>(short, short, short, short)"
 def pjoin4_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(unsigned short, unsigned short, unsigned short, unsigned short)">;
 def pjoin2_i32x2  : RISCVBuiltin<"_Vector<2, int>(int, int)">;
 def pjoin2_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(unsigned int, unsigned int)">;
+
+// Packed Subvector Insert and Extract (32-bit subvector <-> 64-bit packed).
+def pget_i8x8_i8x4    : RISCVBuiltin<"_Vector<4, signed char>(_Vector<8, signed char>, _Constant unsigned int)">;
+def pget_u8x8_u8x4    : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<8, unsigned char>, _Constant unsigned int)">;
+def pget_i16x4_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<4, short>, _Constant unsigned int)">;
+def pget_u16x4_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<4, unsigned short>, _Constant unsigned int)">;
+def pset_i8x4_i8x8    : RISCVBuiltin<"_Vector<8, signed char>(_Vector<8, signed char>, _Vector<4, signed char>, _Constant unsigned int)">;
+def pset_u8x4_u8x8    : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, unsigned char>, _Vector<4, unsigned char>, _Constant unsigned int)">;
+def pset_i16x2_i16x4  : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, _Vector<2, short>, _Constant unsigned int)">;
+def pset_u16x2_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, _Vector<2, unsigned short>, _Constant unsigned int)">;
 } // Features = "experimental-p"
 
 let Features = "experimental-p,64bit" in {

@@ -481,6 +481,16 @@ __packed_pst(pst_u32x2, uint32x2_t, uint32_t)
 #define __riscv_pset_i32_i32x2(v, e, idx) __builtin_riscv_pset_i32_i32x2((v), (e), (idx))
 #define __riscv_pset_u32_u32x2(v, e, idx) __builtin_riscv_pset_u32_u32x2((v), (e), (idx))
 
+/* Packed Subvector Insert and Extract. idx is 0 (low) or 1 (high). */
+#define __riscv_pget_i8x8_i8x4(v, idx)     __builtin_riscv_pget_i8x8_i8x4((v), (idx))
+#define __riscv_pget_u8x8_u8x4(v, idx)     __builtin_riscv_pget_u8x8_u8x4((v), (idx))
+#define __riscv_pget_i16x4_i16x2(v, idx)   __builtin_riscv_pget_i16x4_i16x2((v), (idx))
+#define __riscv_pget_u16x4_u16x2(v, idx)   __builtin_riscv_pget_u16x4_u16x2((v), (idx))
+#define __riscv_pset_i8x4_i8x8(v, s, idx)   __builtin_riscv_pset_i8x4_i8x8((v), (s), (idx))
+#define __riscv_pset_u8x4_u8x8(v, s, idx)   __builtin_riscv_pset_u8x4_u8x8((v), (s), (idx))
+#define __riscv_pset_i16x2_i16x4(v, s, idx) __builtin_riscv_pset_i16x2_i16x4((v), (s), (idx))
+#define __riscv_pset_u16x2_u16x4(v, s, idx) __builtin_riscv_pset_u16x2_u16x4((v), (s), (idx))
+
 /* Packed Element Join. */
 #define __packed_pjoin4(name, r_ty, e_ty)                                      \
   static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \

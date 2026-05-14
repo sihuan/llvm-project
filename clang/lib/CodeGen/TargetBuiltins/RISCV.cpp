@@ -2004,6 +2004,47 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   case RISCV::BI__builtin_riscv_pset_u32_u32x2:
     return Builder.CreateInsertElement(Ops[0], Ops[1], Ops[2]);
 
+  // Packed Subvector Insert and Extract. Extract / insert a half-sized
+  // subvector at index 0 (low) or 1 (high) of a 64-bit packed vector. idx
+  // is a compile-time constant.
+  case RISCV::BI__builtin_riscv_pget_i8x8_i8x4:
+  case RISCV::BI__builtin_riscv_pget_u8x8_u8x4:
+  case RISCV::BI__builtin_riscv_pget_i16x4_i16x2:
+  case RISCV::BI__builtin_riscv_pget_u16x4_u16x2: {
+    auto *WideVT = cast<llvm::FixedVectorType>(Ops[0]->getType());
+    unsigned N = WideVT->getNumElements() / 2;
+    uint64_t Idx = cast<llvm::ConstantInt>(Ops[1])->getZExtValue();
+    SmallVector<int, 4> Mask;
+    for (unsigned I = 0; I < N; ++I)
+      Mask.push_back(static_cast<int>(Idx * N + I));
+    return Builder.CreateShuffleVector(Ops[0], Mask);
+  }
+  case RISCV::BI__builtin_riscv_pset_i8x4_i8x8:
+  case RISCV::BI__builtin_riscv_pset_u8x4_u8x8:
+  case RISCV::BI__builtin_riscv_pset_i16x2_i16x4:
+  case RISCV::BI__builtin_riscv_pset_u16x2_u16x4: {
+    // Materialize via integer mask/shift/or so the backend can reduce the
+    // result to a pack / mv depending on XLEN. (Element-wise shuffles tend
+    // to fall apart into per-byte shifts on wide types.)
+    auto *WideVT = cast<llvm::FixedVectorType>(Ops[0]->getType());
+    auto *SubVT = cast<llvm::FixedVectorType>(Ops[1]->getType());
+    unsigned VecBits = WideVT->getNumElements() * WideVT->getScalarSizeInBits();
+    unsigned SubBits = SubVT->getNumElements() * SubVT->getScalarSizeInBits();
+    llvm::Type *WideIntTy = Builder.getIntNTy(VecBits);
+    llvm::Type *SubIntTy = Builder.getIntNTy(SubBits);
+    uint64_t Idx = cast<llvm::ConstantInt>(Ops[2])->getZExtValue();
+    uint64_t HoleMask = ((1ULL << SubBits) - 1) << (Idx * SubBits);
+    llvm::Value *VInt = Builder.CreateBitCast(Ops[0], WideIntTy);
+    llvm::Value *SInt = Builder.CreateBitCast(Ops[1], SubIntTy);
+    llvm::Value *SExt = Builder.CreateZExt(SInt, WideIntTy);
+    llvm::Value *VKept = Builder.CreateAnd(
+        VInt, llvm::ConstantInt::get(WideIntTy, ~HoleMask));
+    llvm::Value *SShifted =
+        Idx == 0 ? SExt : Builder.CreateShl(SExt, Idx * SubBits);
+    llvm::Value *Merged = Builder.CreateOr(VKept, SShifted);
+    return Builder.CreateBitCast(Merged, ConvertType(E->getType()));
+  }
+
   // Packed Element Join. Build the result vector via an insertelement chain
   // over poison; SLP / DAG combining will reduce to pack / ppaire / mv as
   // appropriate.
