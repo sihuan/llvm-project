@@ -2157,6 +2157,24 @@ let Predicates = [HasStdExtP, IsRV32] in {
             (MULSU_H00 GPR:$rs1, GPR:$rs2)>;
   def : Pat<(i32 (int_riscv_pmulsu_h11 (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
             (MULSU_H11 GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply Parts Accumulate: halfword-pair scalar (RV32 only).
+  def : Pat<(i32 (int_riscv_pmacc_h00   (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MACC_H00   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmacc_h01   (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MACC_H01   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmacc_h11   (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MACC_H11   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmaccu_h00  (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MACCU_H00  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmaccu_h01  (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MACCU_H01  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmaccu_h11  (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MACCU_H11  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmaccsu_h00 (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MACCSU_H00 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i32 (int_riscv_pmaccsu_h11 (i32 GPR:$rd), (v2i16 GPR:$rs1), (v2i16 GPR:$rs2))),
+            (MACCSU_H11 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV32]
 
 let Predicates = [HasStdExtP, IsRV64] in {
@@ -2564,4 +2582,40 @@ let Predicates = [HasStdExtP, IsRV64] in {
             (MULSU_W00 GPR:$rs1, GPR:$rs2)>;
   def : Pat<(i64 (int_riscv_pmulsu_w11 (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
             (MULSU_W11 GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply Parts Accumulate: halfword-pair vector (RV64 only).
+  def : Pat<(v2i32 (int_riscv_pmacc_h00   (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMACC_W_H00   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmacc_h01   (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMACC_W_H01   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmacc_h11   (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMACC_W_H11   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmaccu_h00  (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMACCU_W_H00  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmaccu_h01  (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMACCU_W_H01  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmaccu_h11  (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMACCU_W_H11  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmaccsu_h00 (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMACCSU_W_H00 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(v2i32 (int_riscv_pmaccsu_h11 (v2i32 GPR:$rd), (v4i16 GPR:$rs1), (v4i16 GPR:$rs2))),
+            (PMACCSU_W_H11 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+
+  // Packed Multiply Parts Accumulate: word-pair scalar (RV64 only).
+  def : Pat<(i64 (int_riscv_pmacc_w00   (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MACC_W00   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmacc_w01   (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MACC_W01   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmacc_w11   (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MACC_W11   GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmaccu_w00  (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MACCU_W00  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmaccu_w01  (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MACCU_W01  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmaccu_w11  (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MACCU_W11  GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmaccsu_w00 (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MACCSU_W00 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
+  def : Pat<(i64 (int_riscv_pmaccsu_w11 (i64 GPR:$rd), (v2i32 GPR:$rs1), (v2i32 GPR:$rs2))),
+            (MACCSU_W11 GPR:$rd, GPR:$rs1, GPR:$rs2)>;
 } // Predicates = [HasStdExtP, IsRV64]

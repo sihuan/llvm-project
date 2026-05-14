@@ -1419,8 +1419,44 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   RVP_MULP_CASES(mulu_w11_u64,  riscv_pmulu_w11);
   RVP_MULP_CASES(mulsu_w00_i64, riscv_pmulsu_w00);
   RVP_MULP_CASES(mulsu_w11_i64, riscv_pmulsu_w11);
+
+  // Packed Multiply Parts Accumulate: 3-operand (rd, rs1, rs2). Intrinsic
+  // types are {ResultType, InputVectorType (Ops[1])}.
+#define RVP_MULPA_CASES(BUILTIN, INTRINSIC)                                    \
+  case RISCV::BI__builtin_riscv_##BUILTIN:                                     \
+    ID = Intrinsic::INTRINSIC;                                                 \
+    IntrinsicTypes = {ResultType, Ops[1]->getType()};                          \
+    break
+
+  RVP_MULPA_CASES(macc_h00_i32,    riscv_pmacc_h00);
+  RVP_MULPA_CASES(macc_h01_i32,    riscv_pmacc_h01);
+  RVP_MULPA_CASES(macc_h11_i32,    riscv_pmacc_h11);
+  RVP_MULPA_CASES(maccu_h00_u32,   riscv_pmaccu_h00);
+  RVP_MULPA_CASES(maccu_h01_u32,   riscv_pmaccu_h01);
+  RVP_MULPA_CASES(maccu_h11_u32,   riscv_pmaccu_h11);
+  RVP_MULPA_CASES(maccsu_h00_i32,  riscv_pmaccsu_h00);
+  RVP_MULPA_CASES(maccsu_h11_i32,  riscv_pmaccsu_h11);
+
+  RVP_MULPA_CASES(pmacc_h00_i32x2,   riscv_pmacc_h00);
+  RVP_MULPA_CASES(pmacc_h01_i32x2,   riscv_pmacc_h01);
+  RVP_MULPA_CASES(pmacc_h11_i32x2,   riscv_pmacc_h11);
+  RVP_MULPA_CASES(pmaccu_h00_u32x2,  riscv_pmaccu_h00);
+  RVP_MULPA_CASES(pmaccu_h01_u32x2,  riscv_pmaccu_h01);
+  RVP_MULPA_CASES(pmaccu_h11_u32x2,  riscv_pmaccu_h11);
+  RVP_MULPA_CASES(pmaccsu_h00_i32x2, riscv_pmaccsu_h00);
+  RVP_MULPA_CASES(pmaccsu_h11_i32x2, riscv_pmaccsu_h11);
+
+  RVP_MULPA_CASES(macc_w00_i64,   riscv_pmacc_w00);
+  RVP_MULPA_CASES(macc_w01_i64,   riscv_pmacc_w01);
+  RVP_MULPA_CASES(macc_w11_i64,   riscv_pmacc_w11);
+  RVP_MULPA_CASES(maccu_w00_u64,  riscv_pmaccu_w00);
+  RVP_MULPA_CASES(maccu_w01_u64,  riscv_pmaccu_w01);
+  RVP_MULPA_CASES(maccu_w11_u64,  riscv_pmaccu_w11);
+  RVP_MULPA_CASES(maccsu_w00_i64, riscv_pmaccsu_w00);
+  RVP_MULPA_CASES(maccsu_w11_i64, riscv_pmaccsu_w11);
 #undef RVP_EAS_CASES
 #undef RVP_MULP_CASES
+#undef RVP_MULPA_CASES
 
   case RISCV::BI__builtin_riscv_clz_32:
   case RISCV::BI__builtin_riscv_clz_64: {

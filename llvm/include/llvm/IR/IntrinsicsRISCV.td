@@ -2119,6 +2119,38 @@ let TargetPrefix = "riscv" in {
 } // TargetPrefix = "riscv"
 
 
+// Packed SIMD extensions: Packed Multiply Parts Accumulate
+//===----------------------------------------------------------------------===//
+let TargetPrefix = "riscv" in {
+  class RVPMulPartsAcc
+      : DefaultAttrsIntrinsic<[llvm_any_ty],
+                              [LLVMMatchType<0>, llvm_anyvector_ty,
+                               LLVMMatchType<1>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  // Halfword-pair multiply-accumulate (.w.h00 / .h01 / .h11 family; also
+  // macc.h* scalar form on RV32).
+  def int_riscv_pmacc_h00    : RVPMulPartsAcc;
+  def int_riscv_pmacc_h01    : RVPMulPartsAcc;
+  def int_riscv_pmacc_h11    : RVPMulPartsAcc;
+  def int_riscv_pmaccu_h00   : RVPMulPartsAcc;
+  def int_riscv_pmaccu_h01   : RVPMulPartsAcc;
+  def int_riscv_pmaccu_h11   : RVPMulPartsAcc;
+  def int_riscv_pmaccsu_h00  : RVPMulPartsAcc;
+  def int_riscv_pmaccsu_h11  : RVPMulPartsAcc;
+
+  // Word-pair multiply-accumulate (macc.w* scalar form on RV64).
+  def int_riscv_pmacc_w00    : RVPMulPartsAcc;
+  def int_riscv_pmacc_w01    : RVPMulPartsAcc;
+  def int_riscv_pmacc_w11    : RVPMulPartsAcc;
+  def int_riscv_pmaccu_w00   : RVPMulPartsAcc;
+  def int_riscv_pmaccu_w01   : RVPMulPartsAcc;
+  def int_riscv_pmaccu_w11   : RVPMulPartsAcc;
+  def int_riscv_pmaccsu_w00  : RVPMulPartsAcc;
+  def int_riscv_pmaccsu_w11  : RVPMulPartsAcc;
+} // TargetPrefix = "riscv"
+
+
 //===----------------------------------------------------------------------===//
 // Zvfofp8min - OFP8 conversion extension
 // The Zvfofp8min extension provides basic support for the two 8-bit
