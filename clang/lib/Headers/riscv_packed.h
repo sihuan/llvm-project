@@ -456,6 +456,31 @@ __packed_pst(pst_u16x4, uint16x4_t, uint16_t)
 __packed_pst(pst_i32x2, int32x2_t,  int32_t)
 __packed_pst(pst_u32x2, uint32x2_t, uint32_t)
 
+/* Packed Element Insert and Extract. The idx argument must be a compile-time
+ * constant, so the wrappers are macros to preserve that property at the
+ * builtin call site. */
+#define __riscv_pget_i8x4_i8(v, idx)   __builtin_riscv_pget_i8x4_i8((v), (idx))
+#define __riscv_pget_u8x4_u8(v, idx)   __builtin_riscv_pget_u8x4_u8((v), (idx))
+#define __riscv_pget_i16x2_i16(v, idx) __builtin_riscv_pget_i16x2_i16((v), (idx))
+#define __riscv_pget_u16x2_u16(v, idx) __builtin_riscv_pget_u16x2_u16((v), (idx))
+#define __riscv_pset_i8_i8x4(v, e, idx)   __builtin_riscv_pset_i8_i8x4((v), (e), (idx))
+#define __riscv_pset_u8_u8x4(v, e, idx)   __builtin_riscv_pset_u8_u8x4((v), (e), (idx))
+#define __riscv_pset_i16_i16x2(v, e, idx) __builtin_riscv_pset_i16_i16x2((v), (e), (idx))
+#define __riscv_pset_u16_u16x2(v, e, idx) __builtin_riscv_pset_u16_u16x2((v), (e), (idx))
+
+#define __riscv_pget_i8x8_i8(v, idx)   __builtin_riscv_pget_i8x8_i8((v), (idx))
+#define __riscv_pget_u8x8_u8(v, idx)   __builtin_riscv_pget_u8x8_u8((v), (idx))
+#define __riscv_pget_i16x4_i16(v, idx) __builtin_riscv_pget_i16x4_i16((v), (idx))
+#define __riscv_pget_u16x4_u16(v, idx) __builtin_riscv_pget_u16x4_u16((v), (idx))
+#define __riscv_pget_i32x2_i32(v, idx) __builtin_riscv_pget_i32x2_i32((v), (idx))
+#define __riscv_pget_u32x2_u32(v, idx) __builtin_riscv_pget_u32x2_u32((v), (idx))
+#define __riscv_pset_i8_i8x8(v, e, idx)   __builtin_riscv_pset_i8_i8x8((v), (e), (idx))
+#define __riscv_pset_u8_u8x8(v, e, idx)   __builtin_riscv_pset_u8_u8x8((v), (e), (idx))
+#define __riscv_pset_i16_i16x4(v, e, idx) __builtin_riscv_pset_i16_i16x4((v), (e), (idx))
+#define __riscv_pset_u16_u16x4(v, e, idx) __builtin_riscv_pset_u16_u16x4((v), (e), (idx))
+#define __riscv_pset_i32_i32x2(v, e, idx) __builtin_riscv_pset_i32_i32x2((v), (e), (idx))
+#define __riscv_pset_u32_u32x2(v, e, idx) __builtin_riscv_pset_u32_u32x2((v), (e), (idx))
+
 #if __riscv_xlen == 32
 /* Packed Multiply Parts (RV32 form, direct builtin) */
 __packed_pm_horiz_binary(pmul_b00_i16x2,    int16x2_t,  int8x4_t,  int8x4_t)

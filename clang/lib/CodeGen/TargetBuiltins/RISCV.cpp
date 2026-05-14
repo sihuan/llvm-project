@@ -1979,6 +1979,31 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return Builder.CreateBitCast(Call, ResultType);
   }
 
+  // Packed Element Insert and Extract. Both XLENs; idx is a constant.
+  case RISCV::BI__builtin_riscv_pget_i8x4_i8:
+  case RISCV::BI__builtin_riscv_pget_u8x4_u8:
+  case RISCV::BI__builtin_riscv_pget_i16x2_i16:
+  case RISCV::BI__builtin_riscv_pget_u16x2_u16:
+  case RISCV::BI__builtin_riscv_pget_i8x8_i8:
+  case RISCV::BI__builtin_riscv_pget_u8x8_u8:
+  case RISCV::BI__builtin_riscv_pget_i16x4_i16:
+  case RISCV::BI__builtin_riscv_pget_u16x4_u16:
+  case RISCV::BI__builtin_riscv_pget_i32x2_i32:
+  case RISCV::BI__builtin_riscv_pget_u32x2_u32:
+    return Builder.CreateExtractElement(Ops[0], Ops[1]);
+
+  case RISCV::BI__builtin_riscv_pset_i8_i8x4:
+  case RISCV::BI__builtin_riscv_pset_u8_u8x4:
+  case RISCV::BI__builtin_riscv_pset_i16_i16x2:
+  case RISCV::BI__builtin_riscv_pset_u16_u16x2:
+  case RISCV::BI__builtin_riscv_pset_i8_i8x8:
+  case RISCV::BI__builtin_riscv_pset_u8_u8x8:
+  case RISCV::BI__builtin_riscv_pset_i16_i16x4:
+  case RISCV::BI__builtin_riscv_pset_u16_u16x4:
+  case RISCV::BI__builtin_riscv_pset_i32_i32x2:
+  case RISCV::BI__builtin_riscv_pset_u32_u32x2:
+    return Builder.CreateInsertElement(Ops[0], Ops[1], Ops[2]);
+
   // Packed Load and Store. The spec guarantees the pointer is aligned to
   // the element size; emit a vector load/store with that alignment so the
   // backend can pick an unaligned wider load (lw/sw or ld/sd) or fall back

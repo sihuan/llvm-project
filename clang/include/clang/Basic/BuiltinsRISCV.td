@@ -417,6 +417,30 @@ def pst_i16x4  : RISCVBuiltin<"void(short *, _Vector<4, short>)">;
 def pst_u16x4  : RISCVBuiltin<"void(unsigned short *, _Vector<4, unsigned short>)">;
 def pst_i32x2  : RISCVBuiltin<"void(int *, _Vector<2, int>)">;
 def pst_u32x2  : RISCVBuiltin<"void(unsigned int *, _Vector<2, unsigned int>)">;
+
+// Packed Element Insert and Extract (32-bit and 64-bit packed types, both
+// XLENs). Index must be a constant.
+def pget_i8x4_i8     : RISCVBuiltin<"signed char(_Vector<4, signed char>, _Constant unsigned int)">;
+def pget_u8x4_u8     : RISCVBuiltin<"unsigned char(_Vector<4, unsigned char>, _Constant unsigned int)">;
+def pget_i16x2_i16   : RISCVBuiltin<"short(_Vector<2, short>, _Constant unsigned int)">;
+def pget_u16x2_u16   : RISCVBuiltin<"unsigned short(_Vector<2, unsigned short>, _Constant unsigned int)">;
+def pset_i8_i8x4     : RISCVBuiltin<"_Vector<4, signed char>(_Vector<4, signed char>, signed char, _Constant unsigned int)">;
+def pset_u8_u8x4     : RISCVBuiltin<"_Vector<4, unsigned char>(_Vector<4, unsigned char>, unsigned char, _Constant unsigned int)">;
+def pset_i16_i16x2   : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, short, _Constant unsigned int)">;
+def pset_u16_u16x2   : RISCVBuiltin<"_Vector<2, unsigned short>(_Vector<2, unsigned short>, unsigned short, _Constant unsigned int)">;
+
+def pget_i8x8_i8     : RISCVBuiltin<"signed char(_Vector<8, signed char>, _Constant unsigned int)">;
+def pget_u8x8_u8     : RISCVBuiltin<"unsigned char(_Vector<8, unsigned char>, _Constant unsigned int)">;
+def pget_i16x4_i16   : RISCVBuiltin<"short(_Vector<4, short>, _Constant unsigned int)">;
+def pget_u16x4_u16   : RISCVBuiltin<"unsigned short(_Vector<4, unsigned short>, _Constant unsigned int)">;
+def pget_i32x2_i32   : RISCVBuiltin<"int(_Vector<2, int>, _Constant unsigned int)">;
+def pget_u32x2_u32   : RISCVBuiltin<"unsigned int(_Vector<2, unsigned int>, _Constant unsigned int)">;
+def pset_i8_i8x8     : RISCVBuiltin<"_Vector<8, signed char>(_Vector<8, signed char>, signed char, _Constant unsigned int)">;
+def pset_u8_u8x8     : RISCVBuiltin<"_Vector<8, unsigned char>(_Vector<8, unsigned char>, unsigned char, _Constant unsigned int)">;
+def pset_i16_i16x4   : RISCVBuiltin<"_Vector<4, short>(_Vector<4, short>, short, _Constant unsigned int)">;
+def pset_u16_u16x4   : RISCVBuiltin<"_Vector<4, unsigned short>(_Vector<4, unsigned short>, unsigned short, _Constant unsigned int)">;
+def pset_i32_i32x2   : RISCVBuiltin<"_Vector<2, int>(_Vector<2, int>, int, _Constant unsigned int)">;
+def pset_u32_u32x2   : RISCVBuiltin<"_Vector<2, unsigned int>(_Vector<2, unsigned int>, unsigned int, _Constant unsigned int)">;
 } // Features = "experimental-p"
 
 let Features = "experimental-p,64bit" in {
