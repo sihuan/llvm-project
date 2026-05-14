@@ -2291,6 +2291,25 @@ let TargetPrefix = "riscv" in {
   def int_riscv_pnclipru : RVPNarrowingShift;
   def int_riscv_pnclip   : RVPNarrowingShift;
   def int_riscv_pnclipr  : RVPNarrowingShift;
+
+  // Packed Multiplication with Widening Horizontal Addition (RV32 only).
+  // Same i64-result / pair-of-narrow-vectors shape as the widening add/sub/
+  // multiply family. The .h instructions only have v2i16 inputs.
+  def int_riscv_pm2wadd     : RVPWAddSub;
+  def int_riscv_pm2wadd_x   : RVPWAddSub;
+  def int_riscv_pm2waddu    : RVPWAddSub;
+  def int_riscv_pm2wsub     : RVPWAddSub;
+  def int_riscv_pm2wsub_x   : RVPWAddSub;
+  def int_riscv_pm2waddsu   : RVPWAddSub;
+
+  // Accumulating variants (RV32 only). Same i64 accumulator shape as the
+  // widening add/sub accumulate family.
+  def int_riscv_pm2wadda    : RVPWAddSubAcc;
+  def int_riscv_pm2wadda_x  : RVPWAddSubAcc;
+  def int_riscv_pm2waddau   : RVPWAddSubAcc;
+  def int_riscv_pm2wsuba    : RVPWAddSubAcc;
+  def int_riscv_pm2wsuba_x  : RVPWAddSubAcc;
+  def int_riscv_pm2waddasu  : RVPWAddSubAcc;
 } // TargetPrefix = "riscv"
 
 

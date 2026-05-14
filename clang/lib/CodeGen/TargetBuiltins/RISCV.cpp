@@ -1642,6 +1642,73 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return Builder.CreateBitCast(Call, ResultType);
   }
 
+  // Packed Multiplication with Widening Horizontal Addition (RV32 only).
+  // Result and rd (for accumulating variants) are int64_t scalars, so no
+  // bitcast is needed at the call boundary.
+  case RISCV::BI__builtin_riscv_pm2wadd_i64:
+  case RISCV::BI__builtin_riscv_pm2wadd_x_i64:
+  case RISCV::BI__builtin_riscv_pm2waddu_u64:
+  case RISCV::BI__builtin_riscv_pm2wsub_i64:
+  case RISCV::BI__builtin_riscv_pm2wsub_x_i64:
+  case RISCV::BI__builtin_riscv_pm2waddsu_u64: {
+    unsigned IntID;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_pm2wadd_i64:
+      IntID = Intrinsic::riscv_pm2wadd;
+      break;
+    case RISCV::BI__builtin_riscv_pm2wadd_x_i64:
+      IntID = Intrinsic::riscv_pm2wadd_x;
+      break;
+    case RISCV::BI__builtin_riscv_pm2waddu_u64:
+      IntID = Intrinsic::riscv_pm2waddu;
+      break;
+    case RISCV::BI__builtin_riscv_pm2wsub_i64:
+      IntID = Intrinsic::riscv_pm2wsub;
+      break;
+    case RISCV::BI__builtin_riscv_pm2wsub_x_i64:
+      IntID = Intrinsic::riscv_pm2wsub_x;
+      break;
+    case RISCV::BI__builtin_riscv_pm2waddsu_u64:
+      IntID = Intrinsic::riscv_pm2waddsu;
+      break;
+    }
+    llvm::Function *F = CGM.getIntrinsic(IntID, Ops[0]->getType());
+    return Builder.CreateCall(F, Ops);
+  }
+
+  case RISCV::BI__builtin_riscv_pm2wadda_i64:
+  case RISCV::BI__builtin_riscv_pm2wadda_x_i64:
+  case RISCV::BI__builtin_riscv_pm2waddau_u64:
+  case RISCV::BI__builtin_riscv_pm2wsuba_i64:
+  case RISCV::BI__builtin_riscv_pm2wsuba_x_i64:
+  case RISCV::BI__builtin_riscv_pm2waddasu_u64: {
+    unsigned IntID;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_pm2wadda_i64:
+      IntID = Intrinsic::riscv_pm2wadda;
+      break;
+    case RISCV::BI__builtin_riscv_pm2wadda_x_i64:
+      IntID = Intrinsic::riscv_pm2wadda_x;
+      break;
+    case RISCV::BI__builtin_riscv_pm2waddau_u64:
+      IntID = Intrinsic::riscv_pm2waddau;
+      break;
+    case RISCV::BI__builtin_riscv_pm2wsuba_i64:
+      IntID = Intrinsic::riscv_pm2wsuba;
+      break;
+    case RISCV::BI__builtin_riscv_pm2wsuba_x_i64:
+      IntID = Intrinsic::riscv_pm2wsuba_x;
+      break;
+    case RISCV::BI__builtin_riscv_pm2waddasu_u64:
+      IntID = Intrinsic::riscv_pm2waddasu;
+      break;
+    }
+    llvm::Function *F = CGM.getIntrinsic(IntID, Ops[1]->getType());
+    return Builder.CreateCall(F, Ops);
+  }
+
   // Packed Widening Shift Left (RV32 only). Same i64 -> vector bitcast shape
   // as the widening add/sub/multiply family, with an i32 shift amount.
   case RISCV::BI__builtin_riscv_pwsll_s_u16x4:

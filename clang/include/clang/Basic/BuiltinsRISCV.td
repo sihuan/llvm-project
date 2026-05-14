@@ -300,6 +300,20 @@ def pnclip_s_i8x4     : RISCVBuiltin<"_Vector<4, signed char>(_Vector<4, short>,
 def pnclip_s_i16x2    : RISCVBuiltin<"_Vector<2, short>(_Vector<2, int>, unsigned int)">;
 def pnclipr_s_i8x4    : RISCVBuiltin<"_Vector<4, signed char>(_Vector<4, short>, unsigned int)">;
 def pnclipr_s_i16x2   : RISCVBuiltin<"_Vector<2, short>(_Vector<2, int>, unsigned int)">;
+
+// Packed Multiplication with Widening Horizontal Addition (RV32 only).
+def pm2wadd_i64    : RISCVBuiltin<"int64_t(_Vector<2, short>, _Vector<2, short>)">;
+def pm2wadda_i64   : RISCVBuiltin<"int64_t(int64_t, _Vector<2, short>, _Vector<2, short>)">;
+def pm2wadd_x_i64  : RISCVBuiltin<"int64_t(_Vector<2, short>, _Vector<2, short>)">;
+def pm2wadda_x_i64 : RISCVBuiltin<"int64_t(int64_t, _Vector<2, short>, _Vector<2, short>)">;
+def pm2waddu_u64   : RISCVBuiltin<"uint64_t(_Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+def pm2waddau_u64  : RISCVBuiltin<"uint64_t(uint64_t, _Vector<2, unsigned short>, _Vector<2, unsigned short>)">;
+def pm2wsub_i64    : RISCVBuiltin<"int64_t(_Vector<2, short>, _Vector<2, short>)">;
+def pm2wsuba_i64   : RISCVBuiltin<"int64_t(int64_t, _Vector<2, short>, _Vector<2, short>)">;
+def pm2wsub_x_i64  : RISCVBuiltin<"int64_t(_Vector<2, short>, _Vector<2, short>)">;
+def pm2wsuba_x_i64 : RISCVBuiltin<"int64_t(int64_t, _Vector<2, short>, _Vector<2, short>)">;
+def pm2waddsu_u64  : RISCVBuiltin<"int64_t(_Vector<2, short>, _Vector<2, unsigned short>)">;
+def pm2waddasu_u64 : RISCVBuiltin<"int64_t(int64_t, _Vector<2, short>, _Vector<2, unsigned short>)">;
 } // Features = "experimental-p,32bit"
 
 // Packed Exchanged Addition and Subtraction (halfword form, RV32 and RV64).

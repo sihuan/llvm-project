@@ -16014,7 +16014,13 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
     case Intrinsic::riscv_pwsubu:
     case Intrinsic::riscv_pwmul:
     case Intrinsic::riscv_pwmulu:
-    case Intrinsic::riscv_pwmulsu: {
+    case Intrinsic::riscv_pwmulsu:
+    case Intrinsic::riscv_pm2wadd:
+    case Intrinsic::riscv_pm2wadd_x:
+    case Intrinsic::riscv_pm2waddu:
+    case Intrinsic::riscv_pm2wsub:
+    case Intrinsic::riscv_pm2wsub_x:
+    case Intrinsic::riscv_pm2waddsu: {
       // Packed Widening add/sub/mul on RV32: the underlying instruction
       // writes a GPR pair (untyped, 64-bit). Emit the machine instruction
       // directly, then split the pair into two i32s and reassemble as i64
@@ -16032,16 +16038,24 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
         case Intrinsic::riscv_pwmul:   Opc = RISCV::PWMUL_B;   break;
         case Intrinsic::riscv_pwmulu:  Opc = RISCV::PWMULU_B;  break;
         case Intrinsic::riscv_pwmulsu: Opc = RISCV::PWMULSU_B; break;
+        // pm2w* have no .b variant.
+        default: return;
         }
       } else if (InVT == MVT::v2i16) {
         switch (IntNo) {
-        case Intrinsic::riscv_pwadd:   Opc = RISCV::PWADD_H;   break;
-        case Intrinsic::riscv_pwaddu:  Opc = RISCV::PWADDU_H;  break;
-        case Intrinsic::riscv_pwsub:   Opc = RISCV::PWSUB_H;   break;
-        case Intrinsic::riscv_pwsubu:  Opc = RISCV::PWSUBU_H;  break;
-        case Intrinsic::riscv_pwmul:   Opc = RISCV::PWMUL_H;   break;
-        case Intrinsic::riscv_pwmulu:  Opc = RISCV::PWMULU_H;  break;
-        case Intrinsic::riscv_pwmulsu: Opc = RISCV::PWMULSU_H; break;
+        case Intrinsic::riscv_pwadd:     Opc = RISCV::PWADD_H;     break;
+        case Intrinsic::riscv_pwaddu:    Opc = RISCV::PWADDU_H;    break;
+        case Intrinsic::riscv_pwsub:     Opc = RISCV::PWSUB_H;     break;
+        case Intrinsic::riscv_pwsubu:    Opc = RISCV::PWSUBU_H;    break;
+        case Intrinsic::riscv_pwmul:     Opc = RISCV::PWMUL_H;     break;
+        case Intrinsic::riscv_pwmulu:    Opc = RISCV::PWMULU_H;    break;
+        case Intrinsic::riscv_pwmulsu:   Opc = RISCV::PWMULSU_H;   break;
+        case Intrinsic::riscv_pm2wadd:   Opc = RISCV::PM2WADD_H;   break;
+        case Intrinsic::riscv_pm2wadd_x: Opc = RISCV::PM2WADD_HX;  break;
+        case Intrinsic::riscv_pm2waddu:  Opc = RISCV::PM2WADDU_H;  break;
+        case Intrinsic::riscv_pm2wsub:   Opc = RISCV::PM2WSUB_H;   break;
+        case Intrinsic::riscv_pm2wsub_x: Opc = RISCV::PM2WSUB_HX;  break;
+        case Intrinsic::riscv_pm2waddsu: Opc = RISCV::PM2WADDSU_H; break;
         }
       } else {
         return;
@@ -16064,7 +16078,13 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
     case Intrinsic::riscv_pwmaccu:
     case Intrinsic::riscv_pwmaccsu:
     case Intrinsic::riscv_pmqwacc:
-    case Intrinsic::riscv_pmqrwacc: {
+    case Intrinsic::riscv_pmqrwacc:
+    case Intrinsic::riscv_pm2wadda:
+    case Intrinsic::riscv_pm2wadda_x:
+    case Intrinsic::riscv_pm2waddau:
+    case Intrinsic::riscv_pm2wsuba:
+    case Intrinsic::riscv_pm2wsuba_x:
+    case Intrinsic::riscv_pm2waddasu: {
       // Like pwadd, but with an i64 accumulator rd that must be passed as a
       // GPR pair. Split rd into i32 lo/hi, BuildGPRPair, emit the machine
       // node, split the output pair, BUILD_PAIR the i64 result.
@@ -16078,20 +16098,26 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
         case Intrinsic::riscv_pwaddau: Opc = RISCV::PWADDAU_B; break;
         case Intrinsic::riscv_pwsuba:  Opc = RISCV::PWSUBA_B;  break;
         case Intrinsic::riscv_pwsubau: Opc = RISCV::PWSUBAU_B; break;
-        // pwmacc / pmqwacc have no .b variant.
+        // pwmacc / pmqwacc / pm2w*a have no .b variant.
         default: return;
         }
       } else if (InVT == MVT::v2i16) {
         switch (IntNo) {
-        case Intrinsic::riscv_pwadda:   Opc = RISCV::PWADDA_H;   break;
-        case Intrinsic::riscv_pwaddau:  Opc = RISCV::PWADDAU_H;  break;
-        case Intrinsic::riscv_pwsuba:   Opc = RISCV::PWSUBA_H;   break;
-        case Intrinsic::riscv_pwsubau:  Opc = RISCV::PWSUBAU_H;  break;
-        case Intrinsic::riscv_pwmacc:   Opc = RISCV::PWMACC_H;   break;
-        case Intrinsic::riscv_pwmaccu:  Opc = RISCV::PWMACCU_H;  break;
-        case Intrinsic::riscv_pwmaccsu: Opc = RISCV::PWMACCSU_H; break;
-        case Intrinsic::riscv_pmqwacc:  Opc = RISCV::PMQWACC_H;  break;
-        case Intrinsic::riscv_pmqrwacc: Opc = RISCV::PMQRWACC_H; break;
+        case Intrinsic::riscv_pwadda:      Opc = RISCV::PWADDA_H;     break;
+        case Intrinsic::riscv_pwaddau:     Opc = RISCV::PWADDAU_H;    break;
+        case Intrinsic::riscv_pwsuba:      Opc = RISCV::PWSUBA_H;     break;
+        case Intrinsic::riscv_pwsubau:     Opc = RISCV::PWSUBAU_H;    break;
+        case Intrinsic::riscv_pwmacc:      Opc = RISCV::PWMACC_H;     break;
+        case Intrinsic::riscv_pwmaccu:     Opc = RISCV::PWMACCU_H;    break;
+        case Intrinsic::riscv_pwmaccsu:    Opc = RISCV::PWMACCSU_H;   break;
+        case Intrinsic::riscv_pmqwacc:     Opc = RISCV::PMQWACC_H;    break;
+        case Intrinsic::riscv_pmqrwacc:    Opc = RISCV::PMQRWACC_H;   break;
+        case Intrinsic::riscv_pm2wadda:    Opc = RISCV::PM2WADDA_H;   break;
+        case Intrinsic::riscv_pm2wadda_x:  Opc = RISCV::PM2WADDA_HX;  break;
+        case Intrinsic::riscv_pm2waddau:   Opc = RISCV::PM2WADDAU_H;  break;
+        case Intrinsic::riscv_pm2wsuba:    Opc = RISCV::PM2WSUBA_H;   break;
+        case Intrinsic::riscv_pm2wsuba_x:  Opc = RISCV::PM2WSUBA_HX;  break;
+        case Intrinsic::riscv_pm2waddasu:  Opc = RISCV::PM2WADDASU_H; break;
         }
       } else {
         return;

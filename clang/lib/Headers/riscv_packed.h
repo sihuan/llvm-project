@@ -561,6 +561,30 @@ __packed_pwshift(pnclip_s_i8x4,     int8x4_t,   int16x4_t)
 __packed_pwshift(pnclip_s_i16x2,    int16x2_t,  int32x2_t)
 __packed_pwshift(pnclipr_s_i8x4,    int8x4_t,   int16x4_t)
 __packed_pwshift(pnclipr_s_i16x2,   int16x2_t,  int32x2_t)
+
+/* Packed Multiplication with Widening Horizontal Addition (RV32 only). */
+#define __packed_pm2w(name, r_ty, a_ty, b_ty)                                  \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(a_ty __rs1, b_ty __rs2) {                                     \
+    return __builtin_riscv_##name(__rs1, __rs2);                               \
+  }
+#define __packed_pm2wa(name, r_ty, a_ty, b_ty)                                 \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(r_ty __rd, a_ty __rs1, b_ty __rs2) {                          \
+    return __builtin_riscv_##name(__rd, __rs1, __rs2);                         \
+  }
+__packed_pm2w (pm2wadd_i64,     int64_t,  int16x2_t,  int16x2_t)
+__packed_pm2wa(pm2wadda_i64,    int64_t,  int16x2_t,  int16x2_t)
+__packed_pm2w (pm2wadd_x_i64,   int64_t,  int16x2_t,  int16x2_t)
+__packed_pm2wa(pm2wadda_x_i64,  int64_t,  int16x2_t,  int16x2_t)
+__packed_pm2w (pm2waddu_u64,    uint64_t, uint16x2_t, uint16x2_t)
+__packed_pm2wa(pm2waddau_u64,   uint64_t, uint16x2_t, uint16x2_t)
+__packed_pm2w (pm2wsub_i64,     int64_t,  int16x2_t,  int16x2_t)
+__packed_pm2wa(pm2wsuba_i64,    int64_t,  int16x2_t,  int16x2_t)
+__packed_pm2w (pm2wsub_x_i64,   int64_t,  int16x2_t,  int16x2_t)
+__packed_pm2wa(pm2wsuba_x_i64,  int64_t,  int16x2_t,  int16x2_t)
+__packed_pm2w (pm2waddsu_u64,   int64_t,  int16x2_t,  uint16x2_t)
+__packed_pm2wa(pm2waddasu_u64,  int64_t,  int16x2_t,  uint16x2_t)
 #endif
 
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
@@ -999,6 +1023,8 @@ __packed_pmulh_parts_acc_rv64_scalar(mhaccsu_h1_i32,  int32_t, int32x2_t,
 #undef __packed_pwadd_sub
 #undef __packed_pwadd_sub_acc
 #undef __packed_pwshift
+#undef __packed_pm2w
+#undef __packed_pm2wa
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)
