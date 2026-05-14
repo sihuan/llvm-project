@@ -15865,7 +15865,9 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
     case Intrinsic::riscv_paas_x:
     case Intrinsic::riscv_pasa_x:
     case Intrinsic::riscv_psh1add:
-    case Intrinsic::riscv_pssh1sadd: {
+    case Intrinsic::riscv_pssh1sadd:
+    case Intrinsic::riscv_pmulq:
+    case Intrinsic::riscv_pmulqr: {
       // On RV64 with the P extension, pas.hx / psa.hx / ... operate on the
       // lower 32 bits of a 64-bit GPR. Lower a v2i16 intrinsic call to a
       // v4i16 intrinsic call with the operands placed in the lower half;

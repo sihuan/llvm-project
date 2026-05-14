@@ -333,6 +333,10 @@ __packed_exchange_add_sub(psh1add_i16x2,   int16x2_t)
 __packed_exchange_add_sub(psh1add_u16x2,   uint16x2_t)
 __packed_exchange_add_sub(pssh1sadd_i16x2, int16x2_t)
 
+/* Packed "Q-format" Multiplication (halfword, 32-bit, RV32 and RV64) */
+__packed_exchange_add_sub(pmulq_i16x2,  int16x2_t)
+__packed_exchange_add_sub(pmulqr_i16x2, int16x2_t)
+
 /* Packed Multiply High (halfword, 32-bit, RV32 and RV64).
  * Intermediate product is a 32-bit-element-wide vector with the same lane
  * count as the input. */
@@ -430,6 +434,12 @@ __packed_exchange_add_sub(psh1add_i32x2,   int32x2_t)
 __packed_exchange_add_sub(psh1add_u32x2,   uint32x2_t)
 __packed_exchange_add_sub(pssh1sadd_i16x4, int16x4_t)
 __packed_exchange_add_sub(pssh1sadd_i32x2, int32x2_t)
+
+/* Packed "Q-format" Multiplication (64-bit, RV64 only) */
+__packed_exchange_add_sub(pmulq_i16x4,  int16x4_t)
+__packed_exchange_add_sub(pmulq_i32x2,  int32x2_t)
+__packed_exchange_add_sub(pmulqr_i16x4, int16x4_t)
+__packed_exchange_add_sub(pmulqr_i32x2, int32x2_t)
 
 /* Wider intermediate vector types used by Packed Multiply High wrappers
  * below. Prefixed with __riscv_ to avoid leaking into the user namespace. */

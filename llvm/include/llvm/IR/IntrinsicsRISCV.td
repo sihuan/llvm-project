@@ -2065,6 +2065,19 @@ let TargetPrefix = "riscv" in {
 } // TargetPrefix = "riscv"
 
 
+// Packed SIMD extensions: Packed "Q-format" Multiplication
+//===----------------------------------------------------------------------===//
+let TargetPrefix = "riscv" in {
+  class RVPQFormatMul
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>],
+                              [IntrNoMem, IntrSpeculatable]>;
+
+  def int_riscv_pmulq  : RVPQFormatMul;
+  def int_riscv_pmulqr : RVPQFormatMul;
+} // TargetPrefix = "riscv"
+
+
 //===----------------------------------------------------------------------===//
 // Zvfofp8min - OFP8 conversion extension
 // The Zvfofp8min extension provides basic support for the two 8-bit
