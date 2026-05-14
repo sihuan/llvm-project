@@ -1979,6 +1979,76 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return Builder.CreateBitCast(Call, ResultType);
   }
 
+  // Packed Load and Store. The spec guarantees the pointer is aligned to
+  // the element size; emit a vector load/store with that alignment so the
+  // backend can pick an unaligned wider load (lw/sw or ld/sd) or fall back
+  // to byte-wise loads/stores when the subtarget can't do unaligned access.
+  case RISCV::BI__builtin_riscv_pld_i8x4:
+  case RISCV::BI__builtin_riscv_pld_u8x4:
+  case RISCV::BI__builtin_riscv_pld_i16x2:
+  case RISCV::BI__builtin_riscv_pld_u16x2:
+  case RISCV::BI__builtin_riscv_pld_i8x8:
+  case RISCV::BI__builtin_riscv_pld_u8x8:
+  case RISCV::BI__builtin_riscv_pld_i16x4:
+  case RISCV::BI__builtin_riscv_pld_u16x4:
+  case RISCV::BI__builtin_riscv_pld_i32x2:
+  case RISCV::BI__builtin_riscv_pld_u32x2: {
+    unsigned EltBytes;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_pld_i8x4:
+    case RISCV::BI__builtin_riscv_pld_u8x4:
+    case RISCV::BI__builtin_riscv_pld_i8x8:
+    case RISCV::BI__builtin_riscv_pld_u8x8:
+      EltBytes = 1;
+      break;
+    case RISCV::BI__builtin_riscv_pld_i16x2:
+    case RISCV::BI__builtin_riscv_pld_u16x2:
+    case RISCV::BI__builtin_riscv_pld_i16x4:
+    case RISCV::BI__builtin_riscv_pld_u16x4:
+      EltBytes = 2;
+      break;
+    case RISCV::BI__builtin_riscv_pld_i32x2:
+    case RISCV::BI__builtin_riscv_pld_u32x2:
+      EltBytes = 4;
+      break;
+    }
+    llvm::Type *VecTy = ConvertType(E->getType());
+    return Builder.CreateAlignedLoad(VecTy, Ops[0], llvm::Align(EltBytes));
+  }
+  case RISCV::BI__builtin_riscv_pst_i8x4:
+  case RISCV::BI__builtin_riscv_pst_u8x4:
+  case RISCV::BI__builtin_riscv_pst_i16x2:
+  case RISCV::BI__builtin_riscv_pst_u16x2:
+  case RISCV::BI__builtin_riscv_pst_i8x8:
+  case RISCV::BI__builtin_riscv_pst_u8x8:
+  case RISCV::BI__builtin_riscv_pst_i16x4:
+  case RISCV::BI__builtin_riscv_pst_u16x4:
+  case RISCV::BI__builtin_riscv_pst_i32x2:
+  case RISCV::BI__builtin_riscv_pst_u32x2: {
+    unsigned EltBytes;
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin");
+    case RISCV::BI__builtin_riscv_pst_i8x4:
+    case RISCV::BI__builtin_riscv_pst_u8x4:
+    case RISCV::BI__builtin_riscv_pst_i8x8:
+    case RISCV::BI__builtin_riscv_pst_u8x8:
+      EltBytes = 1;
+      break;
+    case RISCV::BI__builtin_riscv_pst_i16x2:
+    case RISCV::BI__builtin_riscv_pst_u16x2:
+    case RISCV::BI__builtin_riscv_pst_i16x4:
+    case RISCV::BI__builtin_riscv_pst_u16x4:
+      EltBytes = 2;
+      break;
+    case RISCV::BI__builtin_riscv_pst_i32x2:
+    case RISCV::BI__builtin_riscv_pst_u32x2:
+      EltBytes = 4;
+      break;
+    }
+    return Builder.CreateAlignedStore(Ops[1], Ops[0], llvm::Align(EltBytes));
+  }
+
   case RISCV::BI__builtin_riscv_clz_32:
   case RISCV::BI__builtin_riscv_clz_64: {
     Function *F = CGM.getIntrinsic(Intrinsic::ctlz, Ops[0]->getType());

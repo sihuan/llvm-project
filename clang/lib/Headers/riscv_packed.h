@@ -423,6 +423,39 @@ __packed_exchange_add_sub(pssh1sadd_i16x2, int16x2_t)
 __packed_exchange_add_sub(pmulq_i16x2,  int16x2_t)
 __packed_exchange_add_sub(pmulqr_i16x2, int16x2_t)
 
+/* Packed Load and Store (element-aligned). */
+#define __packed_pld(name, r_ty, p_ty)                                         \
+  static __inline__ r_ty __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(p_ty *__p) {                                                  \
+    return __builtin_riscv_##name(__p);                                        \
+  }
+#define __packed_pst(name, v_ty, p_ty)                                         \
+  static __inline__ void __DEFAULT_FN_ATTRS                                    \
+  __riscv_##name(p_ty *__p, v_ty __v) {                                        \
+    __builtin_riscv_##name(__p, __v);                                          \
+  }
+__packed_pld(pld_i8x4,  int8x4_t,   int8_t)
+__packed_pld(pld_u8x4,  uint8x4_t,  uint8_t)
+__packed_pld(pld_i16x2, int16x2_t,  int16_t)
+__packed_pld(pld_u16x2, uint16x2_t, uint16_t)
+__packed_pst(pst_i8x4,  int8x4_t,   int8_t)
+__packed_pst(pst_u8x4,  uint8x4_t,  uint8_t)
+__packed_pst(pst_i16x2, int16x2_t,  int16_t)
+__packed_pst(pst_u16x2, uint16x2_t, uint16_t)
+
+__packed_pld(pld_i8x8,  int8x8_t,   int8_t)
+__packed_pld(pld_u8x8,  uint8x8_t,  uint8_t)
+__packed_pld(pld_i16x4, int16x4_t,  int16_t)
+__packed_pld(pld_u16x4, uint16x4_t, uint16_t)
+__packed_pld(pld_i32x2, int32x2_t,  int32_t)
+__packed_pld(pld_u32x2, uint32x2_t, uint32_t)
+__packed_pst(pst_i8x8,  int8x8_t,   int8_t)
+__packed_pst(pst_u8x8,  uint8x8_t,  uint8_t)
+__packed_pst(pst_i16x4, int16x4_t,  int16_t)
+__packed_pst(pst_u16x4, uint16x4_t, uint16_t)
+__packed_pst(pst_i32x2, int32x2_t,  int32_t)
+__packed_pst(pst_u32x2, uint32x2_t, uint32_t)
+
 #if __riscv_xlen == 32
 /* Packed Multiply Parts (RV32 form, direct builtin) */
 __packed_pm_horiz_binary(pmul_b00_i16x2,    int16x2_t,  int8x4_t,  int8x4_t)
@@ -1083,6 +1116,8 @@ __packed_pmulh_parts_acc_rv64_scalar(mhaccsu_h1_i32,  int32_t, int32x2_t,
 #undef __packed_pm2w
 #undef __packed_pm2wa
 #undef __packed_pwcvt
+#undef __packed_pld
+#undef __packed_pst
 #undef __DEFAULT_FN_ATTRS
 
 #if defined(__cplusplus)

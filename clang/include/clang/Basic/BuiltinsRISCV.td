@@ -391,6 +391,32 @@ def pssh1sadd_i16x2 : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector
 // Packed "Q-format" Multiplication (halfword form, RV32 and RV64).
 def pmulq_i16x2  : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<2, short>)">;
 def pmulqr_i16x2 : RISCVBuiltin<"_Vector<2, short>(_Vector<2, short>, _Vector<2, short>)">;
+
+// Packed Load and Store (element-aligned). The vector types are 32-bit on the
+// "32-bit" set and 64-bit on the "64-bit" set; both sets are supported on
+// both XLENs (on RV32 a 64-bit load/store is materialized as two lw/sw via
+// the standard i64 legalization).
+def pld_i8x4   : RISCVBuiltin<"_Vector<4, signed char>(signed char *)">;
+def pld_u8x4   : RISCVBuiltin<"_Vector<4, unsigned char>(unsigned char *)">;
+def pld_i16x2  : RISCVBuiltin<"_Vector<2, short>(short *)">;
+def pld_u16x2  : RISCVBuiltin<"_Vector<2, unsigned short>(unsigned short *)">;
+def pst_i8x4   : RISCVBuiltin<"void(signed char *, _Vector<4, signed char>)">;
+def pst_u8x4   : RISCVBuiltin<"void(unsigned char *, _Vector<4, unsigned char>)">;
+def pst_i16x2  : RISCVBuiltin<"void(short *, _Vector<2, short>)">;
+def pst_u16x2  : RISCVBuiltin<"void(unsigned short *, _Vector<2, unsigned short>)">;
+
+def pld_i8x8   : RISCVBuiltin<"_Vector<8, signed char>(signed char *)">;
+def pld_u8x8   : RISCVBuiltin<"_Vector<8, unsigned char>(unsigned char *)">;
+def pld_i16x4  : RISCVBuiltin<"_Vector<4, short>(short *)">;
+def pld_u16x4  : RISCVBuiltin<"_Vector<4, unsigned short>(unsigned short *)">;
+def pld_i32x2  : RISCVBuiltin<"_Vector<2, int>(int *)">;
+def pld_u32x2  : RISCVBuiltin<"_Vector<2, unsigned int>(unsigned int *)">;
+def pst_i8x8   : RISCVBuiltin<"void(signed char *, _Vector<8, signed char>)">;
+def pst_u8x8   : RISCVBuiltin<"void(unsigned char *, _Vector<8, unsigned char>)">;
+def pst_i16x4  : RISCVBuiltin<"void(short *, _Vector<4, short>)">;
+def pst_u16x4  : RISCVBuiltin<"void(unsigned short *, _Vector<4, unsigned short>)">;
+def pst_i32x2  : RISCVBuiltin<"void(int *, _Vector<2, int>)">;
+def pst_u32x2  : RISCVBuiltin<"void(unsigned int *, _Vector<2, unsigned int>)">;
 } // Features = "experimental-p"
 
 let Features = "experimental-p,64bit" in {
