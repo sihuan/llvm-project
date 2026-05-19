@@ -624,6 +624,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction({ISD::LOAD, ISD::STORE}, P64VecVTs, Custom);
       setOperationAction(ISD::BITCAST, P64VecVTs, Custom);
       setOperationAction({ISD::ADD, ISD::SUB}, P64VecVTs, Legal);
+      setOperationAction({ISD::AND, ISD::OR, ISD::XOR},
+                         {MVT::v8i8, MVT::v4i16}, Custom);
       setOperationAction(
           {ISD::UADDSAT, ISD::SADDSAT, ISD::USUBSAT, ISD::SSUBSAT}, P64VecVTs,
           Legal);
@@ -8938,9 +8940,6 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::MUL:
   case ISD::MULHS:
   case ISD::MULHU:
-  case ISD::AND:
-  case ISD::OR:
-  case ISD::XOR:
   case ISD::SDIV:
   case ISD::SREM:
   case ISD::UDIV:
@@ -8949,6 +8948,20 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::CTPOP:
   case ISD::VSELECT:
     return lowerToScalableOp(Op, DAG);
+  case ISD::AND:
+  case ISD::OR:
+  case ISD::XOR: {
+    EVT VT = Op.getValueType();
+    if (!Subtarget.is64Bit() && Subtarget.hasStdExtP() &&
+        (VT == MVT::v8i8 || VT == MVT::v4i16)) {
+      SDLoc DL(Op);
+      SDValue X = DAG.getBitcast(MVT::i64, Op.getOperand(0));
+      SDValue Y = DAG.getBitcast(MVT::i64, Op.getOperand(1));
+      SDValue R = DAG.getNode(Op.getOpcode(), DL, MVT::i64, X, Y);
+      return DAG.getBitcast(VT, R);
+    }
+    return lowerToScalableOp(Op, DAG);
+  }
   case ISD::SHL:
   case ISD::SRL:
   case ISD::SRA:
