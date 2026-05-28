@@ -1193,6 +1193,46 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     break;
   }
 
+  // P extension - Packed Saturating/Rounding Shifts.
+  case RISCV::BI__builtin_riscv_pssha_s_i16x2:
+  case RISCV::BI__builtin_riscv_pssha_s_i16x4:
+  case RISCV::BI__builtin_riscv_pssha_s_i32x2:
+  case RISCV::BI__builtin_riscv_psshar_s_i16x2:
+  case RISCV::BI__builtin_riscv_psshar_s_i16x4:
+  case RISCV::BI__builtin_riscv_psshar_s_i32x2:
+  case RISCV::BI__builtin_riscv_psshl_s_u16x2:
+  case RISCV::BI__builtin_riscv_psshl_s_u16x4:
+  case RISCV::BI__builtin_riscv_psshl_s_u32x2:
+  case RISCV::BI__builtin_riscv_psshlr_s_u16x2:
+  case RISCV::BI__builtin_riscv_psshlr_s_u16x4:
+  case RISCV::BI__builtin_riscv_psshlr_s_u32x2: {
+    switch (BuiltinID) {
+    default: llvm_unreachable("unexpected builtin ID");
+    case RISCV::BI__builtin_riscv_pssha_s_i16x2:
+    case RISCV::BI__builtin_riscv_pssha_s_i16x4:
+    case RISCV::BI__builtin_riscv_pssha_s_i32x2:
+      ID = Intrinsic::riscv_pssha;
+      break;
+    case RISCV::BI__builtin_riscv_psshar_s_i16x2:
+    case RISCV::BI__builtin_riscv_psshar_s_i16x4:
+    case RISCV::BI__builtin_riscv_psshar_s_i32x2:
+      ID = Intrinsic::riscv_psshar;
+      break;
+    case RISCV::BI__builtin_riscv_psshl_s_u16x2:
+    case RISCV::BI__builtin_riscv_psshl_s_u16x4:
+    case RISCV::BI__builtin_riscv_psshl_s_u32x2:
+      ID = Intrinsic::riscv_psshl;
+      break;
+    case RISCV::BI__builtin_riscv_psshlr_s_u16x2:
+    case RISCV::BI__builtin_riscv_psshlr_s_u16x4:
+    case RISCV::BI__builtin_riscv_psshlr_s_u32x2:
+      ID = Intrinsic::riscv_psshlr;
+      break;
+    }
+    IntrinsicTypes = {ResultType};
+    break;
+  }
+
   // Zk builtins
 
   // Zknh

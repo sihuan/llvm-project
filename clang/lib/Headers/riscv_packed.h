@@ -111,6 +111,28 @@ __packed_shift8(psra_s_i8x8, int8x8_t, >>)
 __packed_shift16(psra_s_i16x4, int16x4_t, >>)
 __packed_shift32(psra_s_i32x2, int32x2_t, >>)
 
+#define __packed_satshift(name, ty, builtin)                                   \
+  static __inline__ ty __DEFAULT_FN_ATTRS                                      \
+  __riscv_##name(ty __rs1, int __shamt) {                                      \
+    return builtin(__rs1, __shamt);                                            \
+  }
+
+/* Saturating/Rounding Packed Shifts (32-bit) */
+__packed_satshift(pssha_s_i16x2,  int16x2_t,  __builtin_riscv_pssha_s_i16x2)
+__packed_satshift(psshar_s_i16x2, int16x2_t,  __builtin_riscv_psshar_s_i16x2)
+__packed_satshift(psshl_s_u16x2,  uint16x2_t, __builtin_riscv_psshl_s_u16x2)
+__packed_satshift(psshlr_s_u16x2, uint16x2_t, __builtin_riscv_psshlr_s_u16x2)
+
+/* Saturating/Rounding Packed Shifts (64-bit) */
+__packed_satshift(pssha_s_i16x4,  int16x4_t,  __builtin_riscv_pssha_s_i16x4)
+__packed_satshift(pssha_s_i32x2,  int32x2_t,  __builtin_riscv_pssha_s_i32x2)
+__packed_satshift(psshar_s_i16x4, int16x4_t,  __builtin_riscv_psshar_s_i16x4)
+__packed_satshift(psshar_s_i32x2, int32x2_t,  __builtin_riscv_psshar_s_i32x2)
+__packed_satshift(psshl_s_u16x4,  uint16x4_t, __builtin_riscv_psshl_s_u16x4)
+__packed_satshift(psshl_s_u32x2,  uint32x2_t, __builtin_riscv_psshl_s_u32x2)
+__packed_satshift(psshlr_s_u16x4, uint16x4_t, __builtin_riscv_psshlr_s_u16x4)
+__packed_satshift(psshlr_s_u32x2, uint32x2_t, __builtin_riscv_psshlr_s_u32x2)
+
 /* Packed Addition with Scalar (32-bit) */
 __packed_scalar_binary_op(padd_s_u8x4, uint8x4_t, uint8_t, +, __packed_splat4)
 __packed_scalar_binary_op(padd_s_i8x4, int8x4_t, int8_t, +, __packed_splat4)
@@ -236,6 +258,7 @@ __packed_unary_op(pnot_u32x2, uint32x2_t, ~)
 #undef __packed_shift8
 #undef __packed_shift16
 #undef __packed_shift32
+#undef __packed_satshift
 #undef __packed_scalar_binary_op
 #undef __packed_binary_op
 #undef __packed_unary_op
