@@ -408,6 +408,86 @@ int32x2_t test_psra_s_i32x2_imm(int32x2_t a) {
   return __riscv_psra_s_i32x2(a, 11);
 }
 
+// CHECK-LABEL: test_pssha_s_i16x2:
+// CHECK:       pssha.hs
+int16x2_t test_pssha_s_i16x2(int16x2_t a, int n) {
+  return __riscv_pssha_s_i16x2(a, n);
+}
+
+// CHECK-LABEL: test_psshar_s_i16x2:
+// CHECK:       psshar.hs
+int16x2_t test_psshar_s_i16x2(int16x2_t a, int n) {
+  return __riscv_psshar_s_i16x2(a, n);
+}
+
+// CHECK-LABEL: test_psshl_s_u16x2:
+// CHECK:       psshl.hs
+uint16x2_t test_psshl_s_u16x2(uint16x2_t a, int n) {
+  return __riscv_psshl_s_u16x2(a, n);
+}
+
+// CHECK-LABEL: test_psshlr_s_u16x2:
+// CHECK:       psshlr.hs
+uint16x2_t test_psshlr_s_u16x2(uint16x2_t a, int n) {
+  return __riscv_psshlr_s_u16x2(a, n);
+}
+
+// CHECK-LABEL: test_pssha_s_i16x4:
+// RV32:        pssha.dhs
+// RV64:        pssha.hs
+int16x4_t test_pssha_s_i16x4(int16x4_t a, int n) {
+  return __riscv_pssha_s_i16x4(a, n);
+}
+
+// CHECK-LABEL: test_pssha_s_i32x2:
+// RV32:        pssha.dws
+// RV64:        pssha.ws
+int32x2_t test_pssha_s_i32x2(int32x2_t a, int n) {
+  return __riscv_pssha_s_i32x2(a, n);
+}
+
+// CHECK-LABEL: test_psshar_s_i16x4:
+// RV32:        psshar.dhs
+// RV64:        psshar.hs
+int16x4_t test_psshar_s_i16x4(int16x4_t a, int n) {
+  return __riscv_psshar_s_i16x4(a, n);
+}
+
+// CHECK-LABEL: test_psshar_s_i32x2:
+// RV32:        psshar.dws
+// RV64:        psshar.ws
+int32x2_t test_psshar_s_i32x2(int32x2_t a, int n) {
+  return __riscv_psshar_s_i32x2(a, n);
+}
+
+// CHECK-LABEL: test_psshl_s_u16x4:
+// RV32:        psshl.dhs
+// RV64:        psshl.hs
+uint16x4_t test_psshl_s_u16x4(uint16x4_t a, int n) {
+  return __riscv_psshl_s_u16x4(a, n);
+}
+
+// CHECK-LABEL: test_psshl_s_u32x2:
+// RV32:        psshl.dws
+// RV64:        psshl.ws
+uint32x2_t test_psshl_s_u32x2(uint32x2_t a, int n) {
+  return __riscv_psshl_s_u32x2(a, n);
+}
+
+// CHECK-LABEL: test_psshlr_s_u16x4:
+// RV32:        psshlr.dhs
+// RV64:        psshlr.hs
+uint16x4_t test_psshlr_s_u16x4(uint16x4_t a, int n) {
+  return __riscv_psshlr_s_u16x4(a, n);
+}
+
+// CHECK-LABEL: test_psshlr_s_u32x2:
+// RV32:        psshlr.dws
+// RV64:        psshlr.ws
+uint32x2_t test_psshlr_s_u32x2(uint32x2_t a, int n) {
+  return __riscv_psshlr_s_u32x2(a, n);
+}
+
 // CHECK-LABEL: test_padd_s_u8x4:
 // CHECK:       padd.bs
 uint8x4_t test_padd_s_u8x4(uint8x4_t a, uint8_t b) {
