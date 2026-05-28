@@ -1947,7 +1947,10 @@ def SDT_RISCVPackedShift : SDTypeProfile<1, 2, [SDTCisVec<0>,
 def riscv_pshl : RVSDNode<"PSHL", SDT_RISCVPackedShift>;
 def riscv_psrl : RVSDNode<"PSRL", SDT_RISCVPackedShift>;
 def riscv_psra : RVSDNode<"PSRA", SDT_RISCVPackedShift>;
-def riscv_pssha : RVSDNode<"PSSHA", SDT_RISCVPackedShift>;
+def riscv_pssha  : RVSDNode<"PSSHA",  SDT_RISCVPackedShift>;
+def riscv_psshar : RVSDNode<"PSSHAR", SDT_RISCVPackedShift>;
+def riscv_psshl  : RVSDNode<"PSSHL",  SDT_RISCVPackedShift>;
+def riscv_psshlr : RVSDNode<"PSSHLR", SDT_RISCVPackedShift>;
 
 // The immediate for these is the number of trailing ones in the max value.
 def riscv_sati : RVSDNode<"SATI", SDTIntBinOp>;
@@ -2111,6 +2114,12 @@ let Predicates = [HasStdExtP] in {
   // 16-bit signed saturation shift left patterns
   def : PatGprImm<riscv_pssha, PSSLAI_H, uimm4, XLenVecI16VT>;
   def : PatGprShift<riscv_pssha, PSSHA_HS, XLenVecI16VT>;
+
+  // 16-bit signed saturation shift left with rounding / unsigned saturation
+  // shift (no immediate forms emitted in this revision).
+  def : PatGprShift<riscv_psshar, PSSHAR_HS, XLenVecI16VT>;
+  def : PatGprShift<riscv_psshl,  PSSHL_HS,  XLenVecI16VT>;
+  def : PatGprShift<riscv_psshlr, PSSHLR_HS, XLenVecI16VT>;
 
   // 8-bit logical shift left/right
   def : PatGprShiftMask<riscv_pshl, PSLL_BS, shiftMask8, XLenVecI8VT>;
@@ -2328,11 +2337,17 @@ let Predicates = [HasStdExtP, IsRV32] in {
 
   // 16-bit signed saturation shift left patterns
   def : PatGprPairImm<riscv_pssha, PSSLAI_DH, uimm4, v4i16>;
-  def : PatGprPairShift<riscv_pssha, PSSHA_DHS, v4i16>;
+  def : PatGprPairShift<riscv_pssha,  PSSHA_DHS,  v4i16>;
+  def : PatGprPairShift<riscv_psshar, PSSHAR_DHS, v4i16>;
+  def : PatGprPairShift<riscv_psshl,  PSSHL_DHS,  v4i16>;
+  def : PatGprPairShift<riscv_psshlr, PSSHLR_DHS, v4i16>;
 
   // 32-bit signed saturation shift left patterns
   def : PatGprPairImm<riscv_pssha, PSSLAI_DW, uimm5, v2i32>;
-  def : PatGprPairShift<riscv_pssha, PSSHA_DWS, v2i32>;
+  def : PatGprPairShift<riscv_pssha,  PSSHA_DWS,  v2i32>;
+  def : PatGprPairShift<riscv_psshar, PSSHAR_DWS, v2i32>;
+  def : PatGprPairShift<riscv_psshl,  PSSHL_DWS,  v2i32>;
+  def : PatGprPairShift<riscv_psshlr, PSSHLR_DWS, v2i32>;
 
   // 8-bit logical shift left/right
   def : PatGprPairShiftMask<riscv_pshl, PSLL_DBS, shiftMask8, v8i8>;
@@ -2487,7 +2502,10 @@ let Predicates = [HasStdExtP, IsRV64] in {
 
   // 32-bit signed saturation shift left patterns
   def : PatGprImm<riscv_pssha, PSSLAI_W, uimm5, v2i32>;
-  def : PatGprShift<riscv_pssha, PSSHA_WS, v2i32>;
+  def : PatGprShift<riscv_pssha,  PSSHA_WS,  v2i32>;
+  def : PatGprShift<riscv_psshar, PSSHAR_WS, v2i32>;
+  def : PatGprShift<riscv_psshl,  PSSHL_WS,  v2i32>;
+  def : PatGprShift<riscv_psshlr, PSSHLR_WS, v2i32>;
 
   // 32-bit logical shift left/right
   def : PatGprShiftMask<riscv_pshl, PSLL_WS, shiftMask32, v2i32>;

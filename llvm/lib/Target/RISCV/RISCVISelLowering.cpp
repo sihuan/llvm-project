@@ -556,6 +556,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       // widen for those operations that will be unrolled.
       setOperationAction({ISD::SHL, ISD::SRL, ISD::SRA},
                          {MVT::v2i16, MVT::v4i8}, Custom);
+      // The packed saturating/rounding shift intrinsics are exposed as IR
+      // intrinsics. On RV64 the 32-bit-wide v2i16 type is illegal and would
+      // not be auto-widened by the type legalizer for an INTRINSIC_WO_CHAIN
+      // node; widen it explicitly in ReplaceNodeResults.
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2i16, Custom);
     } else {
       VTs = P32VecVTs;
     }
@@ -11735,6 +11740,29 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     unsigned Opc = IntNo == Intrinsic::riscv_clmulh ? ISD::CLMULH : ISD::CLMULR;
     return DAG.getNode(Opc, DL, XLenVT, Op.getOperand(1), Op.getOperand(2));
   }
+  case Intrinsic::riscv_pssha:
+  case Intrinsic::riscv_psshar:
+  case Intrinsic::riscv_psshl:
+  case Intrinsic::riscv_psshlr: {
+    unsigned Opc;
+    switch (IntNo) {
+    case Intrinsic::riscv_pssha:  Opc = RISCVISD::PSSHA;  break;
+    case Intrinsic::riscv_psshar: Opc = RISCVISD::PSSHAR; break;
+    case Intrinsic::riscv_psshl:  Opc = RISCVISD::PSSHL;  break;
+    case Intrinsic::riscv_psshlr: Opc = RISCVISD::PSSHLR; break;
+    }
+    SDValue Shamt = Op.getOperand(2);
+    // shamt is declared i32 in IR; the instruction reads it as a signed
+    // integer (negative shamt = right shift). If shamt has not yet been
+    // promoted to XLenVT, sign-extend directly; if already promoted on RV64
+    // (typically via ANY_EXTEND), restore the signed value in the low 32 bits.
+    if (Shamt.getValueType() != XLenVT)
+      Shamt = DAG.getNode(ISD::SIGN_EXTEND, DL, XLenVT, Shamt);
+    else if (Subtarget.is64Bit())
+      Shamt = DAG.getNode(ISD::SIGN_EXTEND_INREG, DL, XLenVT, Shamt,
+                          DAG.getValueType(MVT::i32));
+    return DAG.getNode(Opc, DL, Op.getValueType(), Op.getOperand(1), Shamt);
+  }
   case Intrinsic::experimental_get_vector_length:
     return lowerGetVectorLength(Op.getNode(), DAG, Subtarget);
   case Intrinsic::riscv_vmv_x_s: {
@@ -15776,6 +15804,27 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
       Res = DAG.getNode(ISD::SRL, DL, MVT::i64, Res,
                         DAG.getConstant(32, DL, MVT::i64));
       Results.push_back(DAG.getNode(ISD::TRUNCATE, DL, MVT::i32, Res));
+      return;
+    }
+    case Intrinsic::riscv_pssha:
+    case Intrinsic::riscv_psshar:
+    case Intrinsic::riscv_psshl:
+    case Intrinsic::riscv_psshlr: {
+      // On RV64 the 32-bit-wide v2i16 type is illegal. Widen to v4i16, call
+      // the same intrinsic on the wider type, and extract the low subvector.
+      assert(Subtarget.is64Bit() && Subtarget.hasStdExtP() &&
+             N->getSimpleValueType(0) == MVT::v2i16 &&
+             "Unexpected custom legalization");
+      MVT WideVT = MVT::v4i16;
+      SDValue Wide =
+          DAG.getNode(ISD::INSERT_SUBVECTOR, DL, WideVT, DAG.getUNDEF(WideVT),
+                      N->getOperand(1), DAG.getVectorIdxConstant(0, DL));
+      SDValue NewIntrin =
+          DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, WideVT,
+                      {N->getOperand(0), Wide, N->getOperand(2)});
+      Results.push_back(DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, MVT::v2i16,
+                                    NewIntrin,
+                                    DAG.getVectorIdxConstant(0, DL)));
       return;
     }
     case Intrinsic::riscv_vmv_x_s: {

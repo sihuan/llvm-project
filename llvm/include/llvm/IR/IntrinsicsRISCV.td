@@ -2038,6 +2038,27 @@ let TargetPrefix = "riscv" in {
 } // TargetPrefix = "riscv"
 
 
+// P (Packed SIMD) extension
+//===----------------------------------------------------------------------===//
+let TargetPrefix = "riscv" in {
+  class RISCVPackedShift
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [LLVMMatchType<0>, llvm_i32_ty],
+                              [IntrNoMem]>;
+
+  // pssha: signed saturating arithmetic shift (positive shamt = saturating
+  // left, negative = arithmetic right). VXSAT side-effect not modeled in IR.
+  def int_riscv_pssha  : RISCVPackedShift;
+  // Same as pssha, with rounding when shifting right.
+  def int_riscv_psshar : RISCVPackedShift;
+  // psshl: unsigned saturating logical shift (positive = saturating left,
+  // negative = logical right).
+  def int_riscv_psshl  : RISCVPackedShift;
+  // Same as psshl, with rounding when shifting right.
+  def int_riscv_psshlr : RISCVPackedShift;
+} // TargetPrefix = "riscv"
+
+
 // Zihintpause extensions
 //===----------------------------------------------------------------------===//
 let TargetPrefix = "riscv" in
