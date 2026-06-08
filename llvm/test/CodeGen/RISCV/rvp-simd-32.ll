@@ -249,6 +249,61 @@ define <2 x i16> @test_pssh1sadd_h_addself(<2 x i16> %a, <2 x i16> %b) {
   ret <2 x i16> %res
 }
 
+; Test exchanged add/sub operations for v2i16
+define <2 x i16> @test_pas_x_h(<2 x i16> %a, <2 x i16> %b) {
+; CHECK-LABEL: test_pas_x_h:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    pas.hx a0, a0, a1
+; CHECK-NEXT:    ret
+  %res = call <2 x i16> @llvm.riscv.pas.v2i16(<2 x i16> %a, <2 x i16> %b)
+  ret <2 x i16> %res
+}
+
+define <2 x i16> @test_psa_x_h(<2 x i16> %a, <2 x i16> %b) {
+; CHECK-LABEL: test_psa_x_h:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    psa.hx a0, a0, a1
+; CHECK-NEXT:    ret
+  %res = call <2 x i16> @llvm.riscv.psa.v2i16(<2 x i16> %a, <2 x i16> %b)
+  ret <2 x i16> %res
+}
+
+define <2 x i16> @test_psas_x_h(<2 x i16> %a, <2 x i16> %b) {
+; CHECK-LABEL: test_psas_x_h:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    psas.hx a0, a0, a1
+; CHECK-NEXT:    ret
+  %res = call <2 x i16> @llvm.riscv.psas.v2i16(<2 x i16> %a, <2 x i16> %b)
+  ret <2 x i16> %res
+}
+
+define <2 x i16> @test_pssa_x_h(<2 x i16> %a, <2 x i16> %b) {
+; CHECK-LABEL: test_pssa_x_h:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    pssa.hx a0, a0, a1
+; CHECK-NEXT:    ret
+  %res = call <2 x i16> @llvm.riscv.pssa.v2i16(<2 x i16> %a, <2 x i16> %b)
+  ret <2 x i16> %res
+}
+
+define <2 x i16> @test_paas_x_h(<2 x i16> %a, <2 x i16> %b) {
+; CHECK-LABEL: test_paas_x_h:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    paas.hx a0, a0, a1
+; CHECK-NEXT:    ret
+  %res = call <2 x i16> @llvm.riscv.paas.v2i16(<2 x i16> %a, <2 x i16> %b)
+  ret <2 x i16> %res
+}
+
+define <2 x i16> @test_pasa_x_h(<2 x i16> %a, <2 x i16> %b) {
+; CHECK-LABEL: test_pasa_x_h:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    pasa.hx a0, a0, a1
+; CHECK-NEXT:    ret
+  %res = call <2 x i16> @llvm.riscv.pasa.v2i16(<2 x i16> %a, <2 x i16> %b)
+  ret <2 x i16> %res
+}
+
 ; Test saturating add operations for v4i8
 define <4 x i8> @test_psadd_b(<4 x i8> %a, <4 x i8> %b) {
 ; CHECK-LABEL: test_psadd_b:
@@ -2202,10 +2257,10 @@ define <2 x i16> @test_select_v2i16(i1 %cond, <2 x i16> %a, <2 x i16> %b) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    andi a3, a0, 1
 ; CHECK-NEXT:    mv a0, a1
-; CHECK-NEXT:    bnez a3, .LBB153_2
+; CHECK-NEXT:    bnez a3, .LBB159_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a0, a2
-; CHECK-NEXT:  .LBB153_2:
+; CHECK-NEXT:  .LBB159_2:
 ; CHECK-NEXT:    ret
   %res = select i1 %cond, <2 x i16> %a, <2 x i16> %b
   ret <2 x i16> %res
@@ -2216,10 +2271,10 @@ define <4 x i8> @test_select_v4i8(i1 %cond, <4 x i8> %a, <4 x i8> %b) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    andi a3, a0, 1
 ; CHECK-NEXT:    mv a0, a1
-; CHECK-NEXT:    bnez a3, .LBB154_2
+; CHECK-NEXT:    bnez a3, .LBB160_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a0, a2
-; CHECK-NEXT:  .LBB154_2:
+; CHECK-NEXT:  .LBB160_2:
 ; CHECK-NEXT:    ret
   %res = select i1 %cond, <4 x i8> %a, <4 x i8> %b
   ret <4 x i8> %res

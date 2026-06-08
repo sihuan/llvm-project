@@ -556,6 +556,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       // widen for those operations that will be unrolled.
       setOperationAction({ISD::SHL, ISD::SRL, ISD::SRA},
                          {MVT::v2i16, MVT::v4i8}, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2i16, Custom);
     } else {
       VTs = P32VecVTs;
     }
@@ -647,6 +648,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction(ISD::EXTRACT_VECTOR_ELT, MVT::v2i32, Legal);
       setOperationAction({ISD::EXTRACT_VECTOR_ELT, ISD::INSERT_VECTOR_ELT},
                          {MVT::v4i16, MVT::v8i8}, Custom);
+      setOperationAction(ISD::INTRINSIC_WO_CHAIN, MVT::v2i32, Custom);
       setOperationAction(ISD::CONCAT_VECTORS, {MVT::v4i16, MVT::v8i8}, Legal);
       setOperationAction(ISD::EXTRACT_SUBVECTOR, {MVT::v2i16, MVT::v4i8},
                          Legal);
@@ -11684,6 +11686,50 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     EVT PtrVT = getPointerTy(DAG.getDataLayout());
     return DAG.getRegister(RISCV::X4, PtrVT);
   }
+  case Intrinsic::riscv_pas:
+  case Intrinsic::riscv_psa:
+  case Intrinsic::riscv_psas:
+  case Intrinsic::riscv_pssa:
+  case Intrinsic::riscv_paas:
+  case Intrinsic::riscv_pasa: {
+    // v2i32 has no paired instruction on RV32; split into scalar i32 cross
+    // operations.
+    if (Subtarget.is64Bit() || Op.getSimpleValueType() != MVT::v2i32)
+      break;
+    SDValue S1 = Op.getOperand(1);
+    SDValue S2 = Op.getOperand(2);
+    SDValue Idx0 = DAG.getVectorIdxConstant(0, DL);
+    SDValue Idx1 = DAG.getVectorIdxConstant(1, DL);
+    SDValue S1Even =
+        DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::i32, S1, Idx0);
+    SDValue S1Odd =
+        DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::i32, S1, Idx1);
+    SDValue S2Even =
+        DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::i32, S2, Idx0);
+    SDValue S2Odd =
+        DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::i32, S2, Idx1);
+
+    bool EvenIsAdd = IntNo == Intrinsic::riscv_psa ||
+                     IntNo == Intrinsic::riscv_pssa ||
+                     IntNo == Intrinsic::riscv_pasa;
+    bool IsSat =
+        IntNo == Intrinsic::riscv_psas || IntNo == Intrinsic::riscv_pssa;
+    bool IsAvg =
+        IntNo == Intrinsic::riscv_paas || IntNo == Intrinsic::riscv_pasa;
+
+    auto Combine = [&](bool IsAdd, SDValue A, SDValue B) -> SDValue {
+      if (IsAvg)
+        return IsAdd ? DAG.getNode(ISD::AVGFLOORS, DL, MVT::i32, A, B)
+                     : DAG.getNode(RISCVISD::ASUB, DL, MVT::i32, A, B);
+      unsigned Opc = IsSat ? (IsAdd ? ISD::SADDSAT : ISD::SSUBSAT)
+                           : (IsAdd ? ISD::ADD : ISD::SUB);
+      return DAG.getNode(Opc, DL, MVT::i32, A, B);
+    };
+
+    SDValue REven = Combine(EvenIsAdd, S1Even, S2Odd);
+    SDValue ROdd = Combine(!EvenIsAdd, S1Odd, S2Even);
+    return DAG.getNode(ISD::BUILD_VECTOR, DL, MVT::v2i32, REven, ROdd);
+  }
   case Intrinsic::riscv_orc_b:
   case Intrinsic::riscv_brev8:
   case Intrinsic::riscv_sha256sig0:
@@ -15700,6 +15746,25 @@ void RISCVTargetLowering::ReplaceNodeResults(SDNode *N,
           RISCVISD::MOP_RR, DL, MVT::i64, NewOp0, NewOp1,
           DAG.getTargetConstant(N->getConstantOperandVal(3), DL, MVT::i64));
       Results.push_back(DAG.getNode(ISD::TRUNCATE, DL, MVT::i32, Res));
+      return;
+    }
+    case Intrinsic::riscv_pas:
+    case Intrinsic::riscv_psa:
+    case Intrinsic::riscv_psas:
+    case Intrinsic::riscv_pssa:
+    case Intrinsic::riscv_paas:
+    case Intrinsic::riscv_pasa: {
+      // v2i16 is illegal on RV64; widen to v4i16 (the exchange is per 32-bit
+      // word, so the undef high word is harmless) and keep the low half.
+      assert(N->getSimpleValueType(0) == MVT::v2i16 &&
+             "Unexpected exchanged add/sub legalization");
+      SDValue Undef = DAG.getUNDEF(MVT::v2i16);
+      SDValue Op0 = DAG.getNode(ISD::CONCAT_VECTORS, DL, MVT::v4i16,
+                                N->getOperand(1), Undef);
+      SDValue Op1 = DAG.getNode(ISD::CONCAT_VECTORS, DL, MVT::v4i16,
+                                N->getOperand(2), Undef);
+      Results.push_back(DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, MVT::v4i16,
+                                    N->getOperand(0), Op0, Op1));
       return;
     }
     case Intrinsic::riscv_clmulh:

@@ -110,6 +110,24 @@ let TargetPrefix = "riscv" in {
 } // TargetPrefix = "riscv"
 
 //===----------------------------------------------------------------------===//
+// Packed SIMD (P extension)
+
+let TargetPrefix = "riscv" in {
+
+  class RISCVPackedBinaryIntrinsic
+      : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                              [LLVMMatchType<0>, LLVMMatchType<0>], [IntrNoMem]>;
+
+  // Packed exchanged addition and subtraction.
+  def int_riscv_pas  : RISCVPackedBinaryIntrinsic;
+  def int_riscv_psa  : RISCVPackedBinaryIntrinsic;
+  def int_riscv_psas : RISCVPackedBinaryIntrinsic;
+  def int_riscv_pssa : RISCVPackedBinaryIntrinsic;
+  def int_riscv_paas : RISCVPackedBinaryIntrinsic;
+  def int_riscv_pasa : RISCVPackedBinaryIntrinsic;
+} // TargetPrefix = "riscv"
+
+//===----------------------------------------------------------------------===//
 // Vectors
 
 // The intrinsic does not have any operand that must be extended.
