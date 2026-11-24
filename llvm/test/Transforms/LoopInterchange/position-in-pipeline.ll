@@ -15,6 +15,7 @@
 ; CHECK-NEXT: Running pass: LoopInterchangePass
 ; CHECK-NEXT: Running pass: LoopDistributePass
 ; CHECK-NEXT: Running pass: InjectTLIMappings
+; CHECK-NEXT: Running pass: SplitPackedFloatPairsPass
 ; CHECK-NEXT: Running pass: LoopVectorizePass
 
 
